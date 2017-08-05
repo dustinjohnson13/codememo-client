@@ -1,0 +1,41 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #222;
+  padding: 20px;
+  color: white;
+}
+
+.collection {
+  padding-top: 20px;
+}
+
+.deck {
+  border: 1px solid;
+  padding: 7px 0;
+  margin-bottom: 10px;
+}
+
+.deck-name {
+  text-align: left;
+  font-weight: bold;
+  padding-left: 10%;
+}
+
+.card-counts {
+  float: right;
+}
+
+.due-count {
+  color: green;
+}
+
+.new-count {
+  color: blue;
+}
+
+.btn {
+  cursor: pointer;
+}

@@ -4,6 +4,7 @@
 
 .deck {
   border: 1px solid;
+  cursor: pointer;
   padding: 7px 0;
   margin-bottom: 10px;
 }

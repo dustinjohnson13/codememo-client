@@ -6,21 +6,8 @@ class CollectionPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            collection: {
-                decks: CollectionPage.decks()
-            },
             modal: false
         };
-
-        this.addNewDeckToStore = this.addNewDeckToStore.bind(this);
-    }
-
-    static decks() {
-        let decks = [];
-        for (let i = 0; i < 6; i++) {
-            decks.push(CollectionPage.deck(i));
-        }
-        return decks;
     }
 
     static deck(number) {
@@ -31,19 +18,14 @@ class CollectionPage extends Component {
         };
     }
 
-    addNewDeckToStore(deck) {
-        this.state.collection.decks.push(deck);
-        this.forceUpdate();
-    }
-
     render() {
         return (
             <div>
                 <Container>
-                    <Collection decks={this.state.collection.decks}/>
+                    <Collection decks={this.props.collection.decks} reviewDeck={this.props.reviewDeck}/>
                 </Container>
 
-                <ModalExample addNewDeck={this.addNewDeckToStore}/>
+                <ModalExample addNewDeck={this.props.addNewDeckToStore}/>
             </div>
         );
     }
@@ -55,7 +37,7 @@ class Collection extends Component {
     }
 
     render() {
-        const decks = this.props.decks.map((deck) => <Deck deck={deck} key={deck.name}/>);
+        const decks = this.props.decks.map((deck) => <Deck deck={deck} key={deck.name} reviewDeck={this.props.reviewDeck}/>);
 
         return (
             <Row>
@@ -70,6 +52,12 @@ class Collection extends Component {
 class Deck extends Component {
     constructor(props) {
         super(props);
+
+        this.review = this.review.bind(this);
+    }
+
+    review() {
+        this.props.reviewDeck(this.props.deck.name)
     }
 
     render() {
@@ -78,7 +66,7 @@ class Deck extends Component {
 
         return (
             <Col sm={{size: 6, offset: 3}}>
-                <Row className="deck">
+                <Row className="deck" onClick={this.review}>
                     <Col sm="8">
                         <div className="deck-name">
                             <span>{this.props.deck.name}</span>

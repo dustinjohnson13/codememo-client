@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import CollectionPage from './CollectionPage'
 import ReviewPage from './ReviewPage'
+import * as domain from "./Collection";
 import './App.css';
 
 class App extends Component {
@@ -8,14 +9,13 @@ class App extends Component {
         super(props);
 
         this.state = {
-            collection: {
-                decks: App.decks()
-            },
+            collection: new domain.Collection(App.decks()),
             page: "CollectionPage",
             deck: null
         };
 
         this.addNewDeckToStore = this.addNewDeckToStore.bind(this);
+        this.collections = this.collections.bind(this);
         this.reviewDeck = this.reviewDeck.bind(this);
     }
 
@@ -32,10 +32,20 @@ class App extends Component {
         this.forceUpdate();
     }
 
+    collections() {
+        this.state = {
+            ...this.state,
+            page: "CollectionPage",
+            deck: null
+        };
+        this.forceUpdate();
+    }
+
     reviewDeck(name) {
         const deck = this.state.collection.decks.find((it) => it.name === name);
 
         this.state = {
+            ...this.state,
             page: "ReviewPage",
             deck: deck
         };
@@ -44,8 +54,9 @@ class App extends Component {
 
     render() {
         let page = "CollectionPage" === this.state.page ?
-            <CollectionPage collection={this.state.collection} reviewDeck={this.reviewDeck} addNewDeckToStore={this.addNewDeckToStore}/> :
-            <ReviewPage deck={this.state.deck}/>;
+            <CollectionPage collection={this.state.collection} reviewDeck={this.reviewDeck}
+                            addNewDeckToStore={this.addNewDeckToStore}/> :
+            <ReviewPage deck={this.state.deck} back={this.collections}/>;
 
         return (
             <div className="App">

@@ -1,0 +1,16 @@
+.back, .tools {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.back {
+  margin-right: 10px;
+}
+
+.tools {
+  margin-left: 10px;
+}
+
+.menu {
+  margin-bottom: 15px;
+}

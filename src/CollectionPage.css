@@ -1,5 +1,4 @@
 .collection {
-  padding-top: 20px;
 }
 
 .deck {
@@ -17,12 +16,4 @@
 
 .card-counts {
   float: right;
-}
-
-.due-count {
-  color: green;
-}
-
-.new-count {
-  color: blue;
 }

@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Button, Col, Container, Modal, ModalBody, ModalFooter, ModalHeader, Row} from 'reactstrap';
+import * as domain from './Collection'
 import './CollectionPage.css';
 
 class CollectionPage extends Component {
@@ -11,11 +12,25 @@ class CollectionPage extends Component {
     }
 
     static deck(number) {
-        return {
-            name: `Deck${number}`,
-            due: Math.floor(Math.random() * 30) + 1,
-            new: Math.floor(Math.random() * 15) + 1
-        };
+        const cards = [];
+        const dueCount = Math.floor(Math.random() * 30) + 1;
+        const newCount = Math.floor(Math.random() * 15) + 1;
+        const totalCount = dueCount + newCount + (Math.floor(Math.random() * 15) + 1);
+        const currentTime = new Date().getTime();
+
+        for (let i = 0; i < totalCount; i++) {
+            let dueTime = null;
+            if (i > dueCount) {
+                dueTime = currentTime + (10000 * i);
+            } else if (i > newCount) {
+                dueTime = currentTime - (10000 * i);
+            }
+
+            const card = new domain.Card(`Question Number ${i}?`, `Answer Number ${i}`, dueTime);
+            cards.push(card);
+        }
+
+        return new domain.Deck(`Deck${number}`, cards);
     }
 
     render() {
@@ -37,7 +52,8 @@ class Collection extends Component {
     }
 
     render() {
-        const decks = this.props.decks.map((deck) => <Deck deck={deck} key={deck.name} reviewDeck={this.props.reviewDeck}/>);
+        const decks = this.props.decks.map((deck) => <Deck deck={deck} key={deck.name}
+                                                           reviewDeck={this.props.reviewDeck}/>);
 
         return (
             <Row>
@@ -61,8 +77,8 @@ class Deck extends Component {
     }
 
     render() {
-        const dueCount = this.props.deck.due;
-        const newCount = this.props.deck.new;
+        const dueCount = this.props.deck.getDue().length;
+        const newCount = this.props.deck.getNew().length;
 
         return (
             <Col sm={{size: 6, offset: 3}}>

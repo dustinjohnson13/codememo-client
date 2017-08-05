@@ -1,0 +1,27 @@
+.collection {
+  padding-top: 20px;
+}
+
+.deck {
+  border: 1px solid;
+  padding: 7px 0;
+  margin-bottom: 10px;
+}
+
+.deck-name {
+  text-align: left;
+  font-weight: bold;
+  padding-left: 10%;
+}
+
+.card-counts {
+  float: right;
+}
+
+.due-count {
+  color: green;
+}
+
+.new-count {
+  color: blue;
+}

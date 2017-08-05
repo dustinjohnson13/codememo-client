@@ -29,28 +29,31 @@ class App extends Component {
     }
 
     addNewDeckToStore(deck) {
-        this.state.collection.decks.push(deck);
-        this.forceUpdate();
+        this.setState({
+            ...this.state,
+            collection: {
+                ...this.state.collection,
+                decks: [...this.state.collection.decks, deck]
+            }
+        });
     }
 
     collections() {
-        this.state = {
+        this.setState({
             ...this.state,
             page: "CollectionPage",
             deck: null
-        };
-        this.forceUpdate();
+        });
     }
 
     reviewDeck(name) {
         const deck = this.state.collection.decks.find((it) => it.name === name);
 
-        this.state = {
+        this.setState({
             ...this.state,
             page: "ReviewPage",
             deck: deck
-        };
-        this.forceUpdate();
+        });
     }
 
     render() {

@@ -1,3 +1,13 @@
+class Clock {
+    constructor(epochSecondsRetriever) {
+        this.epochSecondsRetriever = epochSecondsRetriever;
+    }
+
+    epochSeconds() {
+        return this.epochSecondsRetriever();
+    }
+}
+
 class Collection {
     constructor(decks) {
         this.decks = decks;
@@ -14,8 +24,8 @@ class Deck {
         return this.cards.filter((it) => it.isNew())
     }
 
-    getDue() {
-        return this.cards.filter((it) => it.isDue())
+    getDue(clock) {
+        return this.cards.filter((it) => it.isDue(clock))
     }
 }
 
@@ -30,11 +40,11 @@ class Card {
         return this.due === null
     }
 
-    isDue() {
-        return !this.isNew() && this.due < new Date().getTime();
+    isDue(clock) {
+        return !this.isNew() && this.due < clock.epochSeconds();
     }
 }
 
 module.exports = {
-    Collection, Deck, Card
+    Clock, Collection, Deck, Card
 };

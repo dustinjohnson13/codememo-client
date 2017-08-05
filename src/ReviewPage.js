@@ -16,7 +16,8 @@ class ReviewPage extends Component {
                     <a href="JavaScript:void(0)" className="tools">Tools</a>
                 </div>
                 <h3>{this.props.deck.name}</h3>
-                <h5>{this.props.deck.cards.length} cards (<span className="due-count">{this.props.deck.getDue().length}</span> due,
+                <h5>{this.props.deck.cards.length} cards (<span
+                    className="due-count">{this.props.deck.getDue(this.props.clock).length}</span> due,
                     <span className="new-count"> {this.props.deck.getNew().length}</span> new)</h5>
             </div>
         );

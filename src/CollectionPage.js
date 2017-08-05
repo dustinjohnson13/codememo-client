@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Button, Col, Container, Modal, ModalBody, ModalFooter, ModalHeader, Row} from 'reactstrap';
-import * as domain from './Collection'
+import * as domain from './Domain'
 import './CollectionPage.css';
 
 class CollectionPage extends Component {
@@ -11,12 +11,12 @@ class CollectionPage extends Component {
         };
     }
 
-    static deck(number) {
+    static deck(clock, number) {
         const cards = [];
         const dueCount = Math.floor(Math.random() * 30) + 1;
         const newCount = Math.floor(Math.random() * 15) + 1;
         const totalCount = dueCount + newCount + (Math.floor(Math.random() * 15) + 1);
-        const currentTime = new Date().getTime();
+        const currentTime = clock.epochSeconds();
 
         for (let i = 0; i < totalCount; i++) {
             let dueTime = null;
@@ -37,10 +37,11 @@ class CollectionPage extends Component {
         return (
             <div>
                 <Container>
-                    <Collection decks={this.props.collection.decks} reviewDeck={this.props.reviewDeck}/>
+                    <Collection decks={this.props.collection.decks} reviewDeck={this.props.reviewDeck}
+                                clock={this.props.clock}/>
                 </Container>
 
-                <ModalExample addNewDeck={this.props.addNewDeckToStore}/>
+                <ModalExample addNewDeck={this.props.addNewDeckToStore} clock={this.props.clock}/>
             </div>
         );
     }
@@ -53,7 +54,8 @@ class Collection extends Component {
 
     render() {
         const decks = this.props.decks.map((deck) => <Deck deck={deck} key={deck.name}
-                                                           reviewDeck={this.props.reviewDeck}/>);
+                                                           reviewDeck={this.props.reviewDeck}
+                                                           clock={this.props.clock}/>);
 
         return (
             <Row>
@@ -77,7 +79,7 @@ class Deck extends Component {
     }
 
     render() {
-        const dueCount = this.props.deck.getDue().length;
+        const dueCount = this.props.deck.getDue(this.props.clock).length;
         const newCount = this.props.deck.getNew().length;
 
         return (
@@ -112,7 +114,10 @@ class ModalExample extends React.Component {
     }
 
     deckConfirmed() {
-        this.props.addNewDeck(CollectionPage.deck(new Date().getTime()));
+        const clock = this.props.clock;
+        const deck = CollectionPage.deck(clock, clock.epochSeconds());
+
+        this.props.addNewDeck(deck);
         this.toggle();
     }
 

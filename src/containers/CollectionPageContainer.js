@@ -1,9 +1,12 @@
 import {connect} from 'react-redux'
-import {addDeck, reviewDeck, fetchCollectionRequest, fetchCollection} from '../actions/index'
-import MainPage from '../MainPage'
+import {addDeck, fetchCollectionRequest, reviewDeck} from '../actions/index'
+import CollectionPage from '../CollectionPage'
 
 const mapStateToProps = (state, ownProps) => {
-    return {...state.mainPage, clock: ownProps.clock};
+    return {...state.mainPage,
+        clock: ownProps.clock,
+        collection: state.mainPage.collection
+    };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {
@@ -11,9 +14,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     return {
         fetchCollections: () => {
             dispatch(fetchCollectionRequest());
-        },
-        back: () => {
-            dispatch(fetchCollection());
         },
         reviewDeck: id => {
             dispatch(reviewDeck(id))
@@ -24,9 +24,9 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     }
 };
 
-const MainPageContainer = connect(
+const CollectionPageContainer = connect(
     mapStateToProps,
     mapDispatchToProps
-)(MainPage);
+)(CollectionPage);
 
-export default MainPageContainer
+export default CollectionPageContainer

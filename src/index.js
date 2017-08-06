@@ -6,7 +6,7 @@ import {Provider} from 'react-redux'
 import {createLogger} from 'redux-logger'
 import {applyMiddleware, createStore} from 'redux'
 import 'bootstrap/dist/css/bootstrap.css'
-import App from './App';
+import AppContainer from './containers/AppContainer';
 import flashcardApp from './reducers/index'
 import './index.css';
 import registerServiceWorker from './registerServiceWorker';
@@ -23,7 +23,7 @@ store.dispatch(fetchCollection());
 
 ReactDOM.render(
     <Provider store={store}>
-        <App/>
+        <AppContainer />
     </Provider>,
     document.getElementById('root')
 );

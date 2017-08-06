@@ -2,21 +2,22 @@ import * as domain from '../Domain'
 
 import DataService from '../services/DataService';
 
-const dataService = new DataService(new domain.Clock(() => new Date().getTime()));
-
-const mainPage = (state = {
-    page: "CollectionPage",
-    deck: null,
-    collection: dataService.getCollection()
-}, action) => {
+const mainPage = (state = {}, action) => {
     switch (action.type) {
-        case 'SHOW_COLLECTIONS':
+        case 'FETCH_COLLECTION_REQUEST':
+            return {
+                ...state,
+                page: null
+            }
+        case 'FETCH_COLLECTION_SUCCESS':
             return {
                 ...state,
                 page: "CollectionPage",
+                collection: action.collection,
                 deck: null
             };
         case 'ADD_NEW_DECK':
+            const dataService = new DataService(new domain.Clock(() => new Date().getTime()));
             const name = action.name;
             const newDeck = dataService.createDeck(name);
 

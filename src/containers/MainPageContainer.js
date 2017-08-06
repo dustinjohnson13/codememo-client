@@ -1,5 +1,5 @@
 import {connect} from 'react-redux'
-import {addDeck, reviewDeck, showCollections} from '../actions/index'
+import {addDeck, reviewDeck, fetchCollectionRequest, fetchCollection} from '../actions/index'
 import MainPage from '../MainPage'
 
 const mapStateToProps = (state, ownProps) => {
@@ -9,8 +9,11 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
 
     return {
-        showCollections: () => {
-            dispatch(showCollections());
+        fetchCollections: () => {
+            dispatch(fetchCollectionRequest());
+        },
+        back: () => {
+            dispatch(fetchCollection());
         },
         reviewDeck: id => {
             dispatch(reviewDeck(id))

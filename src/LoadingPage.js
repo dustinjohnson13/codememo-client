@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
-import './ReviewPage.css';
 import Spinner from 'react-spin';
 
-class ReviewPage extends Component {
+class LoadingPage extends Component {
     constructor(props) {
         super(props);
     }
@@ -21,4 +20,4 @@ class ReviewPage extends Component {
     }
 }
 
-export default ReviewPage;
+export default LoadingPage;

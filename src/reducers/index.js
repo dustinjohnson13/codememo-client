@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux'
+import {combineReducers} from 'redux'
 import mainPage from './mainPage'
 import visibilityFilter from './visibilityFilter'
 

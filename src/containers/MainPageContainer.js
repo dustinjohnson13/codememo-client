@@ -1,12 +1,12 @@
 import {connect} from 'react-redux'
-import {addDeck, showCollections, reviewDeck} from '../actions/index'
+import {addDeck, reviewDeck, showCollections} from '../actions/index'
 import MainPage from '../MainPage'
 
-const mapStateToProps = state => {
-    return state.mainPage;
+const mapStateToProps = (state, ownProps) => {
+    return {...state.mainPage, clock: ownProps.clock};
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch, ownProps) => {
 
     return {
         showCollections: () => {

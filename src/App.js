@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import './App.css';
 import MainPageContainer from './containers/MainPageContainer'
+import * as domain from './Domain'
+
+const clock = new domain.Clock(() => new Date().getTime());
 
 class App extends Component {
     constructor(props) {
@@ -13,7 +16,7 @@ class App extends Component {
                 <div className="App-header">
                     <h2>Flashcard App</h2>
                 </div>
-                <MainPageContainer/>
+                <MainPageContainer clock={clock}/>
 
             </div>
         );

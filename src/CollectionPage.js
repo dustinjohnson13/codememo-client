@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {Button, Col, Container, Modal, ModalBody, ModalFooter, ModalHeader, Row} from 'reactstrap';
-import * as domain from './Domain'
 import './CollectionPage.css';
 
 class CollectionPage extends Component {

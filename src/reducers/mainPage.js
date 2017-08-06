@@ -2,14 +2,12 @@ import * as domain from '../Domain'
 
 import DataService from '../services/DataService';
 
-const clock = new domain.Clock(() => new Date().getTime());
-const dataService = new DataService(clock);
+const dataService = new DataService(new domain.Clock(() => new Date().getTime()));
 
 const mainPage = (state = {
     page: "CollectionPage",
     deck: null,
-    collection: dataService.getCollection(),
-    clock: clock
+    collection: dataService.getCollection()
 }, action) => {
     switch (action.type) {
         case 'SHOW_COLLECTIONS':

@@ -29,10 +29,17 @@ export const addDeckSuccess = json => {
     };
 };
 
-export const reviewDeck = name => {
+export const fetchDeckRequest = name => {
     return {
-        type: 'REVIEW_DECK',
+        type: 'FETCH_DECK_REQUEST',
         name
+    }
+};
+
+export const fetchDeckSuccess = json => {
+    return {
+        type: 'FETCH_DECK_SUCCESS',
+        deck: json
     }
 };
 
@@ -82,5 +89,15 @@ export function addDeck(name) {
 
         return dataService.addDeck(name)
             .then(collection => dispatch(addDeckSuccess(collection)))
+    }
+}
+
+export function fetchDeck(name) {
+    return function (dispatch) {
+
+        dispatch(fetchDeckRequest(name));
+
+        return dataService.fetchDeck(name)
+            .then(deck => dispatch(fetchDeckSuccess(deck)))
     }
 }

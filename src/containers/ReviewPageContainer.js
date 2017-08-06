@@ -4,7 +4,7 @@ import ReviewPage from '../ReviewPage'
 
 const mapStateToProps = (state, ownProps) => {
     return {
-        ...state.mainPage,
+        ...state.collectionPage,
         clock: ownProps.clock
     };
 };

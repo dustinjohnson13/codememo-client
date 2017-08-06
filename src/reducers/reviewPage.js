@@ -1,4 +1,4 @@
-const visibilityFilter = (state = 'SHOW_ALL', action) => {
+const reviewPage = (state = {}, action) => {
     switch (action.type) {
         case 'SET_VISIBILITY_FILTER':
             return action.filter;
@@ -7,4 +7,4 @@ const visibilityFilter = (state = 'SHOW_ALL', action) => {
     }
 };
 
-export default visibilityFilter
+export default reviewPage

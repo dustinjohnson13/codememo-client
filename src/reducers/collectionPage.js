@@ -1,8 +1,4 @@
-import * as domain from '../Domain'
-
-import DataService from '../services/DataService';
-
-const mainPage = (state = {}, action) => {
+const collectionPage = (state = {}, action) => {
     switch (action.type) {
         case 'FETCH_COLLECTION_REQUEST':
             return {
@@ -17,8 +13,8 @@ const mainPage = (state = {}, action) => {
                 collection: action.collection,
                 deck: null
             };
-        case 'REVIEW_DECK':
-            const deck = state.collection.decks.find((it) => it.name === action.name);
+        case 'FETCH_DECK_SUCCESS':
+            const deck = action.deck;
             return {
                 ...state,
                 page: "ReviewPage",
@@ -29,4 +25,4 @@ const mainPage = (state = {}, action) => {
     }
 };
 
-export default mainPage
+export default collectionPage

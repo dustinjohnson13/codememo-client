@@ -1,10 +1,10 @@
 import {combineReducers} from 'redux'
-import mainPage from './mainPage'
-import visibilityFilter from './visibilityFilter'
+import collectionPage from './collectionPage'
+import reviewPage from './reviewPage'
 
 const flashcardApp = combineReducers({
-    mainPage,
-    visibilityFilter
+    collectionPage,
+    reviewPage
 });
 
 export default flashcardApp

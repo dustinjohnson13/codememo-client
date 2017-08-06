@@ -14,7 +14,7 @@ class CollectionPage extends Component {
         return (
             <div>
                 <Container>
-                    <Collection decks={this.props.collection.decks} reviewDeck={this.props.reviewDeck}
+                    <Collection decks={this.props.collection.decks} fetchDeck={this.props.fetchDeck}
                                 clock={this.props.clock}/>
                 </Container>
 
@@ -31,7 +31,7 @@ class Collection extends Component {
 
     render() {
         const decks = this.props.decks.map((deck) => <Deck deck={deck} key={deck.name}
-                                                           reviewDeck={this.props.reviewDeck}
+                                                           reviewDeck={this.props.fetchDeck}
                                                            clock={this.props.clock}/>);
 
         return (

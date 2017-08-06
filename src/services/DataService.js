@@ -61,4 +61,10 @@ export default class {
         });
     }
 
+    fetchDeck(name) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => resolve(this.collection.decks.find(it => it.name === name)), 250);
+        });
+    }
+
 };

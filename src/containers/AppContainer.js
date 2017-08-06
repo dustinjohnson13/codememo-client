@@ -2,7 +2,7 @@ import {connect} from 'react-redux'
 import App from '../App'
 
 const mapStateToProps = (state, ownProps) => {
-    return {...state.mainPage, clock: ownProps.clock};
+    return {...state.collectionPage, clock: ownProps.clock};
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {

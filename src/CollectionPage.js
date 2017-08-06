@@ -57,7 +57,7 @@ class Deck extends Component {
     }
 
     render() {
-        const dueCount = this.props.deck.getDue(new domain.Clock(() => new Date().getTime())).length;
+        const dueCount = this.props.deck.getDue(this.props.clock).length;
         const newCount = this.props.deck.getNew().length;
 
         return (

@@ -25,8 +25,8 @@ class MainPage extends Component {
 }
 
 MainPage.propTypes = {
-    back: PropTypes.func.isRequired,
-    reviewDeck: PropTypes.func.isRequired
+    // back: PropTypes.func.isRequired,
+    // reviewDeck: PropTypes.func.isRequired
 };
 
 export default MainPage;

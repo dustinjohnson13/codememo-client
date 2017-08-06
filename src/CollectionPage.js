@@ -11,28 +11,6 @@ class CollectionPage extends Component {
         };
     }
 
-    static deck(clock, number) {
-        const cards = [];
-        const dueCount = Math.floor(Math.random() * 30) + 1;
-        const newCount = Math.floor(Math.random() * 15) + 1;
-        const totalCount = dueCount + newCount + (Math.floor(Math.random() * 15) + 1);
-        const currentTime = clock.epochSeconds();
-
-        for (let i = 0; i < totalCount; i++) {
-            let dueTime = null;
-            if (i > dueCount) {
-                dueTime = currentTime + (10000 * i);
-            } else if (i > newCount) {
-                dueTime = currentTime - (10000 * i);
-            }
-
-            const card = new domain.Card(`Question Number ${i}?`, `Answer Number ${i}`, dueTime);
-            cards.push(card);
-        }
-
-        return new domain.Deck(`Deck${number}`, cards);
-    }
-
     render() {
         return (
             <div>
@@ -41,7 +19,7 @@ class CollectionPage extends Component {
                                 clock={this.props.clock}/>
                 </Container>
 
-                <ModalExample addNewDeck={this.props.addNewDeckToStore} clock={this.props.clock}/>
+                <ModalExample addDeck={this.props.addDeck} newDeck={this.props.newDeck} clock={this.props.clock}/>
             </div>
         );
     }
@@ -79,7 +57,7 @@ class Deck extends Component {
     }
 
     render() {
-        const dueCount = this.props.deck.getDue(this.props.clock).length;
+        const dueCount = this.props.deck.getDue(new domain.Clock(() => new Date().getTime())).length;
         const newCount = this.props.deck.getNew().length;
 
         return (
@@ -115,9 +93,10 @@ class ModalExample extends React.Component {
 
     deckConfirmed() {
         const clock = this.props.clock;
-        const deck = CollectionPage.deck(clock, clock.epochSeconds());
+        const name = `Deck${clock.epochSeconds()})`;
 
-        this.props.addNewDeck(deck);
+        this.props.addDeck(name);
+
         this.toggle();
     }
 

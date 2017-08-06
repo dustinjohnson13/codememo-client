@@ -15,10 +15,10 @@ class ReviewPage extends Component {
                     <Button>Add</Button><Button>Edit</Button><Button>Find</Button>
                     <a href="JavaScript:void(0)" className="tools">Tools</a>
                 </div>
-                <h3>{this.props.deck.name}</h3>
-                <h5>{this.props.deck.cards.length} cards (<span
-                    className="due-count">{this.props.deck.getDue(this.props.clock).length}</span> due,
-                    <span className="new-count"> {this.props.deck.getNew().length}</span> new)</h5>
+                <h3>{this.props.deckName}</h3>
+                <h5>{this.props.totalCount} cards (<span
+                    className="due-count">{this.props.dueCount}</span> due,
+                    <span className="new-count"> {this.props.newCount}</span> new)</h5>
             </div>
         );
     }

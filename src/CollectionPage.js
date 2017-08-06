@@ -5,20 +5,16 @@ import './CollectionPage.css';
 class CollectionPage extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            modal: false
-        };
     }
 
     render() {
         return (
             <div>
                 <Container>
-                    <Collection decks={this.props.collection.decks} fetchDeck={this.props.fetchDeck}
-                                clock={this.props.clock}/>
+                    <Collection decks={this.props.decks} fetchDeck={this.props.fetchDeck} />
                 </Container>
 
-                <ModalExample addDeck={this.props.addDeck} newDeck={this.props.newDeck} clock={this.props.clock}/>
+                <ModalExample addDeck={this.props.addDeck}/>
             </div>
         );
     }
@@ -30,9 +26,8 @@ class Collection extends Component {
     }
 
     render() {
-        const decks = this.props.decks.map((deck) => <Deck deck={deck} key={deck.name}
-                                                           reviewDeck={this.props.fetchDeck}
-                                                           clock={this.props.clock}/>);
+        const decks = this.props.decks.map(deck =>
+            <Deck deck={deck} key={deck.name} reviewDeck={this.props.fetchDeck}/>);
 
         return (
             <Row>
@@ -56,8 +51,8 @@ class Deck extends Component {
     }
 
     render() {
-        const dueCount = this.props.deck.getDue(this.props.clock).length;
-        const newCount = this.props.deck.getNew().length;
+        const dueCount = this.props.deck.due;
+        const newCount = this.props.deck.new;
 
         return (
             <Col sm={{size: 6, offset: 3}}>
@@ -91,8 +86,7 @@ class ModalExample extends React.Component {
     }
 
     deckConfirmed() {
-        const clock = this.props.clock;
-        const name = `Deck${clock.epochSeconds()})`;
+        const name = `Deck${new Date().getTime()}`;
 
         this.props.addDeck(name);
 

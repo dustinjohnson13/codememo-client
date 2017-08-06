@@ -3,9 +3,17 @@ import {fetchCollection} from '../actions/index'
 import ReviewPage from '../ReviewPage'
 
 const mapStateToProps = (state, ownProps) => {
+    const currentTime = ownProps.clock.epochSeconds();
+    const deckName = state.collectionPage.deck.name;
+    const totalCount = state.collectionPage.deck.cards.length;
+    const newCount = state.collectionPage.deck.cards.filter(it => it.due === null).length;
+    const dueCount = state.collectionPage.deck.cards.filter(it => it.due && currentTime > it.due).length;
+
     return {
-        ...state.collectionPage,
-        clock: ownProps.clock
+        deckName: deckName,
+        newCount: newCount,
+        dueCount: dueCount,
+        totalCount: totalCount
     };
 };
 

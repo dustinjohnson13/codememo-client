@@ -1,11 +1,8 @@
 import React, {Component} from 'react';
 import './App.css';
-import * as domain from './Domain'
 import LoadingPage from './LoadingPage'
 import CollectionPageContainer from './containers/CollectionPageContainer'
 import ReviewPageContainer from './containers/ReviewPageContainer'
-
-const clock = new domain.Clock(() => new Date().getTime());
 
 class App extends Component {
     constructor(props) {
@@ -15,8 +12,8 @@ class App extends Component {
     render() {
         const page = this.props.page === null ? <LoadingPage/> :
             "CollectionPage" === this.props.page ?
-                <CollectionPageContainer clock={clock}/> :
-                <ReviewPageContainer clock={clock}/>;
+                <CollectionPageContainer/> :
+                <ReviewPageContainer clock={this.props.clock}/>;
 
         return (
             <div className="App">

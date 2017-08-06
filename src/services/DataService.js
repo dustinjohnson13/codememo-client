@@ -4,15 +4,16 @@ export default class {
 
     constructor(clock) {
         this.clock = clock;
-        this.collection = {decks: []};
-        this.createCollection();
+        this.collectionStore = {decks: []};
+        this.idCounter = 1;
+        this.createCollectionStore();
     }
 
     createDecks() {
         for (let i = 0; i < 6; i++) {
             this.createDeck(`Deck${i}`);
         }
-        return this.collection;
+        return this.collectionStore;
     }
 
     createDeck(name) {
@@ -34,19 +35,19 @@ export default class {
             cards.push(card);
         }
 
-        const deck = new domain.Deck(name, cards);
-        this.collection = {
-            ...this.collection,
+        const deck = new domain.Deck(name, `deck-${this.idCounter++}`, cards);
+        this.collectionStore = {
+            ...this.collectionStore,
             decks: [
-                ...this.collection.decks,
+                ...this.collectionStore.decks,
                 deck
             ]
         };
 
-        return this.collection;
+        return this.collectionStore;
     }
 
-    createCollection() {
+    createCollectionStore() {
         return this.createDecks()
     }
 
@@ -57,13 +58,33 @@ export default class {
 
     fetchCollection() {
         return new Promise((resolve, reject) => { // fetch(`https://www.reddit.com/r/${subreddit}.json`)
-            setTimeout(() => resolve(this.collection), 250);
+            const decks = this.collectionStore.decks.map(it => {
+                return {
+                    id: it.id,
+                    name: it.name,
+                    total: it.cards.length,
+                    due: it.getDue(this.clock).length,
+                    new: it.getNew().length
+                }
+            });
+            const collectionResponse = {decks: decks};
+
+            setTimeout(() => resolve(collectionResponse), 250);
         });
     }
 
     fetchDeck(name) {
         return new Promise((resolve, reject) => {
-            setTimeout(() => resolve(this.collection.decks.find(it => it.name === name)), 250);
+            const deck = this.collectionStore.decks.find(it => it.name === name);
+            const cards = deck.cards.map(it => {
+                return {
+                    id: it.id,
+                    due: it.due
+                }
+            });
+            const deckResponse = {id: deck.id, name: deck.name, cards: cards};
+
+            setTimeout(() => resolve(deckResponse), 250);
         });
     }
 

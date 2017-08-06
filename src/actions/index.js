@@ -1,7 +1,6 @@
 import * as domain from '../Domain'
-// import fetch from 'isomorphic-fetch'
-
 import DataService from '../services/DataService';
+// import fetch from 'isomorphic-fetch'
 
 export const fetchCollectionRequest = () => {
     return {
@@ -16,16 +15,23 @@ export const fetchCollectionSuccess = (json) => {
     }
 };
 
-export const reviewDeck = name => {
+export const addDeckRequest = name => {
     return {
-        type: 'REVIEW_DECK',
+        type: 'ADD_DECK_REQUEST',
         name
     }
 };
 
-export const addDeck = name => {
+export const addDeckSuccess = json => {
     return {
-        type: 'ADD_NEW_DECK',
+        type: 'ADD_DECK_SUCCESS',
+        collection: json
+    };
+};
+
+export const reviewDeck = name => {
+    return {
+        type: 'REVIEW_DECK',
         name
     }
 };
@@ -51,11 +57,7 @@ export function fetchCollection() {
 
         // In this case, we return a promise to wait for.
         // This is not required by thunk middleware, but it is convenient for us.
-
-        console.log("Retrieving via promise.");
-        return new Promise((resolve, reject) => { // fetch(`https://www.reddit.com/r/${subreddit}.json`)
-            setTimeout(() => resolve(dataService.getCollection()), 250);
-        })
+        return dataService.fetchCollection()
             .then(
                 response => response,// response => response.json(),
                 // Do not use catch, because that will also catch
@@ -67,9 +69,18 @@ export function fetchCollection() {
             .then(json => {
                     // We can dispatch many times!
                     // Here, we update the app state with the results of the API call.
-                    console.log(json);
                     dispatch(fetchCollectionSuccess(json))
                 }
-            )
+            );
+    }
+}
+
+export function addDeck(name) {
+    return function (dispatch) {
+
+        dispatch(addDeckRequest());
+
+        return dataService.addDeck(name)
+            .then(collection => dispatch(addDeckSuccess(collection)))
     }
 }

@@ -4,14 +4,15 @@ export default class {
 
     constructor(clock) {
         this.clock = clock;
+        this.collection = {decks: []};
+        this.createCollection();
     }
 
-    createDecks(clock) {
-        let decks = [];
+    createDecks() {
         for (let i = 0; i < 6; i++) {
-            decks.push(this.createDeck(`Deck${i}`));
+            this.createDeck(`Deck${i}`);
         }
-        return decks;
+        return this.collection;
     }
 
     createDeck(name) {
@@ -33,11 +34,31 @@ export default class {
             cards.push(card);
         }
 
-        return new domain.Deck(name, cards);
+        const deck = new domain.Deck(name, cards);
+        this.collection = {
+            ...this.collection,
+            decks: [
+                ...this.collection.decks,
+                deck
+            ]
+        };
+
+        return this.collection;
     }
 
-    getCollection() {
-        return new domain.Collection(this.createDecks(this.clock))
+    createCollection() {
+        return this.createDecks()
+    }
+
+    addDeck(name) {
+        this.createDeck(name);
+        return this.fetchCollection();
+    }
+
+    fetchCollection() {
+        return new Promise((resolve, reject) => { // fetch(`https://www.reddit.com/r/${subreddit}.json`)
+            setTimeout(() => resolve(this.collection), 250);
+        });
     }
 
 };

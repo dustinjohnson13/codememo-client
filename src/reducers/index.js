@@ -5,8 +5,8 @@ import reviewPage from './reviewPage'
 
 const flashcardApp = combineReducers({
     app,
-    collectionPage,
-    reviewPage
+    collection: collectionPage,
+    review: reviewPage
 });
 
 export default flashcardApp

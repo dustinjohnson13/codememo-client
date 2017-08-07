@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Button} from 'reactstrap';
 import './ReviewPage.css';
+import ReviewCard from "./ReviewCard";
 
 class ReviewPage extends Component {
     constructor(props) {
@@ -19,6 +20,8 @@ class ReviewPage extends Component {
                 <h5>{this.props.totalCount} cards (<span
                     className="due-count">{this.props.dueCount}</span> due,
                     <span className="new-count"> {this.props.newCount}</span> new)</h5>
+
+                <ReviewCard/>
             </div>
         );
     }

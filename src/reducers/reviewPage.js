@@ -10,7 +10,12 @@ export const getViewState = state => {
         deckName: deckName,
         totalCount: totalCount,
         newCount: newCount,
-        dueCount: dueCount
+        dueCount: dueCount,
+        // TODO: Should these stay here?
+        failInterval: '10m',
+        hardInterval: '1d',
+        goodInterval: '3d',
+        easyInterval: '5d'
     };
 };
 

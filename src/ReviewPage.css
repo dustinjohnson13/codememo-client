@@ -14,3 +14,29 @@
 .menu {
   margin-bottom: 15px;
 }
+
+.review-card {
+  /*Make this responsive*/
+  min-height: 500px;
+}
+
+.review-question {
+  margin-top: 20px;
+  font-size: 1.1em;
+}
+
+.review-answer {
+  margin: 20px;
+}
+
+.review-answers {
+  position: absolute;
+  bottom: 15%;
+  text-align: center;
+  width: 100%;
+}
+
+.review-answers > button:not(:first-child) {
+  margin-left: 5px;
+  width: 60px;
+}

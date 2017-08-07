@@ -46,6 +46,11 @@ class Card {
     }
 }
 
+const FAIL = 'FAIL';
+const HARD = 'HARD';
+const GOOD = 'GOOD';
+const EASY = 'EASY';
+
 module.exports = {
-    Clock, Collection, Deck, Card
+    Clock, Collection, Deck, Card, FAIL, HARD, GOOD, EASY
 };

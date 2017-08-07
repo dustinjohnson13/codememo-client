@@ -50,6 +50,13 @@ export const fetchDeckSuccess = json => {
     }
 };
 
+export const answerCard = answer => {
+    return {
+        type: 'ANSWER_CARD',
+        deck: answer
+    }
+};
+
 // Meet our first thunk action creator!
 // Though its insides are different, you would use it just like any other action creator:
 // store.dispatch(fetchPosts('reactjs'))

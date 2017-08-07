@@ -4,7 +4,7 @@ import CollectionPage from '../CollectionPage'
 
 const mapStateToProps = (state, ownProps) => {
     return {
-        decks: state.collectionPage.decks
+        decks: state.collection.decks
     };
 };
 

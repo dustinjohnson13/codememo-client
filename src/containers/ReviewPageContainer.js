@@ -3,7 +3,7 @@ import {collectionPage} from '../actions/index'
 import ReviewPage from '../ReviewPage'
 
 const mapStateToProps = (state, ownProps) => {
-    const props = state.reviewPage;
+    const props = state.review;
 
     return {
         deckName: props.deckName,

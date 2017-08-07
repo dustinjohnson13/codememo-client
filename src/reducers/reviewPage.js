@@ -1,3 +1,5 @@
+import {FETCH_DECK_SUCCESS} from '../actions/actionTypes'
+
 export const getViewState = state => {
     const deck = state.deck;
 
@@ -21,7 +23,7 @@ export const getViewState = state => {
 
 const reviewPage = (state = {}, action) => {
     switch (action.type) {
-        case 'FETCH_DECK_SUCCESS':
+        case FETCH_DECK_SUCCESS:
             const deck = action.deck;
             return getViewState({
                 ...state,

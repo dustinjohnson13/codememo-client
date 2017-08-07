@@ -1,5 +1,11 @@
 import app from './app';
-import {fetchCollectionRequest, fetchCollectionSuccess, fetchDeckRequest, fetchDeckSuccess, loadPage} from '../actions/index'
+import {
+    fetchCollectionRequest,
+    fetchCollectionSuccess,
+    fetchDeckRequest,
+    fetchDeckSuccess,
+    loadPage
+} from '../actions/index'
 
 describe('app', () => {
     it('nullifies page while fetching decks', () => {

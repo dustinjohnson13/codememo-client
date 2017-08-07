@@ -1,8 +1,7 @@
 import reviewPage from './reviewPage';
-import {fetchDeckSuccess} from '../actions/index'
+import {addDeckSuccess, fetchCollectionSuccess, fetchDeckSuccess} from '../actions/index'
 
 describe('reviewPage', () => {
-
     it('adds deck information on fetch deck success', () => {
         const expectedDeckName = 'My Deck';
         const expectedDeckID = 'deck1';

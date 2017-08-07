@@ -3,6 +3,7 @@ import './App.css';
 import LoadingPage from './LoadingPage'
 import CollectionPageContainer from './containers/CollectionPageContainer'
 import ReviewPageContainer from './containers/ReviewPageContainer'
+import {COLLECTION, REVIEW} from "./actions/pages";
 
 class App extends Component {
     constructor(props) {
@@ -10,10 +11,18 @@ class App extends Component {
     }
 
     render() {
-        const page = this.props.page === null ? <LoadingPage/> :
-            "CollectionPage" === this.props.page ?
-                <CollectionPageContainer/> :
-                <ReviewPageContainer clock={this.props.clock}/>;
+        const requestedPage = this.props.page;
+        let page = <LoadingPage/>;
+
+        switch (requestedPage) {
+            case COLLECTION:
+                page = <CollectionPageContainer/>;
+                break;
+            case REVIEW:
+                page = <ReviewPageContainer/>;
+                break;
+            default:
+        }
 
         return (
             <div className="App">

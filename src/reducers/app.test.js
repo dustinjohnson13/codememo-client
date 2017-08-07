@@ -6,10 +6,11 @@ import {
     fetchDeckSuccess,
     loadPage
 } from '../actions/index'
+import {COLLECTION, REVIEW} from "../actions/pages"
 
 describe('app', () => {
     it('nullifies page while fetching decks', () => {
-        const previousState = {page: 'CollectionPage'};
+        const previousState = {page: COLLECTION};
         const expectedState = {page: null};
 
         const actualState = app(previousState, fetchDeckRequest());
@@ -18,7 +19,7 @@ describe('app', () => {
     });
 
     it('nullifies page while fetching the collection', () => {
-        const previousState = {page: 'CollectionPage'};
+        const previousState = {page: COLLECTION};
         const expectedState = {page: null};
 
         const actualState = app(previousState, fetchCollectionRequest());
@@ -28,7 +29,7 @@ describe('app', () => {
 
     it('sets page to CollectionPage on fetch collection success', () => {
         const previousState = {page: null};
-        const expectedState = {page: 'CollectionPage'};
+        const expectedState = {page: COLLECTION};
 
         const actualState = app(previousState, fetchCollectionSuccess());
 
@@ -37,7 +38,7 @@ describe('app', () => {
 
     it('sets page to ReviewPage on fetch deck success', () => {
         const previousState = {page: null};
-        const expectedState = {page: 'ReviewPage'};
+        const expectedState = {page: REVIEW};
 
         const actualState = app(previousState, fetchDeckSuccess());
 
@@ -46,9 +47,9 @@ describe('app', () => {
 
     it('sets page to requested target on load page', () => {
         const previousState = {page: null};
-        const expectedState = {page: 'ReviewPage'};
+        const expectedState = {page: REVIEW};
 
-        const actualState = app(previousState, loadPage('ReviewPage'));
+        const actualState = app(previousState, loadPage(REVIEW));
 
         expect(actualState).toEqual(expectedState);
     });

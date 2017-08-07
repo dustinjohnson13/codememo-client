@@ -5,6 +5,7 @@ import {
     FETCH_DECK_SUCCESS,
     LOAD_PAGE
 } from '../actions/actionTypes'
+import {COLLECTION, REVIEW} from "../actions/pages";
 
 export const getViewState = state => state;
 
@@ -19,12 +20,12 @@ const app = (state = {}, action) => {
         case FETCH_COLLECTION_SUCCESS:
             return getViewState({
                 ...state,
-                page: "CollectionPage"
+                page: COLLECTION
             });
         case FETCH_DECK_SUCCESS:
             return getViewState({
                 ...state,
-                page: "ReviewPage"
+                page: REVIEW
             });
         case LOAD_PAGE:
             return getViewState({

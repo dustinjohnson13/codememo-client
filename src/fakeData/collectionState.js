@@ -1,0 +1,1 @@
+export const collectionState = {decks: [{name: 'deck1'}]};

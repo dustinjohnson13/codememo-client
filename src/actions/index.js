@@ -11,6 +11,7 @@ import {
     FETCH_DECK_SUCCESS,
     LOAD_PAGE
 } from "./actionTypes"
+import {COLLECTION} from '../actions/pages'
 
 export const loadPage = (page) => {
     return {
@@ -20,7 +21,7 @@ export const loadPage = (page) => {
 };
 
 export const collectionPage = () => {
-    return loadPage('CollectionPage');
+    return loadPage(COLLECTION);
 };
 
 export const fetchCollectionRequest = () => {

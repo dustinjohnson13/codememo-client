@@ -1,24 +1,32 @@
+import {
+    FETCH_COLLECTION_REQUEST,
+    FETCH_COLLECTION_SUCCESS,
+    FETCH_DECK_REQUEST,
+    FETCH_DECK_SUCCESS,
+    LOAD_PAGE
+} from '../actions/actionTypes'
+
 export const getViewState = state => state;
 
 const app = (state = {}, action) => {
     switch (action.type) {
-        case 'FETCH_DECK_REQUEST':
-        case 'FETCH_COLLECTION_REQUEST':
+        case FETCH_DECK_REQUEST:
+        case FETCH_COLLECTION_REQUEST:
             return getViewState({
                 ...state,
                 page: null
             });
-        case 'FETCH_COLLECTION_SUCCESS':
+        case FETCH_COLLECTION_SUCCESS:
             return getViewState({
                 ...state,
                 page: "CollectionPage"
             });
-        case 'FETCH_DECK_SUCCESS':
+        case FETCH_DECK_SUCCESS:
             return getViewState({
                 ...state,
                 page: "ReviewPage"
             });
-        case 'LOAD_PAGE':
+        case LOAD_PAGE:
             return getViewState({
                 ...state,
                 page: action.page

@@ -1,58 +1,72 @@
+// import fetch from 'isomorphic-fetch'
 import * as domain from '../Domain'
 import DataService from '../services/DataService';
-// import fetch from 'isomorphic-fetch'
+import {
+    ADD_DECK_REQUEST,
+    ADD_DECK_SUCCESS,
+    ANSWER_CARD,
+    FETCH_COLLECTION_REQUEST,
+    FETCH_COLLECTION_SUCCESS,
+    FETCH_DECK_REQUEST,
+    FETCH_DECK_SUCCESS,
+    LOAD_PAGE
+} from "./actionTypes"
+
+export const loadPage = (page) => {
+    return {
+        type: LOAD_PAGE,
+        page: page
+    }
+};
 
 export const collectionPage = () => {
-    return {
-        type: 'LOAD_PAGE',
-        page: 'CollectionPage'
-    }
+    return loadPage('CollectionPage');
 };
 
 export const fetchCollectionRequest = () => {
     return {
-        type: 'FETCH_COLLECTION_REQUEST'
+        type: FETCH_COLLECTION_REQUEST
     }
 };
 
 export const fetchCollectionSuccess = (json) => {
     return {
-        type: 'FETCH_COLLECTION_SUCCESS',
+        type: FETCH_COLLECTION_SUCCESS,
         collection: json
     }
 };
 
 export const addDeckRequest = name => {
     return {
-        type: 'ADD_DECK_REQUEST',
+        type: ADD_DECK_REQUEST,
         name
     }
 };
 
 export const addDeckSuccess = json => {
     return {
-        type: 'ADD_DECK_SUCCESS',
+        type: ADD_DECK_SUCCESS,
         collection: json
     };
 };
 
 export const fetchDeckRequest = name => {
     return {
-        type: 'FETCH_DECK_REQUEST',
+        type: FETCH_DECK_REQUEST,
         name
     }
 };
 
 export const fetchDeckSuccess = json => {
     return {
-        type: 'FETCH_DECK_SUCCESS',
+        type: FETCH_DECK_SUCCESS,
         deck: json
     }
 };
 
 export const answerCard = answer => {
     return {
-        type: 'ANSWER_CARD',
+        type: ANSWER_CARD,
         deck: answer
     }
 };

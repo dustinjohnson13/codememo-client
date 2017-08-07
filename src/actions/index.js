@@ -2,6 +2,13 @@ import * as domain from '../Domain'
 import DataService from '../services/DataService';
 // import fetch from 'isomorphic-fetch'
 
+export const collectionPage = () => {
+    return {
+        type: 'LOAD_PAGE',
+        page: 'CollectionPage'
+    }
+};
+
 export const fetchCollectionRequest = () => {
     return {
         type: 'FETCH_COLLECTION_REQUEST'

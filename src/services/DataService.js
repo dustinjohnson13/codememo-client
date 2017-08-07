@@ -6,6 +6,7 @@ export default class {
         this.clock = clock;
         this.collectionStore = {decks: []};
         this.idCounter = 1;
+        this.timeoutDelay = 250;
         this.createCollectionStore();
     }
 
@@ -69,7 +70,7 @@ export default class {
             });
             const collectionResponse = {decks: decks};
 
-            setTimeout(() => resolve(collectionResponse), 250);
+            setTimeout(() => resolve(collectionResponse), this.timeoutDelay);
         });
     }
 
@@ -84,7 +85,7 @@ export default class {
             });
             const deckResponse = {id: deck.id, name: deck.name, cards: cards};
 
-            setTimeout(() => resolve(deckResponse), 250);
+            setTimeout(() => resolve(deckResponse), this.timeoutDelay);
         });
     }
 

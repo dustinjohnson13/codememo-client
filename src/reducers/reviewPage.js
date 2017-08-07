@@ -2,8 +2,12 @@ export const getViewState = state => state;
 
 const reviewPage = (state = {}, action) => {
     switch (action.type) {
-        case 'SET_VISIBILITY_FILTER':
-            return action.filter;
+        case 'FETCH_DECK_SUCCESS':
+            const deck = action.deck;
+            return getViewState({
+                ...state,
+                deck: deck
+            });
         default:
             return getViewState(state);
     }

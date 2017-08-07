@@ -76,11 +76,13 @@ export default class {
 
     fetchDeck(name) {
         return new Promise((resolve, reject) => {
+            const currentTime = this.clock.epochSeconds();
             const deck = this.collectionStore.decks.find(it => it.name === name);
             const cards = deck.cards.map(it => {
+                const status = it.due === null ? 'NEW' : currentTime > it.due ? 'DUE' : 'OK';
                 return {
                     id: it.id,
-                    due: it.due
+                    status: status
                 }
             });
             const deckResponse = {id: deck.id, name: deck.name, cards: cards};

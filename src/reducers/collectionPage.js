@@ -1,4 +1,9 @@
-export const getViewState = state => state;
+export const getViewState = (state) => {
+    const decks = state.collection.decks;
+    return {
+        decks: decks
+    }
+};
 
 const collectionPage = (state = {}, action) => {
     switch (action.type) {
@@ -6,11 +11,10 @@ const collectionPage = (state = {}, action) => {
         case 'ADD_DECK_SUCCESS':
             return getViewState({
                 ...state,
-                collection: action.collection,
-                deck: null
+                collection: action.collection
             });
         default:
-            return getViewState(state);
+            return state;
     }
 };
 

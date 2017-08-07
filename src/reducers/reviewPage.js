@@ -1,4 +1,18 @@
-export const getViewState = state => state;
+export const getViewState = state => {
+    const deck = state.deck;
+
+    const deckName = deck.name;
+    const totalCount = deck.cards.length;
+    const newCount = deck.cards.filter(it => it.status === 'NEW').length;
+    const dueCount = deck.cards.filter(it => it.status === 'DUE').length;
+
+    return {
+        deckName: deckName,
+        totalCount: totalCount,
+        newCount: newCount,
+        dueCount: dueCount
+    };
+};
 
 const reviewPage = (state = {}, action) => {
     switch (action.type) {
@@ -9,7 +23,7 @@ const reviewPage = (state = {}, action) => {
                 deck: deck
             });
         default:
-            return getViewState(state);
+            return state;
     }
 };
 

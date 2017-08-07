@@ -24,7 +24,7 @@ const app = (state = {}, action) => {
                 page: action.page
             });
         default:
-            return getViewState(state);
+            return state;
     }
 };
 

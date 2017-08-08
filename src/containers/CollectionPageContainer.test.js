@@ -4,14 +4,9 @@ import jsdom from 'jsdom';
 import {mapDispatchToProps, mapStateToProps} from "./CollectionPageContainer";
 import {collectionState} from "../fakeData/collectionState";
 import {Deck} from "../components/CollectionPage";
-import {addDeckRequest, fetchCollectionRequest, fetchDeckRequest, fetchDeckSuccess} from "../actions/index";
+import {addDeckRequest, fetchCollectionRequest, fetchDeckRequest} from "../actions/index";
 import FakeDataService from "../fakeData/FakeDataService";
 import middlewareFake from "../fakeData/middlewareFake";
-
-
-const doc = jsdom.jsdom('<!doctype html><html><body></body></html>');
-global.document = doc;
-global.window = doc.defaultView;
 
 describe('<CollectionPageContainer />', () => {
 

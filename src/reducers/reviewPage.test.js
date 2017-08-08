@@ -1,5 +1,5 @@
 import reviewPage from './reviewPage';
-import {addDeckSuccess, fetchCollectionSuccess, fetchDeckSuccess} from '../actions/index'
+import {fetchDeckSuccess} from '../actions/index'
 
 describe('reviewPage', () => {
     it('adds deck information on fetch deck success', () => {

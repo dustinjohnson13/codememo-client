@@ -12,11 +12,15 @@ class LoadingPage extends Component {
     }
 
     render() {
-        var spinCfg = {
-            width: 12,
-            radius: 35
-        };
-        return <Spinner config={spinCfg} />
+        if (this.props.nospin) {
+            return <div></div>
+        } else {
+            var spinCfg = {
+                width: 12,
+                radius: 35
+            };
+            return <Spinner config={spinCfg}/>
+        }
     }
 }
 

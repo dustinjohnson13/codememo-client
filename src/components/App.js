@@ -12,7 +12,7 @@ class App extends Component {
 
     render() {
         const requestedPage = this.props.page;
-        let page = <LoadingPage/>;
+        let page = <LoadingPage nospin={this.props.nospin}/>;
 
         switch (requestedPage) {
             case COLLECTION:

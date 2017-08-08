@@ -1,8 +1,7 @@
 import {connect} from 'react-redux'
 import App from '../components/App'
-import * as domain from '../Domain'
 
-const mapStateToProps = (state, ownProps) => {
+export const mapStateToProps = (state, ownProps) => {
     const page = state.app.page;
 
     return {page: page, dataService: ownProps.dataService};

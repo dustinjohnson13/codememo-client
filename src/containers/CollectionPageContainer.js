@@ -2,23 +2,23 @@ import {connect} from 'react-redux'
 import {addDeck, fetchCollectionRequest, fetchDeck} from '../actions/index'
 import CollectionPage from '../components/CollectionPage'
 
-const mapStateToProps = (state, ownProps) => {
-    return {
-        decks: state.collection.decks
-    };
-};
+export const mapStateToProps = (state, ownProps) => ({
+   decks: state.collection.decks
+});
 
-const mapDispatchToProps = (dispatch, ownProps) => {
+export const mapDispatchToProps = (dispatch, ownProps) => {
+
+    const dataService = ownProps.dataService;
 
     return {
         fetchCollections: () => {
             dispatch(fetchCollectionRequest());
         },
         fetchDeck: name => {
-            dispatch(fetchDeck(name))
+            dispatch(fetchDeck(dataService, name))
         },
         addDeck: name => {
-            dispatch(addDeck(name))
+            dispatch(addDeck(dataService, name))
         }
     }
 };

@@ -16,7 +16,7 @@ class App extends Component {
 
         switch (requestedPage) {
             case COLLECTION:
-                page = <CollectionPageContainer/>;
+                page = <CollectionPageContainer dataService={this.props.dataService}/>;
                 break;
             case REVIEW:
                 page = <ReviewPageContainer/>;

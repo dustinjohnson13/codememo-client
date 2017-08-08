@@ -12,6 +12,7 @@ import ReviewPageContainer from "./ReviewPageContainer";
 import CollectionPageContainer from "./CollectionPageContainer";
 import {collectionState} from "../fakeData/collectionState";
 import {reviewState} from "../fakeData/reviewState";
+import FakeDataService from "../fakeData/FakeDataService";
 
 const doc = jsdom.jsdom('<!doctype html><html><body></body></html>');
 global.document = doc;
@@ -19,11 +20,14 @@ global.window = doc.defaultView;
 
 describe('<AppContainer />', () => {
 
+    const dataService = new FakeDataService();
+
     const prepareContainer = (state) => {
         const store = storeFake(state);
+
         const wrapper = mount(
             <Provider store={store}>
-                <AppContainer/>
+                <AppContainer dataService={dataService}/>
             </Provider>
         );
 
@@ -57,9 +61,10 @@ describe('<AppContainer />', () => {
     });
 
     it('displays the collection page when specified', () => {
-        const app = prepareContainer({app: {page: COLLECTION}, collection: collectionState});
+        const state = {app: {page: COLLECTION}, collection: collectionState};
+        const app = prepareContainer(state);
 
-        const expected = <CollectionPageContainer/>;
+        const expected = <CollectionPageContainer dataService={dataService}/>;
         expect(app.contains(expected)).toEqual(true);
     });
 });

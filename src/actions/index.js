@@ -1,6 +1,5 @@
 // import fetch from 'isomorphic-fetch'
-import * as domain from '../Domain'
-import DataService from '../services/DataService';
+
 import {
     ADD_DECK_REQUEST,
     ADD_DECK_SUCCESS,
@@ -75,9 +74,7 @@ export const answerCard = answer => {
 // Meet our first thunk action creator!
 // Though its insides are different, you would use it just like any other action creator:
 // store.dispatch(fetchPosts('reactjs'))
-const dataService = new DataService(new domain.Clock(() => new Date().getTime()));
-
-export function fetchCollection() {
+export function fetchCollection(dataService) {
     // Thunk middleware knows how to handle functions.
     // It passes the dispatch method as an argument to the function,
     // thus making it able to dispatch actions itself.
@@ -111,22 +108,24 @@ export function fetchCollection() {
     }
 }
 
-export function addDeck(name) {
+export function addDeck(dataService, name) {
     return function (dispatch) {
 
-        dispatch(addDeckRequest());
+        dispatch(addDeckRequest(name));
 
         return dataService.addDeck(name)
             .then(collection => dispatch(addDeckSuccess(collection)))
     }
 }
 
-export function fetchDeck(name) {
+export function fetchDeck(dataService, name) {
     return function (dispatch) {
 
         dispatch(fetchDeckRequest(name));
 
         return dataService.fetchDeck(name)
-            .then(deck => dispatch(fetchDeckSuccess(deck)))
+            .then(deck => {
+                dispatch(fetchDeckSuccess(deck))
+            });
     }
 }

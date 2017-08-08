@@ -2,12 +2,10 @@ import {connect} from 'react-redux'
 import App from '../components/App'
 import * as domain from '../Domain'
 
-const clock = new domain.Clock(() => new Date().getTime());
-
 const mapStateToProps = (state, ownProps) => {
     const page = state.app.page;
 
-    return {page: page, clock: clock};
+    return {page: page, dataService: ownProps.dataService};
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {

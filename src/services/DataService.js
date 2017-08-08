@@ -1,94 +1,27 @@
-import * as domain from '../Domain.js'
+import FakeDataService from "../fakeData/FakeDataService";
 
 export default class {
 
     constructor(clock) {
-        this.clock = clock;
-        this.collectionStore = {decks: []};
-        this.idCounter = 1;
         this.timeoutDelay = 250;
-        this.createCollectionStore();
-    }
-
-    createDecks() {
-        for (let i = 0; i < 6; i++) {
-            this.createDeck(`Deck${i}`);
-        }
-        return this.collectionStore;
-    }
-
-    createDeck(name) {
-        const cards = [];
-        const dueCount = Math.floor(Math.random() * 30) + 1;
-        const newCount = Math.floor(Math.random() * 15) + 1;
-        const totalCount = dueCount + newCount + (Math.floor(Math.random() * 15) + 1);
-        const currentTime = this.clock.epochSeconds();
-
-        for (let i = 0; i < totalCount; i++) {
-            let dueTime = null;
-            if (i > dueCount) {
-                dueTime = currentTime + (10000 * i);
-            } else if (i > newCount) {
-                dueTime = currentTime - (10000 * i);
-            }
-
-            const card = new domain.Card(`Question Number ${i}?`, `Answer Number ${i}`, dueTime);
-            cards.push(card);
-        }
-
-        const deck = new domain.Deck(name, `deck-${this.idCounter++}`, cards);
-        this.collectionStore = {
-            ...this.collectionStore,
-            decks: [
-                ...this.collectionStore.decks,
-                deck
-            ]
-        };
-
-        return this.collectionStore;
-    }
-
-    createCollectionStore() {
-        return this.createDecks()
+        this.fakeDataService = new FakeDataService(clock);
     }
 
     addDeck(name) {
-        this.createDeck(name);
-        return this.fetchCollection();
+        return new Promise((resolve, reject) => {
+            setTimeout(() => this.fakeDataService.addDeck(name).then(it => resolve(it)), this.timeoutDelay);
+        });
     }
 
     fetchCollection() {
-        return new Promise((resolve, reject) => { // fetch(`https://www.reddit.com/r/${subreddit}.json`)
-            const decks = this.collectionStore.decks.map(it => {
-                return {
-                    id: it.id,
-                    name: it.name,
-                    total: it.cards.length,
-                    due: it.getDue(this.clock).length,
-                    new: it.getNew().length
-                }
-            });
-            const collectionResponse = {decks: decks};
-
-            setTimeout(() => resolve(collectionResponse), this.timeoutDelay);
+        return new Promise((resolve, reject) => {
+            setTimeout(() => this.fakeDataService.fetchCollection().then(it => resolve(it)), this.timeoutDelay);
         });
     }
 
     fetchDeck(name) {
         return new Promise((resolve, reject) => {
-            const currentTime = this.clock.epochSeconds();
-            const deck = this.collectionStore.decks.find(it => it.name === name);
-            const cards = deck.cards.map(it => {
-                const status = it.due === null ? 'NEW' : currentTime > it.due ? 'DUE' : 'OK';
-                return {
-                    id: it.id,
-                    status: status
-                }
-            });
-            const deckResponse = {id: deck.id, name: deck.name, cards: cards};
-
-            setTimeout(() => resolve(deckResponse), this.timeoutDelay);
+            setTimeout(() => this.fakeDataService.fetchDeck(name).then(it => resolve(it)), this.timeoutDelay);
         });
     }
-
 };

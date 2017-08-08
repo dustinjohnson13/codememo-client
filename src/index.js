@@ -11,6 +11,8 @@ import flashcardApp from './reducers/index'
 import './styles/index.css';
 import registerServiceWorker from './registerServiceWorker';
 import {fetchCollection} from "./actions/index";
+import {Clock} from './Domain'
+import DataService from './services/DataService';
 
 const loggerMiddleware = createLogger();
 
@@ -19,11 +21,14 @@ let store = createStore(flashcardApp, applyMiddleware(
     loggerMiddleware // neat middleware that logs actions
 ));
 
-store.dispatch(fetchCollection());
+const clock = new Clock(() => new Date().getTime());
+const dataService = new DataService(clock);
+
+store.dispatch(fetchCollection(dataService));
 
 ReactDOM.render(
     <Provider store={store}>
-        <AppContainer/>
+        <AppContainer dataService={dataService}/>
     </Provider>,
     document.getElementById('root')
 );

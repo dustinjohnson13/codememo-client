@@ -8,7 +8,7 @@ import {applyMiddleware, createStore} from 'redux'
 import 'bootstrap/dist/css/bootstrap.css'
 import AppContainer from './containers/AppContainer';
 import flashcardApp from './reducers/index'
-import './index.css';
+import './styles/index.css';
 import registerServiceWorker from './registerServiceWorker';
 import {fetchCollection} from "./actions/index";
 
@@ -23,7 +23,7 @@ store.dispatch(fetchCollection());
 
 ReactDOM.render(
     <Provider store={store}>
-        <AppContainer />
+        <AppContainer/>
     </Provider>,
     document.getElementById('root')
 );

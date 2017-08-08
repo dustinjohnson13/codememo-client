@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Button} from 'reactstrap';
-import './ReviewPage.css';
+import '../styles/ReviewPage.css';
 import ReviewCard from "./ReviewCard";
 
 class ReviewPage extends Component {

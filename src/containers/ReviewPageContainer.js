@@ -1,6 +1,6 @@
 import {connect} from 'react-redux'
 import {collectionPage} from '../actions/index'
-import ReviewPage from '../ReviewPage'
+import ReviewPage from '../components/ReviewPage'
 
 const mapStateToProps = (state, ownProps) => {
     const props = state.review;

@@ -2,11 +2,11 @@ import React from 'react';
 import {Provider} from 'react-redux';
 import AppContainer from './AppContainer';
 import {mount} from 'enzyme';
-import App from "../App";
+import App from "../components/App";
 import {storeFake} from "../fakeData/storeFake";
 
 import jsdom from 'jsdom';
-import LoadingPage from "../LoadingPage";
+import LoadingPage from "../components/LoadingPage";
 import {COLLECTION, REVIEW} from "../actions/pages";
 import ReviewPageContainer from "./ReviewPageContainer";
 import CollectionPageContainer from "./CollectionPageContainer";

@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
-import './App.css';
+import '../styles/App.css';
 import LoadingPage from './LoadingPage'
-import CollectionPageContainer from './containers/CollectionPageContainer'
-import ReviewPageContainer from './containers/ReviewPageContainer'
-import {COLLECTION, REVIEW} from "./actions/pages";
+import CollectionPageContainer from '../containers/CollectionPageContainer'
+import ReviewPageContainer from '../containers/ReviewPageContainer'
+import {COLLECTION, REVIEW} from "../actions/pages";
 
 class App extends Component {
     constructor(props) {

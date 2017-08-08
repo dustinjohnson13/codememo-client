@@ -1,6 +1,6 @@
 import {connect} from 'react-redux'
 import {answerCard} from '../actions/index'
-import AnswerCard from '../AnswerCard'
+import AnswerCard from '../components/AnswerCard'
 
 const mapStateToProps = (state, ownProps) => {
     const props = state.review;

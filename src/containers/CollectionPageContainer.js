@@ -1,6 +1,6 @@
 import {connect} from 'react-redux'
 import {addDeck, fetchCollectionRequest, fetchDeck} from '../actions/index'
-import CollectionPage from '../CollectionPage'
+import CollectionPage from '../components/CollectionPage'
 
 const mapStateToProps = (state, ownProps) => {
     return {

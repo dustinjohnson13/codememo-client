@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Button} from 'reactstrap';
-import './ReviewPage.css';
-import {EASY, FAIL, GOOD, HARD} from './Domain'
+import '../styles/ReviewPage.css';
+import {EASY, FAIL, GOOD, HARD} from '../Domain'
 
 class AnswerCard extends Component {
     constructor(props) {

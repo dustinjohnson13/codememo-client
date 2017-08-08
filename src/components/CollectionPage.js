@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Button, Col, Container, Modal, ModalBody, ModalFooter, ModalHeader, Row} from 'reactstrap';
-import './CollectionPage.css';
+import '../styles/CollectionPage.css';
 
 class CollectionPage extends Component {
     constructor(props) {

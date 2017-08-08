@@ -1,5 +1,5 @@
 import {connect} from 'react-redux'
-import App from '../App'
+import App from '../components/App'
 import * as domain from '../Domain'
 
 const clock = new domain.Clock(() => new Date().getTime());

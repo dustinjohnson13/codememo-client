@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import './ReviewPage.css';
-import AnswerCardContainer from './containers/AnswerCardContainer';
+import '../styles/ReviewPage.css';
+import AnswerCardContainer from '../containers/AnswerCardContainer';
 
 class ReviewCard extends Component {
     constructor(props) {

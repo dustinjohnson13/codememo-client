@@ -2,7 +2,7 @@ import {connect} from 'react-redux'
 import {collectionPage} from '../actions/index'
 import ReviewPage from '../components/ReviewPage'
 
-const mapStateToProps = (state, ownProps) => {
+export const mapStateToProps = (state, ownProps) => {
     const props = state.review;
 
     return {
@@ -13,8 +13,7 @@ const mapStateToProps = (state, ownProps) => {
     };
 };
 
-const mapDispatchToProps = (dispatch, ownProps) => {
-
+export const mapDispatchToProps = (dispatch, ownProps) => {
     return {
         back: () => {
             dispatch(collectionPage());

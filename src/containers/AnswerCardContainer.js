@@ -2,7 +2,7 @@ import {connect} from 'react-redux'
 import {answerCard} from '../actions/index'
 import AnswerCard from '../components/AnswerCard'
 
-const mapStateToProps = (state, ownProps) => {
+export const mapStateToProps = (state, ownProps) => {
     const props = state.review;
 
     return {
@@ -13,7 +13,7 @@ const mapStateToProps = (state, ownProps) => {
     };
 };
 
-const mapDispatchToProps = (dispatch, ownProps) => {
+export const mapDispatchToProps = (dispatch, ownProps) => {
 
     return {
         answerCard: (answer) => {

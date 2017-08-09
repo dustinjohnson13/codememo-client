@@ -15,9 +15,9 @@ class Collection {
 }
 
 class Deck {
-    constructor(name, id, cards) {
-        this.name = name;
+    constructor(id, name, cards) {
         this.id = id;
+        this.name = name;
         this.cards = cards;
     }
 
@@ -31,7 +31,8 @@ class Deck {
 }
 
 class Card {
-    constructor(question, answer, due) {
+    constructor(id, question, answer, due) {
+        this.id = id;
         this.question = question;
         this.answer = answer;
         this.due = due;

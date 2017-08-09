@@ -21,7 +21,7 @@ class ReviewPage extends Component {
                     <span className="due-count">{this.props.dueCount}</span> due,
                     <span className="new-count">{this.props.newCount}</span> new)</h5>
 
-                <ReviewCard question='What is the capital of Peru?' answer="Lima"/>
+                <ReviewCard question={this.props.question} answer={this.props.answer}/>
             </div>
         );
     }

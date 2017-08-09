@@ -1,5 +1,6 @@
 import * as domain from '../Domain.js'
 
+// Creates a deck with 27 due cards, 23 new cards, and 80 total cards
 export default class {
 
     constructor(clock) {
@@ -11,31 +12,36 @@ export default class {
 
     createDecks() {
         for (let i = 0; i < 6; i++) {
-            this.createDeck(`Deck${i}`);
+            const idNumber = this.idCounter++;
+            this.createDeck(`Deck${idNumber}`, idNumber);
         }
         return this.collectionStore;
     }
 
-    createDeck(name) {
+    createDeck(name, idNumber) {
+        const idNum = idNumber === undefined ? this.idCounter++ : idNumber;
+
         const cards = [];
-        const dueCount = Math.floor(Math.random() * 30) + 1;
-        const newCount = Math.floor(Math.random() * 15) + 1;
-        const totalCount = dueCount + newCount + (Math.floor(Math.random() * 15) + 1);
+        const dueCount = 27;
+        const newCount = 23;
+        const goodCount = 30;
+        const totalCount = dueCount + newCount + goodCount;
         const currentTime = this.clock.epochSeconds();
+        const deckId = `deck-${idNum}`;
 
         for (let i = 0; i < totalCount; i++) {
             let dueTime = null;
-            if (i > dueCount) {
+            if (i < goodCount) {
                 dueTime = currentTime + (10000 * i);
-            } else if (i > newCount) {
+            } else if (i < (goodCount + dueCount)) {
                 dueTime = currentTime - (10000 * i);
             }
 
-            const card = new domain.Card(`Question Number ${i}?`, `Answer Number ${i}`, dueTime);
+            const card = new domain.Card(`${deckId}-card-${i}`, `Question Number ${i}?`, `Answer Number ${i}`, dueTime);
             cards.push(card);
         }
 
-        const deck = new domain.Deck(name, `deck-${this.idCounter++}`, cards);
+        const deck = new domain.Deck(deckId, name, cards);
         this.collectionStore = {
             ...this.collectionStore,
             decks: [
@@ -82,6 +88,19 @@ export default class {
         });
         const deckResponse = {id: deck.id, name: deck.name, cards: cards};
         return Promise.resolve(deckResponse);
+    }
+
+    fetchCards(ids) {
+        const allCards = this.collectionStore.decks.reduce((cards, deck) => {
+            return cards.concat(deck.cards);
+        }, []);
+        const cardsForIds = allCards.filter(card => ids.indexOf(card.id) !== -1);
+
+        const cardJsonArray = cardsForIds.map(card => {
+            return {id: card.id, question: card.question, answer: card.answer, due: card.due}
+        });
+        const cardResponse = {cards: cardJsonArray};
+        return Promise.resolve(cardResponse);
     }
 
 };

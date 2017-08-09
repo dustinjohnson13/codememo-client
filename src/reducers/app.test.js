@@ -5,7 +5,7 @@ import {
     fetchDeckRequest,
     fetchDeckSuccess,
     loadPage
-} from '../actions/index'
+} from '../actions/creators'
 import {COLLECTION, REVIEW} from "../actions/pages"
 
 describe('app', () => {

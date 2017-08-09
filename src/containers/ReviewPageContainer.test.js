@@ -2,7 +2,7 @@ import React from 'react';
 
 import {mapDispatchToProps, mapStateToProps} from "./ReviewPageContainer";
 import {reviewState} from "../fakeData/reviewState";
-import {collectionPage} from "../actions/index";
+import {collectionPage} from "../actions/creators";
 
 describe('<ReviewPageContainer />', () => {
 

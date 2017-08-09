@@ -1,5 +1,5 @@
 import collectionPage from './collectionPage';
-import {addDeckSuccess, fetchCollectionSuccess} from '../actions/index'
+import {addDeckSuccess, fetchCollectionSuccess} from '../actions/creators'
 
 describe('collectionPage', () => {
 

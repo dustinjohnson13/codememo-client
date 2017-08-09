@@ -2,7 +2,7 @@ import React from 'react';
 import {mapDispatchToProps, mapStateToProps} from "./CollectionPageContainer";
 import {collectionState} from "../fakeData/collectionState";
 import {Deck} from "../components/CollectionPage";
-import {addDeckRequest, fetchCollectionRequest, fetchDeckRequest} from "../actions/index";
+import {addDeckRequest, fetchCollectionRequest, fetchDeckRequest} from "../actions/creators";
 import FakeDataService from "../fakeData/FakeDataService";
 import middlewareFake from "../fakeData/middlewareFake";
 

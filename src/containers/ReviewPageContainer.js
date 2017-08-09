@@ -1,5 +1,5 @@
 import {connect} from 'react-redux'
-import {collectionPage} from '../actions/index'
+import {collectionPage} from '../actions/creators'
 import ReviewPage from '../components/ReviewPage'
 
 export const mapStateToProps = (state, ownProps) => {
@@ -9,7 +9,9 @@ export const mapStateToProps = (state, ownProps) => {
         deckName: props.deckName,
         newCount: props.newCount,
         dueCount: props.dueCount,
-        totalCount: props.totalCount
+        totalCount: props.totalCount,
+        question: props.question,
+        answer: props.answer
     };
 };
 

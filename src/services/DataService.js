@@ -24,4 +24,10 @@ export default class {
             setTimeout(() => this.fakeDataService.fetchDeck(name).then(it => resolve(it)), this.timeoutDelay);
         });
     }
+
+    fetchCards(ids) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => this.fakeDataService.fetchCards(ids).then(it => resolve(it)), this.timeoutDelay);
+        });
+    }
 };

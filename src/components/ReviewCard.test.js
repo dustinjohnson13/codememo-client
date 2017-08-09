@@ -38,9 +38,19 @@ describe('<ReviewCard />', () => {
         expect(collection.text()).toEqual('What is the capital of Peru?');
     });
 
-    it('shows the answer', () => {
-        const collection = component.find('.review-answer');
-        expect(collection.length).toEqual(1);
-        expect(collection.text()).toEqual('Lima');
+    it('shows the answer only when the show answer button is pressed', () => {
+
+        const answerSelector = '.review-answer';
+
+        let answer = component.find(answerSelector);
+        expect(answer.length).toEqual(0);
+
+        const showAnswer = component.find('.show-answer');
+        expect(showAnswer.length).toEqual(1);
+        showAnswer.simulate('click');
+
+        answer = component.find(answerSelector);
+        expect(answer.length).toEqual(1);
+        expect(answer.text()).toEqual('Lima');
     });
 });

@@ -10,7 +10,7 @@ import AppContainer from './containers/AppContainer';
 import flashcardApp from './reducers/index'
 import './styles/index.css';
 import registerServiceWorker from './registerServiceWorker';
-import {fetchCollection} from "./actions/index";
+import {fetchCollection} from "./actions/creators";
 import {Clock} from './Domain'
 import DataService from './services/DataService';
 

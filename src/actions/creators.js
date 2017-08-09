@@ -4,6 +4,8 @@ import {
     ADD_DECK_REQUEST,
     ADD_DECK_SUCCESS,
     ANSWER_CARD,
+    FETCH_CARDS_REQUEST,
+    FETCH_CARDS_SUCCESS,
     FETCH_COLLECTION_REQUEST,
     FETCH_COLLECTION_SUCCESS,
     FETCH_DECK_REQUEST,
@@ -64,10 +66,24 @@ export const fetchDeckSuccess = json => {
     }
 };
 
+export const fetchCardsRequest = ids => {
+    return {
+        type: FETCH_CARDS_REQUEST,
+        ids
+    }
+};
+
+export const fetchCardsSuccess = json => {
+    return {
+        type: FETCH_CARDS_SUCCESS,
+        cards: json
+    }
+};
+
 export const answerCard = answer => {
     return {
         type: ANSWER_CARD,
-        deck: answer
+        answer: answer
     }
 };
 
@@ -118,6 +134,8 @@ export function addDeck(dataService, name) {
     }
 }
 
+const CARDS_TO_RETRIEVE_PER_REQUEST = 10;
+
 export function fetchDeck(dataService, name) {
     return function (dispatch) {
 
@@ -125,7 +143,25 @@ export function fetchDeck(dataService, name) {
 
         return dataService.fetchDeck(name)
             .then(deck => {
-                dispatch(fetchDeckSuccess(deck))
+                dispatch(fetchDeckSuccess(deck));
+
+                const dueOrNewCards = deck.cards.filter(card => card.status !== 'OK');
+                if (dueOrNewCards.length > 0) {
+                    const cardsToRetrieve = dueOrNewCards.slice(0, CARDS_TO_RETRIEVE_PER_REQUEST)
+                        .reduce((ids, card) => ids.concat(card.id), []);
+                    dispatch(fetchCards(dataService, cardsToRetrieve))
+                }
             });
+    }
+}
+
+export function fetchCards(dataService, ids) {
+    return function (dispatch) {
+
+        dispatch(fetchCardsRequest(ids));
+
+        return dataService.fetchCards(ids).then(json => {
+            dispatch(fetchCardsSuccess(json.cards))
+        });
     }
 }

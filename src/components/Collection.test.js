@@ -31,7 +31,8 @@ describe('<Collection />', () => {
     });
 
     it('should render a deck for each in the collection', () => {
-        // TODO: How can I check the actual 'Deck' instances
         expect(component.find('.deck').length).toEqual(2);
+        expect(component.contains(<span>Deck1</span>)).toEqual(true);
+        expect(component.contains(<span>Deck2</span>)).toEqual(true);
     });
 });

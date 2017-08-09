@@ -1,6 +1,4 @@
 import React from 'react';
-
-import jsdom from 'jsdom';
 import {mapDispatchToProps, mapStateToProps} from "./CollectionPageContainer";
 import {collectionState} from "../fakeData/collectionState";
 import {Deck} from "../components/CollectionPage";

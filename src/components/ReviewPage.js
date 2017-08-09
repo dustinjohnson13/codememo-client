@@ -17,11 +17,11 @@ class ReviewPage extends Component {
                     <a href="JavaScript:void(0)" className="tools">Tools</a>
                 </div>
                 <h3>{this.props.deckName}</h3>
-                <h5>{this.props.totalCount} cards (<span
-                    className="due-count">{this.props.dueCount}</span> due,
-                    <span className="new-count"> {this.props.newCount}</span> new)</h5>
+                <h5>{this.props.totalCount} cards (
+                    <span className="due-count">{this.props.dueCount}</span> due,
+                    <span className="new-count">{this.props.newCount}</span> new)</h5>
 
-                <ReviewCard/>
+                <ReviewCard question='What is the capital of Peru?' answer="Lima"/>
             </div>
         );
     }

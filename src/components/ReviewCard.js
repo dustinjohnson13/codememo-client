@@ -11,10 +11,10 @@ class ReviewCard extends Component {
         return (
             <div className="review-card">
                 <div className="review-question">
-                    What is the capital of Peru?
+                    {this.props.question}
                 </div>
                 <div className="review-answer">
-                    Lima
+                    {this.props.answer}
                 </div>
                 <AnswerCardContainer/>
             </div>

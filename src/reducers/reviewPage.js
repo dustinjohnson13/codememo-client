@@ -44,7 +44,7 @@ const reviewPage = (state = {toReview: []}, action) => {
         case ANSWER_CARD_SUCCESS:
             const newCard = action.card;
             const reviewedCard = state.toReview.find(card => card.question === state.question && card.answer === state.answer);
-            const reviewedDeckCard = state.deck.cards.find(card => newCard.id === reviewedCard.id);
+            const reviewedDeckCard = state.deck.cards.find(card => newCard.id === card.id);
 
             const newDeckCard = {...reviewedDeckCard, status: 'OK'};
             const newDeckCards = state.deck.cards.filter(card => card !== reviewedDeckCard);

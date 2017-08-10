@@ -1,9 +1,9 @@
 import {connect} from 'react-redux'
-import {addDeck, fetchCollectionRequest, fetchDeck} from '../actions/creators'
+import {addDeck, fetchCollectionRequest, reviewDeck} from '../actions/creators'
 import CollectionPage from '../components/CollectionPage'
 
 export const mapStateToProps = (state, ownProps) => ({
-   decks: state.collection.decks
+    decks: state.collection.decks
 });
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
@@ -14,8 +14,8 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
         fetchCollections: () => {
             dispatch(fetchCollectionRequest());
         },
-        fetchDeck: name => {
-            dispatch(fetchDeck(dataService, name))
+        reviewDeck: name => {
+            dispatch(reviewDeck(dataService, name))
         },
         addDeck: name => {
             dispatch(addDeck(dataService, name))

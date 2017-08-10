@@ -31,15 +31,15 @@ describe('<CollectionPageContainer />', () => {
         expect(dispatchedActions).toEqual([fetchCollectionRequest()]);
     });
 
-    it('maps fetchDeck to the appropriate action', () => {
-
-        const {store, next, invoke} = middlewareFake();
-
-        const {fetchDeck} = mapDispatchToProps(invoke, {dataService: dataService});
-        fetchDeck('Deck1');
-
-        expect(store.dispatch).toHaveBeenCalledWith(fetchDeckRequest('Deck1'));
-    });
+    // it('maps reviewDeck to the appropriate action', () => {
+    //
+    //     let reviewRequest = null;
+    //     const fn = (name) => reviewRequest = name;
+    //     const {reviewDeck} = mapDispatchToProps(invoke, {dataService: dataService});
+    //     reviewDeck('Deck1');
+    //
+    //     expect(reviewDeck).toEqual();
+    // });
 
     it('maps addDeck to the appropriate action', () => {
 

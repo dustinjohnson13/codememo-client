@@ -10,7 +10,7 @@ import AppContainer from './containers/AppContainer';
 import flashcardApp from './reducers/index'
 import './styles/index.css';
 import registerServiceWorker from './registerServiceWorker';
-import {fetchCollection} from "./actions/creators";
+import {loadCollectionPage} from "./actions/creators";
 import {Clock} from './Domain'
 import DataService from './services/DataService';
 
@@ -24,7 +24,7 @@ let store = createStore(flashcardApp, applyMiddleware(
 const clock = new Clock(() => new Date().getTime());
 const dataService = new DataService(clock);
 
-store.dispatch(fetchCollection(dataService));
+store.dispatch(loadCollectionPage(dataService));
 
 ReactDOM.render(
     <Provider store={store}>

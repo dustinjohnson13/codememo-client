@@ -23,7 +23,7 @@ describe('<Collection />', () => {
         const store = storeFake({});
         const wrapper = mount(
             <Provider store={store}>
-                <Collection decks={testDecks} fetchDeck={invokedFunction}/>
+                <Collection decks={testDecks} reviewDeck={invokedFunction}/>
             </Provider>
         );
 

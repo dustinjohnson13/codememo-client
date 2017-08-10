@@ -1,5 +1,5 @@
 import {connect} from 'react-redux'
-import {answerCard, collectionPage} from '../actions/creators'
+import {answerCard, loadCollectionPage} from '../actions/creators'
 import ReviewPage from '../components/ReviewPage'
 
 export const mapStateToProps = (state, ownProps) => {
@@ -19,7 +19,7 @@ export const mapStateToProps = (state, ownProps) => {
 export const mapDispatchToProps = (dispatch, ownProps) => {
     return {
         back: () => {
-            dispatch(collectionPage());
+            dispatch(loadCollectionPage());
         },
         answerCard: (id, answer) => {
             dispatch(answerCard(ownProps.dataService, id, answer))

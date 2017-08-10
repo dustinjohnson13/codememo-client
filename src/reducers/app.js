@@ -1,11 +1,5 @@
-import {
-    FETCH_COLLECTION_REQUEST,
-    FETCH_COLLECTION_SUCCESS,
-    FETCH_DECK_REQUEST,
-    FETCH_DECK_SUCCESS,
-    LOAD_PAGE
-} from '../actions/actionTypes'
-import {COLLECTION, REVIEW} from "../actions/pages";
+import {FETCH_COLLECTION_REQUEST, FETCH_DECK_REQUEST, FETCH_DECK_SUCCESS, LOAD_PAGE} from '../actions/actionTypes'
+import {REVIEW} from "../actions/pages";
 
 export const getViewState = state => state;
 

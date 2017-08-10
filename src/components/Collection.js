@@ -6,7 +6,7 @@ class Collection extends Component {
 
     render() {
         const decks = this.props.decks.map(deck =>
-            <Deck deck={deck} key={deck.name} reviewDeck={this.props.fetchDeck}/>);
+            <Deck deck={deck} key={deck.name} reviewDeck={this.props.reviewDeck}/>);
 
         return (
             <Row>

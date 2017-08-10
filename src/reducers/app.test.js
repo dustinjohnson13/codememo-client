@@ -27,15 +27,6 @@ describe('app', () => {
         expect(actualState).toEqual(expectedState);
     });
 
-    it('sets page to CollectionPage on fetch collection success', () => {
-        const previousState = {page: null};
-        const expectedState = {page: COLLECTION};
-
-        const actualState = app(previousState, fetchCollectionSuccess());
-
-        expect(actualState).toEqual(expectedState);
-    });
-
     it('sets page to ReviewPage on fetch deck success', () => {
         const previousState = {page: null};
         const expectedState = {page: REVIEW};

@@ -10,7 +10,7 @@ class CollectionPage extends Component {
         return (
             <div>
                 <Container>
-                    <Collection decks={this.props.decks} fetchDeck={this.props.fetchDeck}/>
+                    <Collection decks={this.props.decks} reviewDeck={this.props.reviewDeck}/>
                 </Container>
 
                 <AddDeckModal addDeck={this.props.addDeck}/>

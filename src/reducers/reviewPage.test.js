@@ -1,5 +1,5 @@
 import reviewPage from './reviewPage';
-import {answerCard, fetchCardsSuccess, fetchDeckSuccess} from '../actions/creators'
+import {answerCard, answerCardSuccess, fetchCardsSuccess, fetchDeckSuccess} from '../actions/creators'
 import {GOOD} from '../Domain'
 
 describe('reviewPage', () => {
@@ -130,7 +130,12 @@ describe('reviewPage', () => {
             }]
         };
 
-        const actualState = reviewPage(previousState, answerCard('deck-1-card-30', GOOD));
+        const actualState = reviewPage(previousState, answerCardSuccess({
+            id: 'deck-1-card-30',
+            question: 'Question Number 30?',
+            answer: 'Answer Number 30',
+            due: 86400
+        }, GOOD));
 
         expect(actualState).toEqual(expectedState);
     });

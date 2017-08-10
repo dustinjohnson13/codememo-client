@@ -1,5 +1,5 @@
 import {connect} from 'react-redux'
-import {collectionPage} from '../actions/creators'
+import {answerCard, collectionPage} from '../actions/creators'
 import ReviewPage from '../components/ReviewPage'
 
 export const mapStateToProps = (state, ownProps) => {
@@ -11,7 +11,8 @@ export const mapStateToProps = (state, ownProps) => {
         dueCount: props.dueCount,
         totalCount: props.totalCount,
         question: props.question,
-        answer: props.answer
+        answer: props.answer,
+        id: props.toReview.length > 0 ? props.toReview[0].id : undefined
     };
 };
 
@@ -19,6 +20,9 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
     return {
         back: () => {
             dispatch(collectionPage());
+        },
+        answerCard: (id, answer) => {
+            dispatch(answerCard(ownProps.dataService, id, answer))
         }
     }
 };

@@ -3,9 +3,6 @@ import Deck from './Deck'
 import {Col, Row} from 'reactstrap';
 
 class Collection extends Component {
-    constructor(props) {
-        super(props);
-    }
 
     render() {
         const decks = this.props.decks.map(deck =>

@@ -61,7 +61,7 @@ describe('<App />', () => {
 
         const app = prepareContainer(REVIEW, {review: reviewState});
 
-        const reviewPage = <ReviewPageContainer/>;
+        const reviewPage = <ReviewPageContainer dataService={dataService}/>;
         expect(app.contains(reviewPage)).toEqual(true);
     });
 

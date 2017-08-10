@@ -1,4 +1,4 @@
-import {ANSWER_CARD, FETCH_CARDS_SUCCESS, FETCH_DECK_SUCCESS} from '../actions/actionTypes'
+import {ANSWER_CARD_SUCCESS, FETCH_CARDS_SUCCESS, FETCH_DECK_SUCCESS} from '../actions/actionTypes'
 
 export const getViewState = state => {
     const deck = state.deck;
@@ -41,10 +41,10 @@ const reviewPage = (state = {toReview: []}, action) => {
                 ...state,
                 toReview: cards
             });
-        case ANSWER_CARD:
-            const answer = action.answer; // TODO: Need to actually do an api call
+        case ANSWER_CARD_SUCCESS:
+            const newCard = action.card;
             const reviewedCard = state.toReview.find(card => card.question === state.question && card.answer === state.answer);
-            const reviewedDeckCard = state.deck.cards.find(card => card.id === reviewedCard.id);
+            const reviewedDeckCard = state.deck.cards.find(card => newCard.id === reviewedCard.id);
 
             const newDeckCard = {...reviewedDeckCard, status: 'OK'};
             const newDeckCards = state.deck.cards.filter(card => card !== reviewedDeckCard);

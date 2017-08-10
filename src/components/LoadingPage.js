@@ -2,9 +2,6 @@ import React, {Component} from 'react';
 import Spinner from 'react-spin';
 
 class LoadingPage extends Component {
-    constructor(props) {
-        super(props);
-    }
 
     rawMarkup() {
         var spinner = new Spinner().spin();

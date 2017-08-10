@@ -7,7 +7,7 @@ class ReviewCard extends Component {
     constructor(props) {
         super(props);
         this.state = {
-           showingAnswer: false
+            showingAnswer: false
         };
 
         this.showAnswer = this.showAnswer.bind(this);
@@ -23,7 +23,7 @@ class ReviewCard extends Component {
         const answerSection = this.state.showingAnswer ?
             <div>
                 <div className="review-answer">{this.props.answer}</div>
-                < AnswerCardContainer/>
+                <AnswerCardContainer answerCard={this.props.answerCard} id={this.props.id}/>
             </div>
             : <Button className="show-answer" onClick={this.showAnswer}>Show Answer</Button>;
 

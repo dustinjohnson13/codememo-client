@@ -103,4 +103,20 @@ export default class {
         return Promise.resolve(cardResponse);
     }
 
+    answerCard(id, answer) {
+        for (let deck of this.collectionStore.decks) {
+            for (let i = 0; i < deck.cards.length; i++) {
+                const card = deck.cards[i];
+                if (card.id === id) {
+                    card.due = this.clock.epochSeconds() + 86400; // 1 day
+                    deck.cards.splice(i, 1);
+                    deck.cards.push(card);
+                    return this.fetchCards([id]).then(cards => cards.cards[0]);
+                }
+            }
+        }
+
+        return Promise.reject(`Unable to find card with id [${id}]`)
+    }
+
 };

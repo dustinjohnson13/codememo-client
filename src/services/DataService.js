@@ -9,25 +9,31 @@ export default class {
 
     addDeck(name) {
         return new Promise((resolve, reject) => {
-            setTimeout(() => this.fakeDataService.addDeck(name).then(it => resolve(it)), this.timeoutDelay);
+            setTimeout(() => this.fakeDataService.addDeck(name).then(resolve), this.timeoutDelay);
         });
     }
 
     fetchCollection() {
         return new Promise((resolve, reject) => {
-            setTimeout(() => this.fakeDataService.fetchCollection().then(it => resolve(it)), this.timeoutDelay);
+            setTimeout(() => this.fakeDataService.fetchCollection().then(resolve), this.timeoutDelay);
         });
     }
 
     fetchDeck(name) {
         return new Promise((resolve, reject) => {
-            setTimeout(() => this.fakeDataService.fetchDeck(name).then(it => resolve(it)), this.timeoutDelay);
+            setTimeout(() => this.fakeDataService.fetchDeck(name).then(resolve), this.timeoutDelay);
         });
     }
 
     fetchCards(ids) {
         return new Promise((resolve, reject) => {
-            setTimeout(() => this.fakeDataService.fetchCards(ids).then(it => resolve(it)), this.timeoutDelay);
+            setTimeout(() => this.fakeDataService.fetchCards(ids).then(resolve), this.timeoutDelay);
+        });
+    }
+
+    answerCard(id, answer){
+        return new Promise((resolve, reject) => {
+            setTimeout(() => this.fakeDataService.answerCard(id, answer).then(resolve), this.timeoutDelay);
         });
     }
 };

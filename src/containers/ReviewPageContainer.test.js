@@ -1,10 +1,15 @@
 import React from 'react';
-
-import {mapDispatchToProps, mapStateToProps} from "./ReviewPageContainer";
 import {reviewState} from "../fakeData/reviewState";
-import {collectionPage} from "../actions/creators";
+import {answerCardRequest, collectionPage} from "../actions/creators";
+import {GOOD} from '../Domain'
+import middlewareFake from "../fakeData/middlewareFake";
+import {mapDispatchToProps, mapStateToProps} from "./ReviewPageContainer";
+import {Deck} from "../components/CollectionPage";
+import FakeDataService from "../fakeData/FakeDataService";
 
-describe('<ReviewPageContainer />', () => {
+describe('<ReviewPageContainer/>', () => {
+
+    const dataService = new FakeDataService();
 
     it('maps deck attributes from state', () => {
         const expectedState = {
@@ -27,5 +32,14 @@ describe('<ReviewPageContainer />', () => {
         props.back();
 
         expect(dispatchedActions).toEqual([collectionPage()]);
+    });
+
+    it('maps answerCard to the appropriate action', () => {
+        const {store, next, invoke} = middlewareFake();
+
+        const {answerCard} = mapDispatchToProps(invoke, {dataService: dataService});
+        answerCard('deck-1-card-0', GOOD);
+
+        expect(store.dispatch).toHaveBeenCalledWith(answerCardRequest('deck-1-card-0', GOOD));
     });
 });

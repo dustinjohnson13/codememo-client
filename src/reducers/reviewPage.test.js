@@ -130,7 +130,7 @@ describe('reviewPage', () => {
             }]
         };
 
-        const actualState = reviewPage(previousState, answerCard(GOOD));
+        const actualState = reviewPage(previousState, answerCard('deck-1-card-30', GOOD));
 
         expect(actualState).toEqual(expectedState);
     });

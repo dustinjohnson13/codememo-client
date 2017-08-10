@@ -6,10 +6,6 @@ import ReviewPageContainer from '../containers/ReviewPageContainer'
 import {COLLECTION, REVIEW} from "../actions/pages";
 
 class App extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         const requestedPage = this.props.page;
         let page = <LoadingPage nospin={this.props.nospin}/>;
@@ -19,7 +15,7 @@ class App extends Component {
                 page = <CollectionPageContainer dataService={this.props.dataService}/>;
                 break;
             case REVIEW:
-                page = <ReviewPageContainer/>;
+                page = <ReviewPageContainer dataService={this.props.dataService}/>;
                 break;
             default:
         }

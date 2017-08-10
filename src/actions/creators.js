@@ -3,7 +3,8 @@
 import {
     ADD_DECK_REQUEST,
     ADD_DECK_SUCCESS,
-    ANSWER_CARD,
+    ANSWER_CARD_REQUEST,
+    ANSWER_CARD_SUCCESS,
     FETCH_CARDS_REQUEST,
     FETCH_CARDS_SUCCESS,
     FETCH_COLLECTION_REQUEST,
@@ -80,10 +81,18 @@ export const fetchCardsSuccess = json => {
     }
 };
 
-export const answerCard = answer => {
+export const answerCardRequest = (id, answer) => {
     return {
-        type: ANSWER_CARD,
+        type: ANSWER_CARD_REQUEST,
+        id: id,
         answer: answer
+    }
+};
+
+export const answerCardSuccess = json => {
+    return {
+        type: ANSWER_CARD_SUCCESS,
+        card: json
     }
 };
 
@@ -163,5 +172,15 @@ export function fetchCards(dataService, ids) {
         return dataService.fetchCards(ids).then(json => {
             dispatch(fetchCardsSuccess(json.cards))
         });
+    }
+}
+
+export function answerCard(dataService, id, answer) {
+    return function (dispatch) {
+
+        dispatch(answerCardRequest(id, answer));
+
+        return dataService.answerCard(id, answer)
+            .then(card => dispatch(answerCardSuccess(card)))
     }
 }

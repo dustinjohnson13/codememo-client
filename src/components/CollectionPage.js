@@ -5,9 +5,6 @@ import AddDeckModal from "./AddDeckModal";
 import Collection from './Collection'
 
 class CollectionPage extends Component {
-    constructor(props) {
-        super(props);
-    }
 
     render() {
         return (

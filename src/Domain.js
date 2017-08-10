@@ -1,5 +1,5 @@
 class Clock {
-    constructor(epochSecondsRetriever) {
+    constructor(epochSecondsRetriever: any) {
         this.epochSecondsRetriever = epochSecondsRetriever;
     }
 

@@ -17,11 +17,6 @@ const app = (state = {}, action) => {
                 ...state,
                 page: null
             });
-        case FETCH_COLLECTION_SUCCESS:
-            return getViewState({
-                ...state,
-                page: COLLECTION
-            });
         case FETCH_DECK_SUCCESS:
             return getViewState({
                 ...state,

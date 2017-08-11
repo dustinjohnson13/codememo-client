@@ -1,11 +1,16 @@
 //@flow
 import type {Action} from "../actions/actionTypes";
 import {FETCH_COLLECTION_REQUEST, FETCH_DECK_REQUEST, FETCH_DECK_SUCCESS, LOAD_PAGE} from '../actions/actionTypes'
+import type {PageType} from "../actions/pages";
 import {Page} from "../actions/pages";
 
-export const getViewState = (state: any) => state;
+type AppState = {
+    +page: ?PageType;
+}
 
-const app = (state: any = {}, action: Action) => {
+export const getViewState = (state: AppState): AppState => state;
+
+const app = (state: AppState = {page: null}, action: Action): AppState => {
     switch (action.type) {
         case FETCH_DECK_REQUEST:
         case FETCH_COLLECTION_REQUEST:

@@ -1,4 +1,3 @@
-//@flow
 import type {
     AddDeckRequestAction,
     AddDeckSuccessAction,
@@ -189,12 +188,12 @@ function fetchDeck(dataService: DataService, name) {
 }
 
 function fetchCards(dataService: DataService, ids) {
-    return function (dispatch: Dispatch) {
+    return function (dispatch: Dispatch): Promise<FetchCardsSuccessAction> {
 
         dispatch(fetchCardsRequest(ids));
 
-        return dataService.fetchCards(ids).then(response => {
+        return dataService.fetchCards(ids).then((response: CardDetailResponse) =>
             dispatch(fetchCardsSuccess(response))
-        });
+        );
     }
 }

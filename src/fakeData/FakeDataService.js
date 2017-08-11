@@ -1,7 +1,18 @@
+//@flow
 import * as domain from '../Domain.js'
+import type {Clock} from "../Domain";
+import Deck from "../components/Deck";
+import {
+    Card as APICard,
+    CardDetail,
+    CardDetailResponse,
+    CollectionResponse,
+    Deck as APIDeck,
+    DeckResponse
+} from "../services/APIDomain";
 
 class FrozenClock implements Clock {
-    epochSeconds(): number{
+    epochSeconds(): number {
         return 1;
     }
 }
@@ -9,9 +20,13 @@ class FrozenClock implements Clock {
 // Creates a deck with 27 due cards, 23 new cards, and 80 total cards
 export default class {
 
-    constructor(clock) {
+    clock: Clock;
+    collectionStore: Array<Deck>;
+    idCounter: number;
+
+    constructor(clock: Clock) {
         this.clock = clock === undefined ? new FrozenClock() : clock;
-        this.collectionStore = {decks: []};
+        this.collectionStore = [];
         this.idCounter = 1;
         this.createCollectionStore();
     }
@@ -24,8 +39,8 @@ export default class {
         return this.collectionStore;
     }
 
-    createDeck(name, idNumber) {
-        const idNum = idNumber === undefined ? this.idCounter++ : idNumber;
+    createDeck(name: string, idNumber: number | null): Promise<CollectionResponse> {
+        const idNum = idNumber ? idNumber : this.idCounter++;
 
         const cards = [];
         const dueCount = 27;
@@ -48,69 +63,70 @@ export default class {
         }
 
         const deck = new domain.Deck(deckId, name, cards);
-        this.collectionStore = {
+        this.collectionStore = [
             ...this.collectionStore,
-            decks: [
-                ...this.collectionStore.decks,
-                deck
-            ]
-        };
+            deck
+        ];
 
-        return this.collectionStore;
+        return new CollectionResponse(this.collectionStore);
     }
 
     createCollectionStore() {
         return this.createDecks()
     }
 
-    addDeck(name) {
-        this.createDeck(name);
+    addDeck(name: string): Promise<CollectionResponse> {
+        this.createDeck(name, null);
         return this.fetchCollection();
     }
 
-    fetchCollection() {
-        const decks = this.collectionStore.decks.map(it => {
-            return {
-                id: it.id,
-                name: it.name,
-                total: it.cards.length,
-                due: it.getDue(this.clock).length,
-                new: it.getNew().length
-            }
+    fetchCollection(): Promise<CollectionResponse> {
+        const decks = this.collectionStore.map(it => {
+            return new APIDeck(it.id, it.name,
+                it.cards.length, it.getDue(this.clock).length,
+                it.getNew().length
+            )
         });
         const collectionResponse = {decks: decks};
         return Promise.resolve(collectionResponse);
     }
 
-    fetchDeck(name) {
+    fetchDeck(name: string): Promise<DeckResponse> {
         const currentTime = this.clock.epochSeconds();
-        const deck = this.collectionStore.decks.find(it => it.name === name);
-        const cards = deck.cards.map(it => {
-            const status = it.due === null ? 'NEW' : currentTime > it.due ? 'DUE' : 'OK';
-            return {
-                id: it.id,
-                status: status
-            }
-        });
-        const deckResponse = {id: deck.id, name: deck.name, cards: cards};
-        return Promise.resolve(deckResponse);
+        const deck = this.collectionStore.find(it => it.name === name);
+        if (deck) {
+            const cards = deck.cards.map(it => {
+                const status = it.due === null ? 'NEW' : currentTime > it.due ? 'DUE' : 'OK';
+                return new APICard(it.id, status)
+            });
+            const deckResponse = new DeckResponse(deck.id, deck.name, cards);
+            return Promise.resolve(deckResponse);
+        } else {
+            return Promise.reject(`Unable to find deck with name [${name}]`)
+        }
     }
 
-    fetchCards(ids) {
-        const allCards = this.collectionStore.decks.reduce((cards, deck) => {
-            return cards.concat(deck.cards);
-        }, []);
-        const cardsForIds = allCards.filter(card => ids.indexOf(card.id) !== -1);
+    fetchCards(ids: Array<string>): Promise<CardDetailResponse> {
+        const idsToInclude = new Set(ids);
+        const cardsForIds = [];
+
+        for (let deck of this.collectionStore) {
+            for (let card of deck.cards) {
+                if (idsToInclude.has(card.id)) {
+                    cardsForIds.push(card);
+                }
+            }
+        }
 
         const cardJsonArray = cardsForIds.map(card => {
-            return {id: card.id, question: card.question, answer: card.answer, due: card.due}
+            return new CardDetail(card.id, card.question, card.answer, card.due)
         });
-        const cardResponse = {cards: cardJsonArray};
+        const cardResponse = new CardDetailResponse(cardJsonArray);
         return Promise.resolve(cardResponse);
     }
 
-    answerCard(id, answer) {
-        for (let deck of this.collectionStore.decks) {
+    answerCard(id: string, answer: string): Promise<CardDetail> {
+        for (let deck of this.collectionStore) {
             for (let i = 0; i < deck.cards.length; i++) {
                 const card = deck.cards[i];
                 if (card.id === id) {

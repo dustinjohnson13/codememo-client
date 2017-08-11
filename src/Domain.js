@@ -42,9 +42,9 @@ class Card {
     id: string;
     question: string;
     answer: string;
-    due: number;
+    due: number | null;
 
-    constructor(id: string, question: string, answer: string, due: number) {
+    constructor(id: string, question: string, answer: string, due: number | null) {
         this.id = id;
         this.question = question;
         this.answer = answer;
@@ -56,7 +56,7 @@ class Card {
     }
 
     isDue(clock: Clock) {
-        return !this.isNew() && this.due < clock.epochSeconds();
+        return this.due && this.due < clock.epochSeconds();
     }
 }
 

@@ -12,7 +12,7 @@ import './styles/index.css';
 import registerServiceWorker from './registerServiceWorker';
 import {loadCollectionPage} from "./actions/creators";
 import {SystemClock} from './Domain'
-import DataService from './services/DataService';
+import {DelegatingDataService} from "./services/DataService";
 
 const loggerMiddleware = createLogger();
 
@@ -22,7 +22,7 @@ let store = createStore(flashcardApp, applyMiddleware(
 ));
 
 const clock = new SystemClock();
-const dataService = new DataService(clock);
+const dataService = new DelegatingDataService(clock);
 
 store.dispatch(loadCollectionPage(dataService));
 

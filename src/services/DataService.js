@@ -1,39 +1,58 @@
+//@flow
 import FakeDataService from "../fakeData/FakeDataService";
+import type {Card, Clock, Collection} from "../Domain";
+import Deck from "../components/Deck";
+import {CardDetailResponse, CollectionResponse, DeckResponse} from "./APIDomain";
 
-export default class {
+export interface DataService {
+    addDeck(name: string): Promise<Collection>;
 
-    constructor(clock) {
+    fetchCollection(): Promise<Collection>;
+
+    fetchDeck(name: string): Promise<Deck>;
+
+    fetchCards(ids: Array<string>): Promise<Array<Card>>;
+
+    answerCard(id: string, answer: string): Promise<Card>;
+}
+
+export class DelegatingDataService implements DataService {
+
+    timeoutDelay: number;
+    delegate: DataService;
+
+    constructor(clock: Clock) {
         this.timeoutDelay = 250;
-        this.fakeDataService = new FakeDataService(clock);
+        this.delegate = new FakeDataService(clock);
     }
 
-    addDeck(name) {
+    addDeck(name: string): Promise<CollectionResponse> {
         return new Promise((resolve, reject) => {
-            setTimeout(() => this.fakeDataService.addDeck(name).then(resolve), this.timeoutDelay);
+            setTimeout(() => this.delegate.addDeck(name).then(resolve), this.timeoutDelay);
         });
     }
 
-    fetchCollection() {
+    fetchCollection(): Promise<CollectionResponse> {
         return new Promise((resolve, reject) => {
-            setTimeout(() => this.fakeDataService.fetchCollection().then(resolve), this.timeoutDelay);
+            setTimeout(() => this.delegate.fetchCollection().then(resolve), this.timeoutDelay);
         });
     }
 
-    fetchDeck(name) {
+    fetchDeck(name: string): Promise<DeckResponse> {
         return new Promise((resolve, reject) => {
-            setTimeout(() => this.fakeDataService.fetchDeck(name).then(resolve), this.timeoutDelay);
+            setTimeout(() => this.delegate.fetchDeck(name).then(resolve), this.timeoutDelay);
         });
     }
 
-    fetchCards(ids) {
+    fetchCards(ids: Array<string>): Promise<CardDetailResponse> {
         return new Promise((resolve, reject) => {
-            setTimeout(() => this.fakeDataService.fetchCards(ids).then(resolve), this.timeoutDelay);
+            setTimeout(() => this.delegate.fetchCards(ids).then(resolve), this.timeoutDelay);
         });
     }
 
-    answerCard(id, answer){
+    answerCard(id: string, answer: string): Promise<Card> {
         return new Promise((resolve, reject) => {
-            setTimeout(() => this.fakeDataService.answerCard(id, answer).then(resolve), this.timeoutDelay);
+            setTimeout(() => this.delegate.answerCard(id, answer).then(resolve), this.timeoutDelay);
         });
     }
-};
+}

@@ -13,8 +13,8 @@ class Deck extends Component {
     }
 
     render() {
-        const dueCount = this.props.deck.due;
-        const newCount = this.props.deck.new;
+        const dueCount = this.props.deck.dueCount;
+        const newCount = this.props.deck.newCount;
 
         return (
             <Col sm={{size: 6, offset: 3}}>

@@ -1,3 +1,4 @@
+//@flow
 import React from 'react';
 import {Provider} from 'react-redux';
 import {storeFake} from "../fakeData/storeFake";
@@ -5,6 +6,7 @@ import {Collection, CollectionPage} from "./CollectionPage";
 import Deck from './Deck'
 import jsdom from 'jsdom';
 import {mount} from 'enzyme';
+import {Deck as APIDeck} from "../services/APIDomain";
 
 const doc = jsdom.jsdom('<!doctype html><html><body></body></html>');
 global.document = doc;
@@ -12,7 +14,7 @@ global.window = doc.defaultView;
 
 describe('<Deck />', () => {
 
-    const testDeck = {id: 'deck-1', name: 'Deck1', total: 16, due: 7, new: 3};
+    const testDeck = new APIDeck('deck-1', 'Deck1', 16, 7, 3);
 
     let requestedDecks;
     let app;

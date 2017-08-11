@@ -29,9 +29,9 @@ export class CardDetail {
     id: string;
     question: string;
     answer: string;
-    due: number;
+    due: ?number;
 
-    constructor(id: string, question: string, answer: string, due: number) {
+    constructor(id: string, question: string, answer: string, due: ?number) {
         this.id = id;
         this.question = question;
         this.answer = answer;
@@ -60,14 +60,10 @@ export class DeckResponse {
 }
 
 export class CollectionResponse {
-    id: string;
-    name: string;
     decks: Array<Deck>;
     error: ?string;
 
-    constructor(id: string, name: string, decks: Array<Deck>, error: ?string) {
-        this.id = id;
-        this.name = name;
+    constructor(decks: Array<Deck>, error: ?string) {
         this.decks = decks;
         this.error = error;
     }

@@ -1,7 +1,8 @@
+//@flow
 import React from 'react';
 import {mapStateToProps} from './AppContainer';
-import {REVIEW} from "../actions/pages";
-import FakeDataService from "../fakeData/FakeDataService";
+import {Page} from "../actions/pages";
+import {FakeDataService} from "../fakeData/FakeDataService";
 
 describe('<AppContainer />', () => {
 
@@ -9,8 +10,8 @@ describe('<AppContainer />', () => {
     const ownProps = {dataService: dataService};
 
     it('maps the page to props from state', () => {
-        const expectedPage = REVIEW;
-        const state = {app: {page: REVIEW}};
+        const expectedPage = Page.REVIEW;
+        const state = {app: {page: Page.REVIEW}};
 
         const props = mapStateToProps(state, ownProps);
 
@@ -18,7 +19,7 @@ describe('<AppContainer />', () => {
     });
 
     it('maps the dataService to props from ownProps', () => {
-        const state = {app: {page: REVIEW}};
+        const state = {app: {page: Page.REVIEW}};
 
         const props = mapStateToProps(state, ownProps);
 

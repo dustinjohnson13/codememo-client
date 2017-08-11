@@ -1,5 +1,5 @@
 //@flow
-import FakeDataService from "../fakeData/FakeDataService";
+import {FakeDataService} from "../fakeData/FakeDataService";
 import type {Clock} from "../Domain";
 import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "./APIDomain";
 

@@ -1,15 +1,8 @@
 //@flow
 import * as domain from '../Domain.js'
+import * as api from '../services/APIDomain'
+import {Card as APICard, CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from '../services/APIDomain'
 import type {Clock} from "../Domain";
-import Deck from "../components/Deck";
-import {
-    Card as APICard,
-    CardDetail,
-    CardDetailResponse,
-    CollectionResponse,
-    Deck as APIDeck,
-    DeckResponse
-} from "../services/APIDomain";
 
 class FrozenClock implements Clock {
     epochSeconds(): number {
@@ -18,10 +11,9 @@ class FrozenClock implements Clock {
 }
 
 // Creates a deck with 27 due cards, 23 new cards, and 80 total cards
-export default class {
-
+export class FakeDataService {
     clock: Clock;
-    collectionStore: Array<Deck>;
+    collectionStore: domain.Deck[];
     idCounter: number;
 
     constructor(clock: Clock | void) {
@@ -68,7 +60,7 @@ export default class {
             deck
         ];
 
-        return new CollectionResponse(this.collectionStore);
+        return this.fetchCollection()
     }
 
     createCollectionStore() {
@@ -82,12 +74,12 @@ export default class {
 
     fetchCollection(): Promise<CollectionResponse> {
         const decks = this.collectionStore.map(it => {
-            return new APIDeck(it.id, it.name,
+            return new api.Deck(it.id, it.name,
                 it.cards.length, it.getDue(this.clock).length,
                 it.getNew().length
             )
         });
-        const collectionResponse = {decks: decks};
+        const collectionResponse = new CollectionResponse(decks);
         return Promise.resolve(collectionResponse);
     }
 
@@ -96,7 +88,7 @@ export default class {
         const deck = this.collectionStore.find(it => it.name === name);
         if (deck) {
             const cards = deck.cards.map(it => {
-                const status = it.due === null ? 'NEW' : currentTime > it.due ? 'DUE' : 'OK';
+                const status = (it.due) ? currentTime > it.due ? 'DUE' : 'OK' : 'NEW';
                 return new APICard(it.id, status)
             });
             const deckResponse = new DeckResponse(deck.id, deck.name, cards);
@@ -118,7 +110,7 @@ export default class {
             }
         }
 
-        const cardJsonArray = cardsForIds.map(card => {
+        const cardJsonArray = cardsForIds.map((card: domain.Card) => {
             return new CardDetail(card.id, card.question, card.answer, card.due)
         });
         const cardResponse = new CardDetailResponse(cardJsonArray);
@@ -141,4 +133,4 @@ export default class {
         return Promise.reject(`Unable to find card with id [${id}]`)
     }
 
-};
+}

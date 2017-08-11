@@ -1,13 +1,9 @@
 //@flow
 import app from './app';
-import {
-    fetchCollectionRequest,
-    fetchCollectionSuccess,
-    fetchDeckRequest,
-    fetchDeckSuccess,
-    loadPage
-} from '../actions/creators'
+import {fetchCollectionRequest, fetchDeckRequest, fetchDeckSuccess, loadPage} from '../actions/creators'
+import {fetchCollectionSuccess,} from '../actions/creators.thunk.js'
 import {Page} from "../actions/pages"
+import {DeckResponse} from "../services/APIDomain";
 
 describe('app', () => {
     it('nullifies page while fetching decks', () => {
@@ -32,7 +28,7 @@ describe('app', () => {
         const previousState = {page: null};
         const expectedState = {page: Page.REVIEW};
 
-        const actualState = app(previousState, fetchDeckSuccess());
+        const actualState = app(previousState, fetchDeckSuccess(new DeckResponse('id', 'name', [])));
 
         expect(actualState).toEqual(expectedState);
     });

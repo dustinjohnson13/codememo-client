@@ -3,13 +3,13 @@ export interface Clock {
     epochSeconds(): number;
 }
 
-class SystemClock {
+export class SystemClock {
     epochSeconds(): number {
         return new Date().getTime();
     }
 }
 
-class Collection {
+export class Collection {
     decks: Array<Deck>;
 
     constructor(decks: Array<Deck>) {
@@ -17,7 +17,7 @@ class Collection {
     }
 }
 
-class Deck {
+export class Deck {
 
     id: string;
     name: string;
@@ -38,13 +38,13 @@ class Deck {
     }
 }
 
-class Card {
+export class Card {
     id: string;
     question: string;
     answer: string;
-    due: number | null;
+    due: ?number;
 
-    constructor(id: string, question: string, answer: string, due: number | null) {
+    constructor(id: string, question: string, answer: string, due: ?number) {
         this.id = id;
         this.question = question;
         this.answer = answer;
@@ -60,11 +60,7 @@ class Card {
     }
 }
 
-const FAIL = 'FAIL';
-const HARD = 'HARD';
-const GOOD = 'GOOD';
-const EASY = 'EASY';
-
-module.exports = {
-    SystemClock, Collection, Deck, Card, FAIL, HARD, GOOD, EASY
-};
+export const FAIL = 'FAIL';
+export const HARD = 'HARD';
+export const GOOD = 'GOOD';
+export const EASY = 'EASY';

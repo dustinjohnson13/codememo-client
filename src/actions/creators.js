@@ -1,3 +1,4 @@
+//@flow
 import type {
     AddDeckRequestAction,
     AddDeckSuccessAction,
@@ -6,6 +7,7 @@ import type {
     Dispatch,
     FetchCardsRequestAction,
     FetchCardsSuccessAction,
+    FetchCollectionRequestAction,
     FetchCollectionSuccessAction,
     FetchDeckRequestAction,
     FetchDeckSuccessAction,
@@ -28,8 +30,9 @@ import type {PageType} from "./pages";
 import {Page} from './pages'
 import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "../services/APIDomain";
 import type {DataService} from "../services/DataService";
+import {fetchDeck} from './creators.thunk'
 
-export const loadPage = (page: PageType) => {
+export const loadPage = (page: PageType): LoadPageAction => {
     return {
         type: LOAD_PAGE,
         page: page
@@ -40,7 +43,7 @@ export const collectionPage = (): LoadPageAction => {
     return loadPage(Page.COLLECTION);
 };
 
-export const fetchCollectionRequest = () => {
+export const fetchCollectionRequest = (): FetchCollectionRequestAction => {
     return {
         type: FETCH_COLLECTION_REQUEST
     }
@@ -110,21 +113,6 @@ export const answerCardSuccess = (response: CardDetail): AnswerCardSuccessAction
     }
 };
 
-export function loadCollectionPage(dataService: DataService) {
-    return function (dispatch: Dispatch, getState: Function) {
-        return new Promise((resolve, reject) => {
-            const state = getState();
-            if (state.collection.decks) {
-                dispatch(collectionPage());
-            } else {
-                dispatch(fetchCollection(dataService)).then(() => {
-                    dispatch(collectionPage());
-                });
-            }
-        });
-    }
-}
-
 export function reviewDeck(dataService: DataService, name: string) {
     return function (dispatch: Dispatch, getState: Function) {
         return new Promise((resolve, reject) => {
@@ -155,7 +143,7 @@ export function answerCard(dataService: DataService, id: string, answer: string)
     }
 }
 
-function fetchCollection(dataService: DataService) {
+export function fetchCollection(dataService: DataService) {
     return function (dispatch: Dispatch) {
         dispatch(fetchCollectionRequest());
 
@@ -166,28 +154,7 @@ function fetchCollection(dataService: DataService) {
     }
 }
 
-const CARDS_TO_RETRIEVE_PER_REQUEST = 10;
-
-function fetchDeck(dataService: DataService, name) {
-    return function (dispatch: Dispatch) {
-
-        dispatch(fetchDeckRequest(name));
-
-        return dataService.fetchDeck(name)
-            .then(deck => {
-                dispatch(fetchDeckSuccess(deck));
-
-                const dueOrNewCards = deck.cards.filter(card => card.status !== 'OK');
-                if (dueOrNewCards.length > 0) {
-                    const cardsToRetrieve = dueOrNewCards.slice(0, CARDS_TO_RETRIEVE_PER_REQUEST)
-                        .reduce((ids, card) => ids.concat(card.id), []);
-                    dispatch(fetchCards(dataService, cardsToRetrieve))
-                }
-            });
-    }
-}
-
-function fetchCards(dataService: DataService, ids) {
+export function fetchCards(dataService: DataService, ids: Array<string>) {
     return function (dispatch: Dispatch): Promise<FetchCardsSuccessAction> {
 
         dispatch(fetchCardsRequest(ids));

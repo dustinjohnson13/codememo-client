@@ -7,13 +7,13 @@ import App from "./App";
 import {storeFake} from "../fakeData/storeFake";
 
 import LoadingPage from "../components/LoadingPage";
+import type {PageType} from "../actions/pages";
 import {Page} from "../actions/pages";
 import ReviewPageContainer from "../containers/ReviewPageContainer";
 import CollectionPageContainer from "../containers/CollectionPageContainer";
 import {collectionState} from "../fakeData/collectionState";
 import {reviewState} from "../fakeData/reviewState";
-import FakeDataService from "../fakeData/FakeDataService";
-import type {PageType} from "../actions/pages";
+import {FakeDataService} from "../fakeData/FakeDataService";
 
 const doc = jsdom.jsdom('<!doctype html><html><body></body></html>');
 global.document = doc;

@@ -1,11 +1,11 @@
 import React from 'react';
 import {reviewState} from "../fakeData/reviewState";
-import {answerCardRequest, collectionPage, loadCollectionPage} from "../actions/creators";
+import {answerCardRequest, loadCollectionPage} from "../actions/creators";
 import {GOOD} from '../Domain'
 import middlewareFake from "../fakeData/middlewareFake";
 import {mapDispatchToProps, mapStateToProps} from "./ReviewPageContainer";
 import {Deck} from "../components/CollectionPage";
-import FakeDataService from "../fakeData/FakeDataService";
+import {FakeDataService} from "../fakeData/FakeDataService";
 
 describe('<ReviewPageContainer/>', () => {
 

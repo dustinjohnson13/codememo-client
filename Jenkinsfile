@@ -15,7 +15,7 @@ stage('Test') {
         currentBuild.result = "SUCCESS"
 
         try {
-            sh './gradlew build'
+            sh './gradlew clean build'
         } catch (err) {
             currentBuild.result = "FAILURE"
 

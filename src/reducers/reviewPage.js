@@ -1,33 +1,71 @@
+//@flow
+import type {Action} from "../actions/actionTypes";
 import {ANSWER_CARD_SUCCESS, FETCH_CARDS_SUCCESS, FETCH_DECK_SUCCESS} from '../actions/actionTypes'
+import {Card, CardDetail, DeckResponse} from "../services/APIDomain";
 
-export const getViewState = state => {
+type ReviewState = {
+    +toReview: Array<CardDetail>;
+    +deck: DeckResponse;
+    +deckName: string;
+    +totalCount: number;
+    +newCount: number;
+    +dueCount: number;
+    // TODO: Should these stay here?
+    +question: string;
+    +answer: string;
+    +failInterval: string;
+    +hardInterval: string;
+    +goodInterval: string;
+    +easyInterval: string;
+}
+
+const initialState = {
+    toReview: [],
+    deck: new DeckResponse('', '', []),
+    deckName: '',
+    totalCount: 0,
+    newCount: 0,
+    dueCount: 0,
+    question: '',
+    answer: '',
+    failInterval: '',
+    hardInterval: '',
+    goodInterval: '',
+    easyInterval: ''
+};
+
+export const getViewState = (state: ReviewState): ReviewState => {
     const deck = state.deck;
     const cardsForReview = state.toReview;
 
-    const deckName = deck.name;
-    const totalCount = deck.cards.length;
-    const newCount = deck.cards.filter(it => it.status === 'NEW').length;
-    const dueCount = deck.cards.filter(it => it.status === 'DUE').length;
-    const nextCard = cardsForReview.length === 0 ? {question: null, answer: null} : cardsForReview[0];
+    const deckName = deck ? deck.name : '';
+    const totalCount = deck ? deck.cards.length : 0;
+    const newCount = deck ? deck.cards.filter(it => it.status === 'NEW').length : 0;
+    const dueCount = deck ? deck.cards.filter(it => it.status === 'DUE').length : 0;
+    let question = '';
+    let answer = '';
+    if (cardsForReview.length !== 0) {
+        question = cardsForReview[0].question;
+        answer = cardsForReview[0].answer;
+    }
 
     return {
+        toReview: cardsForReview,
         deck: deck,
         deckName: deckName,
         totalCount: totalCount,
         newCount: newCount,
         dueCount: dueCount,
-        // TODO: Should these stay here?
-        question: nextCard.question,
-        answer: nextCard.answer,
+        question: question,
+        answer: answer,
         failInterval: '10m',
         hardInterval: '1d',
         goodInterval: '3d',
-        easyInterval: '5d',
-        toReview: cardsForReview
+        easyInterval: '5d'
     };
 };
 
-const reviewPage = (state = {toReview: []}, action) => {
+const reviewPage = (state: ReviewState = initialState, action: Action) => {
     switch (action.type) {
         case FETCH_DECK_SUCCESS:
             const deck = action.deck;
@@ -46,14 +84,12 @@ const reviewPage = (state = {toReview: []}, action) => {
             const reviewedCard = state.toReview.find(card => card.question === state.question && card.answer === state.answer);
             const reviewedDeckCard = state.deck.cards.find(card => newCard.id === card.id);
 
-            const newDeckCard = {...reviewedDeckCard, status: 'OK'};
             const newDeckCards = state.deck.cards.filter(card => card !== reviewedDeckCard);
-            newDeckCards.push(newDeckCard);
+            if (reviewedDeckCard) {
+                newDeckCards.push(new Card(reviewedDeckCard.id, 'OK'));
+            }
 
-            const newDeck = {
-                ...state.deck,
-                cards: newDeckCards
-            };
+            const newDeck = new DeckResponse(state.deck.id, state.deck.name, newDeckCards);
 
             return getViewState({
                 ...state,

@@ -1,5 +1,5 @@
 //@flow
-import type {CollectionState, FetchCollectionSuccessAction} from "../actions/actionTypes";
+import type {Action, CollectionState} from "../actions/actionTypes";
 import {ADD_DECK_SUCCESS, FETCH_COLLECTION_SUCCESS} from '../actions/actionTypes'
 
 export const getViewState = (state: CollectionState) => {
@@ -10,7 +10,7 @@ export const getViewState = (state: CollectionState) => {
     }
 };
 
-const collectionPage = (state: CollectionState = {collection: null}, action: FetchCollectionSuccessAction) => {
+const collectionPage = (state: CollectionState = {collection: null}, action: Action) => {
     switch (action.type) {
         case FETCH_COLLECTION_SUCCESS:
         case ADD_DECK_SUCCESS:

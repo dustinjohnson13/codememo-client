@@ -1,10 +1,12 @@
+//@flow
 import collectionPage from './collectionPage';
 import {addDeckSuccess, fetchCollectionSuccess} from '../actions/creators'
+import {CollectionResponse, Deck} from "../services/APIDomain";
 
 describe('collectionPage', () => {
 
     it('adds decks on fetch collection success', () => {
-        const collection = {decks: [{name: 'deck1'}]};
+        const collection = new CollectionResponse([new Deck('deck1', 'Deck1', 80, 27, 23)]);
 
         const previousState = {collection: null};
         const expectedState = {decks: collection.decks};
@@ -15,7 +17,7 @@ describe('collectionPage', () => {
     });
 
     it('adds decks on add deck success', () => {
-        const collection = {decks: [{name: 'deck1'}]};
+        const collection = new CollectionResponse([new Deck('deck1', 'Deck1', 80, 27, 23)]);
 
         const previousState = {collection: null};
         const expectedState = {decks: collection.decks};

@@ -3,7 +3,7 @@ import type {Action, ReviewState} from "../actions/actionTypes";
 import {ANSWER_CARD_SUCCESS, FETCH_CARDS_SUCCESS, FETCH_DECK_SUCCESS} from '../actions/actionTypes'
 import {Card, DeckResponse} from "../services/APIDomain";
 
-const initialState = {
+export const initialState = {
     toReview: [],
     deck: new DeckResponse('', '', []),
     deckName: '',

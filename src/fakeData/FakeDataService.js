@@ -24,8 +24,8 @@ export default class {
     collectionStore: Array<Deck>;
     idCounter: number;
 
-    constructor(clock: Clock) {
-        this.clock = clock === undefined ? new FrozenClock() : clock;
+    constructor(clock: Clock | void) {
+        this.clock = (clock) ? clock : new FrozenClock();
         this.collectionStore = [];
         this.idCounter = 1;
         this.createCollectionStore();

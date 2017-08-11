@@ -1,5 +1,5 @@
-// import fetch from 'isomorphic-fetch'
-
+//@flow
+import type {Action} from "./actionTypes";
 import {
     ADD_DECK_REQUEST,
     ADD_DECK_SUCCESS,
@@ -13,10 +13,14 @@ import {
     FETCH_DECK_SUCCESS,
     LOAD_PAGE
 } from "./actionTypes"
-import {COLLECTION} from '../actions/pages'
-import {REVIEW} from "./pages";
+import type {PageType} from "./pages";
+import {Page} from './pages'
+import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "../services/APIDomain";
+import type {DataService} from "../services/DataService";
 
-export const loadPage = (page) => {
+type Dispatch = (action: Action | Promise<Action>) => Promise<any>;
+
+export const loadPage = (page: PageType) => {
     return {
         type: LOAD_PAGE,
         page: page
@@ -24,7 +28,7 @@ export const loadPage = (page) => {
 };
 
 export const collectionPage = () => {
-    return loadPage(COLLECTION);
+    return loadPage(Page.COLLECTION);
 };
 
 export const fetchCollectionRequest = () => {
@@ -33,56 +37,56 @@ export const fetchCollectionRequest = () => {
     }
 };
 
-export const fetchCollectionSuccess = (json) => {
+export const fetchCollectionSuccess = (response: CollectionResponse) => {
     return {
         type: FETCH_COLLECTION_SUCCESS,
-        collection: json
+        collection: response
     }
 };
 
-export const addDeckRequest = name => {
+export const addDeckRequest = (name: string) => {
     return {
         type: ADD_DECK_REQUEST,
         name
     }
 };
 
-export const addDeckSuccess = json => {
+export const addDeckSuccess = (response: CollectionResponse) => {
     return {
         type: ADD_DECK_SUCCESS,
-        collection: json
+        collection: response
     };
 };
 
-export const fetchDeckRequest = name => {
+export const fetchDeckRequest = (name: string) => {
     return {
         type: FETCH_DECK_REQUEST,
         name
     }
 };
 
-export const fetchDeckSuccess = json => {
+export const fetchDeckSuccess = (response: DeckResponse) => {
     return {
         type: FETCH_DECK_SUCCESS,
-        deck: json
+        deck: response
     }
 };
 
-export const fetchCardsRequest = ids => {
+export const fetchCardsRequest = (ids: Array<string>) => {
     return {
         type: FETCH_CARDS_REQUEST,
         ids
     }
 };
 
-export const fetchCardsSuccess = json => {
+export const fetchCardsSuccess = (response: CardDetailResponse) => {
     return {
         type: FETCH_CARDS_SUCCESS,
-        cards: json
+        cards: response
     }
 };
 
-export const answerCardRequest = (id, answer) => {
+export const answerCardRequest = (id: string, answer: string) => {
     return {
         type: ANSWER_CARD_REQUEST,
         id: id,
@@ -90,15 +94,15 @@ export const answerCardRequest = (id, answer) => {
     }
 };
 
-export const answerCardSuccess = json => {
+export const answerCardSuccess = (response: CardDetail) => {
     return {
         type: ANSWER_CARD_SUCCESS,
-        card: json
+        card: response
     }
 };
 
-export function loadCollectionPage(dataService) {
-    return function (dispatch, getState) {
+export function loadCollectionPage(dataService: DataService) {
+    return function (dispatch: Dispatch, getState: Function) {
         return new Promise((resolve, reject) => {
             const state = getState();
             if (state.collection.decks) {
@@ -112,16 +116,16 @@ export function loadCollectionPage(dataService) {
     }
 }
 
-export function reviewDeck(dataService, name) {
-    return function (dispatch, getState) {
+export function reviewDeck(dataService: DataService, name: string) {
+    return function (dispatch: Dispatch, getState: Function) {
         return new Promise((resolve, reject) => {
             dispatch(fetchDeck(dataService, name))
-        }).then(() => dispatch(loadPage(REVIEW)))
+        }).then(() => dispatch(loadPage(Page.REVIEW)))
     }
 }
 
-export function addDeck(dataService, name) {
-    return function (dispatch) {
+export function addDeck(dataService: DataService, name: string) {
+    return function (dispatch: Dispatch) {
 
         dispatch(addDeckRequest(name));
 
@@ -130,8 +134,8 @@ export function addDeck(dataService, name) {
     }
 }
 
-export function answerCard(dataService, id, answer) {
-    return function (dispatch) {
+export function answerCard(dataService: DataService, id: string, answer: string) {
+    return function (dispatch: Dispatch) {
 
         dispatch(answerCardRequest(id, answer));
 
@@ -142,21 +146,21 @@ export function answerCard(dataService, id, answer) {
     }
 }
 
-function fetchCollection(dataService) {
-    return function (dispatch) {
+function fetchCollection(dataService: DataService) {
+    return function (dispatch: Dispatch) {
         dispatch(fetchCollectionRequest());
 
         return dataService.fetchCollection()
             .then(
-                response => response,// response => response.json(),
+                (response: CollectionResponse) => response,
                 // Do not use catch, because that will also catch
                 // any errors in the dispatch and resulting render,
                 // causing an loop of 'Unexpected batch number' errors.
                 // https://github.com/facebook/react/issues/6895
-                error => console.log('An error occured.', error)
+                error => console.log('An error occurred.', error)
             )
-            .then(json => {
-                    dispatch(fetchCollectionSuccess(json))
+            .then((response: CollectionResponse) => {
+                    dispatch(fetchCollectionSuccess(response))
                 }
             );
     }
@@ -164,7 +168,7 @@ function fetchCollection(dataService) {
 
 const CARDS_TO_RETRIEVE_PER_REQUEST = 10;
 
-function fetchDeck(dataService, name) {
+function fetchDeck(dataService: DataService, name) {
     return function (dispatch) {
 
         dispatch(fetchDeckRequest(name));
@@ -183,7 +187,7 @@ function fetchDeck(dataService, name) {
     }
 }
 
-function fetchCards(dataService, ids) {
+function fetchCards(dataService: DataService, ids) {
     return function (dispatch) {
 
         dispatch(fetchCardsRequest(ids));

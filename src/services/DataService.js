@@ -1,19 +1,18 @@
 //@flow
 import FakeDataService from "../fakeData/FakeDataService";
-import type {Card, Clock, Collection} from "../Domain";
-import Deck from "../components/Deck";
-import {CardDetailResponse, CollectionResponse, DeckResponse} from "./APIDomain";
+import type {Clock} from "../Domain";
+import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "./APIDomain";
 
 export interface DataService {
-    addDeck(name: string): Promise<Collection>;
+    addDeck(name: string): Promise<CollectionResponse>;
 
-    fetchCollection(): Promise<Collection>;
+    fetchCollection(): Promise<CollectionResponse>;
 
-    fetchDeck(name: string): Promise<Deck>;
+    fetchDeck(name: string): Promise<DeckResponse>;
 
-    fetchCards(ids: Array<string>): Promise<Array<Card>>;
+    fetchCards(ids: Array<string>): Promise<CardDetailResponse>;
 
-    answerCard(id: string, answer: string): Promise<Card>;
+    answerCard(id: string, answer: string): Promise<CardDetail>;
 }
 
 export class DelegatingDataService implements DataService {
@@ -50,7 +49,7 @@ export class DelegatingDataService implements DataService {
         });
     }
 
-    answerCard(id: string, answer: string): Promise<Card> {
+    answerCard(id: string, answer: string): Promise<CardDetail> {
         return new Promise((resolve, reject) => {
             setTimeout(() => this.delegate.answerCard(id, answer).then(resolve), this.timeoutDelay);
         });

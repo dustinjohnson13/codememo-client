@@ -1,2 +1,7 @@
-export const COLLECTION = 'COLLECTION';
-export const REVIEW = 'REVIEW';
+// @flow
+export const Page = {
+    COLLECTION: 'COLLECTION',
+    REVIEW: 'REVIEW'
+};
+
+export type PageType = $Keys<typeof Page>;

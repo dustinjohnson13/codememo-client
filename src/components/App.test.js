@@ -1,3 +1,4 @@
+//@flow
 import jsdom from 'jsdom';
 import React from 'react';
 import {Provider} from 'react-redux';
@@ -6,12 +7,13 @@ import App from "./App";
 import {storeFake} from "../fakeData/storeFake";
 
 import LoadingPage from "../components/LoadingPage";
-import {COLLECTION, REVIEW} from "../actions/pages";
+import {Page} from "../actions/pages";
 import ReviewPageContainer from "../containers/ReviewPageContainer";
 import CollectionPageContainer from "../containers/CollectionPageContainer";
 import {collectionState} from "../fakeData/collectionState";
 import {reviewState} from "../fakeData/reviewState";
 import FakeDataService from "../fakeData/FakeDataService";
+import type {PageType} from "../actions/pages";
 
 const doc = jsdom.jsdom('<!doctype html><html><body></body></html>');
 global.document = doc;
@@ -21,7 +23,7 @@ describe('<App />', () => {
 
     const dataService = new FakeDataService();
 
-    const prepareContainer = (page, state = {}) => {
+    const prepareContainer = (page: PageType | null | void, state = {}) => {
         const store = storeFake(state);
 
         const wrapper = mount(
@@ -59,14 +61,14 @@ describe('<App />', () => {
 
     it('displays the review page when specified', () => {
 
-        const app = prepareContainer(REVIEW, {review: reviewState});
+        const app = prepareContainer(Page.REVIEW, {review: reviewState});
 
         const reviewPage = <ReviewPageContainer dataService={dataService}/>;
         expect(app.contains(reviewPage)).toEqual(true);
     });
 
     it('displays the collection page when specified', () => {
-        const app = prepareContainer(COLLECTION, {collection: collectionState});
+        const app = prepareContainer(Page.COLLECTION, {collection: collectionState});
 
         const expected = <CollectionPageContainer dataService={dataService}/>;
         expect(app.contains(expected)).toEqual(true);

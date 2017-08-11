@@ -1,10 +1,16 @@
 import * as domain from '../Domain.js'
 
+class FrozenClock implements Clock {
+    epochSeconds(): number{
+        return 1;
+    }
+}
+
 // Creates a deck with 27 due cards, 23 new cards, and 80 total cards
 export default class {
 
     constructor(clock) {
-        this.clock = clock === undefined ? new domain.Clock(() => 1) : clock;
+        this.clock = clock === undefined ? new FrozenClock() : clock;
         this.collectionStore = {decks: []};
         this.idCounter = 1;
         this.createCollectionStore();

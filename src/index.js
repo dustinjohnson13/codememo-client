@@ -11,7 +11,7 @@ import flashcardApp from './reducers/index'
 import './styles/index.css';
 import registerServiceWorker from './registerServiceWorker';
 import {loadCollectionPage} from "./actions/creators";
-import {Clock} from './Domain'
+import {SystemClock} from './Domain'
 import DataService from './services/DataService';
 
 const loggerMiddleware = createLogger();
@@ -21,7 +21,7 @@ let store = createStore(flashcardApp, applyMiddleware(
     loggerMiddleware // neat middleware that logs actions
 ));
 
-const clock = new Clock(() => new Date().getTime());
+const clock = new SystemClock();
 const dataService = new DataService(clock);
 
 store.dispatch(loadCollectionPage(dataService));

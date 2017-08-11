@@ -1,21 +1,29 @@
-class Clock {
-    constructor(epochSecondsRetriever: any) {
-        this.epochSecondsRetriever = epochSecondsRetriever;
-    }
+// @flow
+export interface Clock {
+    epochSeconds(): number;
+}
 
-    epochSeconds() {
-        return this.epochSecondsRetriever();
+class SystemClock {
+    epochSeconds(): number {
+        return new Date().getTime();
     }
 }
 
 class Collection {
-    constructor(decks) {
+    decks: Array<Deck>;
+
+    constructor(decks: Array<Deck>) {
         this.decks = decks;
     }
 }
 
 class Deck {
-    constructor(id, name, cards) {
+
+    id: string;
+    name: string;
+    cards: Array<Card>;
+
+    constructor(id: string, name: string, cards: Array<Card>) {
         this.id = id;
         this.name = name;
         this.cards = cards;
@@ -25,13 +33,18 @@ class Deck {
         return this.cards.filter((it) => it.isNew())
     }
 
-    getDue(clock) {
+    getDue(clock: Clock) {
         return this.cards.filter((it) => it.isDue(clock))
     }
 }
 
 class Card {
-    constructor(id, question, answer, due) {
+    id: string;
+    question: string;
+    answer: string;
+    due: number;
+
+    constructor(id: string, question: string, answer: string, due: number) {
         this.id = id;
         this.question = question;
         this.answer = answer;
@@ -42,7 +55,7 @@ class Card {
         return this.due === null
     }
 
-    isDue(clock) {
+    isDue(clock: Clock) {
         return !this.isNew() && this.due < clock.epochSeconds();
     }
 }
@@ -53,5 +66,5 @@ const GOOD = 'GOOD';
 const EASY = 'EASY';
 
 module.exports = {
-    Clock, Collection, Deck, Card, FAIL, HARD, GOOD, EASY
+    SystemClock, Collection, Deck, Card, FAIL, HARD, GOOD, EASY
 };

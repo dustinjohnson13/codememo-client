@@ -1,3 +1,4 @@
+//@flow
 export class Card {
     id: string;
     status: string; // TODO: Create enum
@@ -62,10 +63,12 @@ export class CollectionResponse {
     id: string;
     name: string;
     decks: Array<Deck>;
+    error: ?string;
 
-    constructor(id: string, name: string, decks: Array<Deck>) {
+    constructor(id: string, name: string, decks: Array<Deck>, error: ?string) {
         this.id = id;
         this.name = name;
         this.decks = decks;
+        this.error = error;
     }
 }

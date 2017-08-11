@@ -1,5 +1,17 @@
 //@flow
-import type {Action} from "./actionTypes";
+import type {
+    AddDeckRequestAction,
+    AddDeckSuccessAction,
+    AnswerCardRequestAction,
+    AnswerCardSuccessAction,
+    Dispatch,
+    FetchCardsRequestAction,
+    FetchCardsSuccessAction,
+    FetchCollectionSuccessAction,
+    FetchDeckRequestAction,
+    FetchDeckSuccessAction,
+    LoadPageAction
+} from "./actionTypes";
 import {
     ADD_DECK_REQUEST,
     ADD_DECK_SUCCESS,
@@ -18,8 +30,6 @@ import {Page} from './pages'
 import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "../services/APIDomain";
 import type {DataService} from "../services/DataService";
 
-type Dispatch = (action: Action | Promise<Action>) => Promise<any>;
-
 export const loadPage = (page: PageType) => {
     return {
         type: LOAD_PAGE,
@@ -27,7 +37,7 @@ export const loadPage = (page: PageType) => {
     }
 };
 
-export const collectionPage = () => {
+export const collectionPage = (): LoadPageAction => {
     return loadPage(Page.COLLECTION);
 };
 
@@ -37,56 +47,56 @@ export const fetchCollectionRequest = () => {
     }
 };
 
-export const fetchCollectionSuccess = (response: CollectionResponse) => {
+export const fetchCollectionSuccess = (response: CollectionResponse): FetchCollectionSuccessAction => {
     return {
         type: FETCH_COLLECTION_SUCCESS,
         collection: response
     }
 };
 
-export const addDeckRequest = (name: string) => {
+export const addDeckRequest = (name: string): AddDeckRequestAction => {
     return {
         type: ADD_DECK_REQUEST,
         name
     }
 };
 
-export const addDeckSuccess = (response: CollectionResponse) => {
+export const addDeckSuccess = (response: CollectionResponse): AddDeckSuccessAction => {
     return {
         type: ADD_DECK_SUCCESS,
         collection: response
     };
 };
 
-export const fetchDeckRequest = (name: string) => {
+export const fetchDeckRequest = (name: string): FetchDeckRequestAction => {
     return {
         type: FETCH_DECK_REQUEST,
         name
     }
 };
 
-export const fetchDeckSuccess = (response: DeckResponse) => {
+export const fetchDeckSuccess = (response: DeckResponse): FetchDeckSuccessAction => {
     return {
         type: FETCH_DECK_SUCCESS,
         deck: response
     }
 };
 
-export const fetchCardsRequest = (ids: Array<string>) => {
+export const fetchCardsRequest = (ids: Array<string>): FetchCardsRequestAction => {
     return {
         type: FETCH_CARDS_REQUEST,
         ids
     }
 };
 
-export const fetchCardsSuccess = (response: CardDetailResponse) => {
+export const fetchCardsSuccess = (response: CardDetailResponse): FetchCardsSuccessAction => {
     return {
         type: FETCH_CARDS_SUCCESS,
-        cards: response
+        cards: response.cards
     }
 };
 
-export const answerCardRequest = (id: string, answer: string) => {
+export const answerCardRequest = (id: string, answer: string): AnswerCardRequestAction => {
     return {
         type: ANSWER_CARD_REQUEST,
         id: id,
@@ -94,7 +104,7 @@ export const answerCardRequest = (id: string, answer: string) => {
     }
 };
 
-export const answerCardSuccess = (response: CardDetail) => {
+export const answerCardSuccess = (response: CardDetail): AnswerCardSuccessAction => {
     return {
         type: ANSWER_CARD_SUCCESS,
         card: response
@@ -151,25 +161,16 @@ function fetchCollection(dataService: DataService) {
         dispatch(fetchCollectionRequest());
 
         return dataService.fetchCollection()
-            .then(
-                (response: CollectionResponse) => response,
-                // Do not use catch, because that will also catch
-                // any errors in the dispatch and resulting render,
-                // causing an loop of 'Unexpected batch number' errors.
-                // https://github.com/facebook/react/issues/6895
-                error => console.log('An error occurred.', error)
-            )
-            .then((response: CollectionResponse) => {
-                    dispatch(fetchCollectionSuccess(response))
-                }
-            );
+            .then((response: CollectionResponse) =>
+                dispatch(fetchCollectionSuccess(response)))
+
     }
 }
 
 const CARDS_TO_RETRIEVE_PER_REQUEST = 10;
 
 function fetchDeck(dataService: DataService, name) {
-    return function (dispatch) {
+    return function (dispatch: Dispatch) {
 
         dispatch(fetchDeckRequest(name));
 
@@ -188,12 +189,12 @@ function fetchDeck(dataService: DataService, name) {
 }
 
 function fetchCards(dataService: DataService, ids) {
-    return function (dispatch) {
+    return function (dispatch: Dispatch) {
 
         dispatch(fetchCardsRequest(ids));
 
-        return dataService.fetchCards(ids).then(json => {
-            dispatch(fetchCardsSuccess(json.cards))
+        return dataService.fetchCards(ids).then(response => {
+            dispatch(fetchCardsSuccess(response))
         });
     }
 }

@@ -1,8 +1,9 @@
+//@flow
 import {FakeDataService} from "../fakeData/FakeDataService";
 
 import configureStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
-import {loadCollectionPage, loadPage, reviewDeck} from "./creators";
+import {collectionPage, loadCollectionPage, loadPage, reviewDeck} from "./creators";
 import {
     deckName,
     getCollection,
@@ -12,8 +13,8 @@ import {
     gotDeck1,
     gotDeck1DueCards
 } from "./creators.test.actions";
-import {COLLECTION, REVIEW} from "./pages";
 import {collectionState} from '../fakeData/collectionState'
+import {Page} from "./pages";
 
 describe('creators', () => {
 
@@ -28,7 +29,7 @@ describe('creators', () => {
         const expectedActions = [
             getCollection,
             gotCollection,
-            loadPage(COLLECTION)
+            collectionPage()
         ];
 
         store.dispatch(loadCollectionPage(dataService)).then(() => {
@@ -42,7 +43,7 @@ describe('creators', () => {
         const store = mockStore(state);
 
         const expectedActions = [
-            loadPage(COLLECTION)
+            collectionPage()
         ];
 
         store.dispatch(loadCollectionPage(dataService)).then(() => {
@@ -58,8 +59,9 @@ describe('creators', () => {
             gotDeck1,
             getDeck1DueCards,
             gotDeck1DueCards,
-            loadPage(REVIEW)];
+            loadPage(Page.REVIEW)];
 
+        // $FlowFixMe
         store.dispatch(reviewDeck(dataService, deckName)).then(() => {
             expect(store.getActions()).toEqual(expectedActions);
         });

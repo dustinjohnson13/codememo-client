@@ -71,5 +71,5 @@ type State =
 type PromiseAction = Promise<Action>;
 type GetState = () => State;
 // eslint-disable-next-line
-type ThunkAction = (dispatch: Dispatch, getState: GetState) => any;
+export type ThunkAction = (dispatch: Dispatch, getState: GetState) => any;
 export type Dispatch = (action: Action | ThunkAction | PromiseAction) => any;

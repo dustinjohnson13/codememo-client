@@ -10,7 +10,7 @@ import AppContainer from './containers/AppContainer';
 import flashcardApp from './reducers/index'
 import './styles/index.css';
 import registerServiceWorker from './registerServiceWorker';
-import {loadCollectionPage} from "./actions/creators.thunk";
+import {loadCollectionPage} from "./actions/creators";
 import {SystemClock} from './Domain'
 import {DelegatingDataService} from "./services/DataService";
 

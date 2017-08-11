@@ -1,6 +1,6 @@
 import {connect} from 'react-redux'
 import {answerCard} from '../actions/creators.js'
-import {loadCollectionPage} from '../actions/creators.thunk.js'
+import {loadCollectionPage} from '../actions/creators'
 import ReviewPage from '../components/ReviewPage'
 
 export const mapStateToProps = (state, ownProps) => {

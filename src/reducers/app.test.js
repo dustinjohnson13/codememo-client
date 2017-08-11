@@ -1,7 +1,6 @@
 //@flow
 import app from './app';
 import {fetchCollectionRequest, fetchDeckRequest, fetchDeckSuccess, loadPage} from '../actions/creators'
-import {fetchCollectionSuccess,} from '../actions/creators.thunk.js'
 import {Page} from "../actions/pages"
 import {DeckResponse} from "../services/APIDomain";
 

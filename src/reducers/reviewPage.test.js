@@ -1,6 +1,5 @@
 import reviewPage from './reviewPage';
 import {answerCardSuccess, fetchCardsSuccess, fetchDeckSuccess} from '../actions/creators'
-import {answerCard} from '../actions/creators.thunk.js'
 import {GOOD} from '../Domain'
 import {CardDetail, CardDetailResponse, DeckResponse} from "../services/APIDomain";
 

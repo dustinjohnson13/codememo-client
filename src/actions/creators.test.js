@@ -2,8 +2,7 @@ import {FakeDataService} from "../fakeData/FakeDataService";
 
 import configureStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
-import {loadPage, reviewDeck} from "./creators";
-import {loadCollectionPage} from "./creators.thunk.js";
+import {loadCollectionPage, loadPage, reviewDeck} from "./creators";
 import {
     deckName,
     getCollection,

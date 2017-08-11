@@ -1,6 +1,6 @@
 //@flow
 import type {PageType} from "./pages";
-import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "../services/APIDomain";
+import {CardDetail, CollectionResponse, DeckResponse} from "../services/APIDomain";
 
 export const LOAD_PAGE = 'LOAD_PAGE';
 export const FETCH_COLLECTION_REQUEST = 'FETCH_COLLECTION_REQUEST';

@@ -38,4 +38,38 @@ export type Action = LoadPageAction
     | AddDeckRequestAction
     | AddDeckSuccessAction
 
-export type Dispatch = (action: Action | Promise<Action>) => Promise<any>;
+
+export type AppState = {
+    +page: ?PageType;
+}
+
+export type CollectionState = {
+    +collection: ?CollectionResponse;
+}
+
+export type ReviewState = {
+    +toReview: Array<CardDetail>;
+    +deck: DeckResponse;
+    +deckName: string;
+    +totalCount: number;
+    +newCount: number;
+    +dueCount: number;
+    // TODO: Should these stay here?
+    +question: string;
+    +answer: string;
+    +failInterval: string;
+    +hardInterval: string;
+    +goodInterval: string;
+    +easyInterval: string;
+}
+
+type State =
+    AppState |
+    ReviewState |
+    CollectionState
+
+type PromiseAction = Promise<Action>;
+type GetState = () => State;
+// eslint-disable-next-line
+type ThunkAction = (dispatch: Dispatch, getState: GetState) => any;
+export type Dispatch = (action: Action | ThunkAction | PromiseAction) => any;

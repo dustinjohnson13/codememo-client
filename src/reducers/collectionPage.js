@@ -1,11 +1,6 @@
 //@flow
-import type {FetchCollectionSuccessAction} from "../actions/actionTypes";
+import type {CollectionState, FetchCollectionSuccessAction} from "../actions/actionTypes";
 import {ADD_DECK_SUCCESS, FETCH_COLLECTION_SUCCESS} from '../actions/actionTypes'
-import {CollectionResponse} from "../services/APIDomain";
-
-type CollectionState = {
-    +collection: ?CollectionResponse;
-}
 
 export const getViewState = (state: CollectionState) => {
     const collection = state.collection;

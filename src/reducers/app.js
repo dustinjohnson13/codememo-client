@@ -1,12 +1,7 @@
 //@flow
-import type {Action} from "../actions/actionTypes";
+import type {Action, AppState} from "../actions/actionTypes";
 import {FETCH_COLLECTION_REQUEST, FETCH_DECK_REQUEST, FETCH_DECK_SUCCESS, LOAD_PAGE} from '../actions/actionTypes'
-import type {PageType} from "../actions/pages";
 import {Page} from "../actions/pages";
-
-type AppState = {
-    +page: ?PageType;
-}
 
 export const getViewState = (state: AppState): AppState => state;
 

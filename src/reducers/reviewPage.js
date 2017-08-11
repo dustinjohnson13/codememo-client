@@ -1,23 +1,7 @@
 //@flow
-import type {Action} from "../actions/actionTypes";
+import type {Action, ReviewState} from "../actions/actionTypes";
 import {ANSWER_CARD_SUCCESS, FETCH_CARDS_SUCCESS, FETCH_DECK_SUCCESS} from '../actions/actionTypes'
-import {Card, CardDetail, DeckResponse} from "../services/APIDomain";
-
-type ReviewState = {
-    +toReview: Array<CardDetail>;
-    +deck: DeckResponse;
-    +deckName: string;
-    +totalCount: number;
-    +newCount: number;
-    +dueCount: number;
-    // TODO: Should these stay here?
-    +question: string;
-    +answer: string;
-    +failInterval: string;
-    +hardInterval: string;
-    +goodInterval: string;
-    +easyInterval: string;
-}
+import {Card, DeckResponse} from "../services/APIDomain";
 
 const initialState = {
     toReview: [],

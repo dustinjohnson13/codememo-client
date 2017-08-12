@@ -1,3 +1,6 @@
 //@flow
+import {CollectionResponse} from "../services/APIDomain";
+
 export const collectionState = {
-    decks: [{name: 'deck1'}, {name: 'deck2'}]};
+    collection: new CollectionResponse([])
+};

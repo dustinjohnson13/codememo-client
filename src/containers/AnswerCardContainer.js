@@ -1,7 +1,14 @@
+//@flow
 import {connect} from 'react-redux'
 import AnswerCard from '../components/AnswerCard'
+import type {CombinedState, Dispatch} from "../actions/actionTypes";
 
-export const mapStateToProps = (state, ownProps) => {
+type OwnProps = {
+    id: string;
+    answerCard: any;
+}
+
+export const mapStateToProps = (state: CombinedState, ownProps: OwnProps) => {
     const props = state.review;
 
     return {
@@ -12,9 +19,9 @@ export const mapStateToProps = (state, ownProps) => {
     };
 };
 
-export const mapDispatchToProps = (dispatch, ownProps) => {
+export const mapDispatchToProps = (dispatch: Dispatch, ownProps: OwnProps) => {
     return {
-        answerCard: (answer) => {
+        answerCard: (answer: any) => {
             ownProps.answerCard(ownProps.id, answer);
         }
     }

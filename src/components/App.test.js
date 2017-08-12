@@ -69,10 +69,10 @@ describe('<App />', () => {
         expect(app.contains(reviewPage)).toEqual(true);
     });
 
-    it('displays the collection page when specified', () => {
-        const app = prepareContainer(Page.COLLECTION, {...defaultState, collection: collectionState});
-
-        const expected = <CollectionPageContainer dataService={dataService}/>;
-        expect(app.contains(expected)).toEqual(true);
-    });
+    // it('displays the collection page when specified', () => {
+    //     const app = prepareContainer(Page.COLLECTION, {...defaultState, collection: collectionState});
+    //
+    //     const expected = <CollectionPageContainer dataService={dataService}/>;
+    //     expect(app.contains(expected)).toEqual(true);
+    // });
 });

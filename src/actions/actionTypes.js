@@ -69,9 +69,9 @@ type State =
     CollectionState
 
 export type CombinedState = {
-    // review: ReviewState,
+    review: ReviewState,
     app: AppState,
-    // collection: CollectionState
+    collection: CollectionState
 }
 
 type PromiseAction = Promise<Action>;

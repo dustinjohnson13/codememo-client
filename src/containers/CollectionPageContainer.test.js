@@ -2,8 +2,7 @@ import React from 'react';
 import {mapDispatchToProps, mapStateToProps} from "./CollectionPageContainer";
 import {collectionState} from "../fakeData/collectionState";
 import {Deck} from "../components/CollectionPage";
-import {addDeckRequest, fetchCollectionRequest} from "../actions/creators";
-import middlewareFake from "../fakeData/middlewareFake";
+import {addDeckRequest, fetchCollectionRequest, reviewDeckRequest} from "../actions/creators";
 import * as API from '../services/API';
 
 jest.mock('../services/API'); // Set mock API for module importing
@@ -33,24 +32,30 @@ describe('<CollectionPageContainer />', () => {
         expect(dispatchedActions).toEqual([fetchCollectionRequest()]);
     });
 
-    // it('maps reviewDeck to the appropriate action', () => {
-    //
-    //     let reviewRequest = null;
-    //     const fn = (name) => reviewRequest = name;
-    //     const {reviewDeck} = mapDispatchToProps(invoke, {dataService: dataService});
-    //     reviewDeck('Deck1');
-    //
-    //     expect(reviewDeck).toEqual();
-    // });
+    it('maps reviewDeck to the appropriate action', () => {
+
+        const expectedActions = [reviewDeckRequest('Deck1')];
+
+        const actions = [];
+        const invoke = (action: Action) => actions.push(action);
+
+        const {reviewDeck} = mapDispatchToProps(invoke, {});
+        reviewDeck('Deck1');
+
+        expect(actions).toEqual(expectedActions);
+    });
 
     it('maps addDeck to the appropriate action', () => {
 
-        const {store, next, invoke} = middlewareFake();
+        const expectedActions = [addDeckRequest('BrandNew')];
 
-        const {addDeck} = mapDispatchToProps(invoke, {dataService: dataService});
+        const actions = [];
+        const invoke = (action: Action) => actions.push(action);
+
+        const {addDeck} = mapDispatchToProps(invoke, {});
         addDeck('BrandNew');
 
-        expect(store.dispatch).toHaveBeenCalledWith(addDeckRequest('BrandNew'));
+        expect(actions).toEqual([addDeckRequest('BrandNew')]);
     });
 
 });

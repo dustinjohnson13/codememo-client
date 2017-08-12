@@ -1,5 +1,5 @@
 //@flow
-import thunkMiddleware from 'redux-thunk'
+import createSagaMiddleware from 'redux-saga'
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {Provider} from 'react-redux'
@@ -10,17 +10,19 @@ import AppContainer from './containers/AppContainer';
 import flashcardApp from './reducers/index'
 import './styles/index.css';
 import registerServiceWorker from './registerServiceWorker';
-import {loadCollectionPage} from "./actions/creators";
+import {collectionPage, saga} from "./actions/creators";
 
+const sagaMiddleware = createSagaMiddleware();
 const loggerMiddleware = createLogger();
 
 // $FlowFixMe
 let store = createStore(flashcardApp, applyMiddleware(
-    thunkMiddleware, // lets us dispatch() functions
+    sagaMiddleware,
     loggerMiddleware // neat middleware that logs actions
 ));
 
-store.dispatch(loadCollectionPage());
+sagaMiddleware.run(saga);
+store.dispatch(collectionPage());
 
 ReactDOM.render(
     <Provider store={store}>

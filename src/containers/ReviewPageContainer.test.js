@@ -2,7 +2,6 @@ import React from 'react';
 import {reviewState} from "../fakeData/reviewState";
 import {answerCardRequest} from "../actions/creators";
 import {GOOD} from '../Domain'
-import middlewareFake from "../fakeData/middlewareFake";
 import {mapDispatchToProps, mapStateToProps} from "./ReviewPageContainer";
 import {Deck} from "../components/CollectionPage";
 import * as API from '../services/API';
@@ -33,21 +32,24 @@ describe('<ReviewPageContainer/>', () => {
 
     // it('maps back to the appropriate action', () => {
     //     const dispatchedActions = [];
-    //     const dispatcher = (action) => dispatchedActions.push(action);
+    //     const dispatcher = (action: Action) => dispatchedActions.push(action);
     //
     //     const props = mapDispatchToProps(dispatcher, {});
-    //
     //     props.back();
     //
     //     expect(dispatchedActions).toEqual([loadCollectionPage()]);
     // });
 
-    it('maps answerCard to the appropriate action', () => {
-        const {store, next, invoke} = middlewareFake();
+    it('maps answerCard', () => {
 
-        const {answerCard} = mapDispatchToProps(invoke, {dataService: dataService});
+        const expectedActions = [answerCardRequest('deck-1-card-0', GOOD)];
+
+        const actions = [];
+        const invoke = (action: Action) => actions.push(action);
+
+        const {answerCard} = mapDispatchToProps(invoke, {});
         answerCard('deck-1-card-0', GOOD);
 
-        expect(store.dispatch).toHaveBeenCalledWith(answerCardRequest('deck-1-card-0', GOOD));
+        expect(actions).toEqual(expectedActions);
     });
 });

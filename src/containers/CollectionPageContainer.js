@@ -1,6 +1,6 @@
 //@flow
 import {connect} from 'react-redux'
-import {addDeck, fetchCollectionRequest, reviewDeck} from '../actions/creators'
+import {addDeckRequest, fetchCollectionRequest, reviewDeckRequest} from '../actions/creators'
 import CollectionPage from '../components/CollectionPage'
 import type {Dispatch} from "../actions/actionTypes";
 import {Deck} from "../services/APIDomain";
@@ -18,10 +18,10 @@ export const mapDispatchToProps = (dispatch: Dispatch, ownProps: OwnProps) => {
             dispatch(fetchCollectionRequest());
         },
         reviewDeck: (name: string) => {
-            dispatch(reviewDeck(name))
+            dispatch(reviewDeckRequest(name))
         },
         addDeck: (name: string) => {
-            dispatch(addDeck(name))
+            dispatch(addDeckRequest(name))
         }
     }
 };

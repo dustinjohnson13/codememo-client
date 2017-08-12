@@ -1,71 +1,81 @@
 //@flow
-import configureStore from 'redux-mock-store'
-import thunk from 'redux-thunk'
-import {collectionPage, loadCollectionPage, loadPage, reviewDeck} from "./creators";
 import {
-    deckName,
-    getCollection,
-    getDeck1,
-    getDeck1DueCards,
-    gotCollection,
-    gotDeck1,
-    gotDeck1DueCards
-} from "./creators.test.actions";
-import {collectionState} from '../fakeData/collectionState'
+    answerCard,
+    answerCardFunc,
+    answerCardRequest,
+    answerCardSuccess,
+    fetchCollection,
+    fetchDeckFunc,
+    loadCollectionPage,
+    loadPage,
+    reviewDeck,
+    reviewDeckRequest
+} from "./creators";
+import {call, put, select} from 'redux-saga/effects'
+import {CardDetail, CollectionResponse} from "../services/APIDomain";
 import {Page} from "./pages";
-import * as API from '../services/API';
+import * as selectors from './selectors'
+import {deckName, getDeck1DueCards, gotDeck1} from "./creators.test.actions";
 
 jest.mock('../services/API'); // Set mock API for module importing
 
 describe('creators', () => {
 
-    const dataService = API.default;
 
-    const middlewares = [thunk];
-    const mockStore = configureStore(middlewares);
+    // Still need tests for these two:
+    // yield takeEvery(ADD_DECK_REQUEST, addDeck);
+    // yield takeEvery(LOAD_COLLECTION_PAGE, loadCollectionPage);
 
-    it('fetches collection and loads collection page when collection not available', () => {
+    it('sends the card answer to the API and returns the new card detail', () => {
 
-        const store = mockStore({collection: {}});
+        const action = answerCardRequest('deck-1-card-0', 'GOOD');
+        const gen = answerCard(action);
+        expect(gen.next().value).toEqual(call(answerCardFunc, action.id, action.answer));
 
-        const expectedActions = [
-            getCollection,
-            gotCollection,
-            collectionPage()
-        ];
-
-        store.dispatch(loadCollectionPage()).then(() => {
-            expect(store.getActions()).toEqual(expectedActions);
-        });
+        const newCard = new CardDetail(action.id, 'question', 'answer', 9000);
+        //$FlowFixMe
+        expect(gen.next(newCard).value).toEqual(put(answerCardSuccess(newCard)));
     });
 
     it('loads collection page automatically when collection available', () => {
 
-        const state = {collection: collectionState};
-        const store = mockStore(state);
+        const gen = loadCollectionPage();
+        expect(gen.next().value).toEqual(select(selectors.collection));
 
-        const expectedActions = [
-            collectionPage()
-        ];
+        //$FlowFixMe
+        let next = gen.next(new CollectionResponse([]));
+        expect(next.value).toEqual(put(loadPage(Page.COLLECTION)));
+    });
 
-        store.dispatch(loadCollectionPage()).then(() => {
-            expect(store.getActions()).toEqual(expectedActions);
-        });
+    it('loads collection page after fetching collection when its absent', () => {
+
+        const gen = loadCollectionPage();
+        expect(gen.next().value).toEqual(select(selectors.collection));
+
+        //$FlowFixMe
+        let next = gen.next(null);
+        expect(next.value).toEqual(call(fetchCollection));
+
+        //$FlowFixMe
+        next = gen.next(new CollectionResponse([]));
+        expect(next.value).toEqual(put(loadPage(Page.COLLECTION)));
     });
 
     it('fetches deck and loads review page', () => {
 
-        const store = mockStore({});
+        const gen = reviewDeck(reviewDeckRequest(deckName));
 
-        const expectedActions = [getDeck1,
-            gotDeck1,
-            getDeck1DueCards,
-            gotDeck1DueCards,
-            loadPage(Page.REVIEW)];
+        expect(gen.next().value)
+            .toEqual(call(fetchDeckFunc, deckName));
 
-        // $FlowFixMe
-        store.dispatch(reviewDeck(deckName)).then(() => {
-            expect(store.getActions()).toEqual(expectedActions);
-        });
+        //$FlowFixMe
+        expect(gen.next(gotDeck1.deck).value)
+            .toEqual(put(gotDeck1));
+
+        //$FlowFixMe
+        expect(gen.next(getDeck1DueCards.ids).value)
+            .toEqual(put(getDeck1DueCards));
+
+        expect(gen.next().value).toEqual(put(loadPage(Page.REVIEW)));
     });
 });

@@ -2,6 +2,8 @@
 import type {PageType} from "./pages";
 import {CardDetail, CollectionResponse, DeckResponse} from "../services/APIDomain";
 
+export const REVIEW_DECK_REQUEST = 'REVIEW_DECK_REQUEST';
+export const LOAD_COLLECTION_PAGE = 'LOAD_COLLECTION_PAGE';
 export const LOAD_PAGE = 'LOAD_PAGE';
 export const FETCH_COLLECTION_REQUEST = 'FETCH_COLLECTION_REQUEST';
 export const FETCH_COLLECTION_SUCCESS = 'FETCH_COLLECTION_SUCCESS';
@@ -14,6 +16,8 @@ export const ADD_DECK_SUCCESS = 'ADD_DECK_SUCCESS';
 export const FETCH_CARDS_REQUEST = 'FETCH_CARDS_REQUEST';
 export const FETCH_CARDS_SUCCESS = 'FETCH_CARDS_SUCCESS';
 
+export type ReviewDeckRequestAction = { type: 'REVIEW_DECK_REQUEST', name: string }
+export type LoadCollectionPageAction = { type: 'LOAD_COLLECTION_PAGE' };
 export type LoadPageAction = { type: 'LOAD_PAGE', page: PageType };
 export type FetchCollectionRequestAction = { type: 'FETCH_COLLECTION_REQUEST' }
 export type FetchCollectionSuccessAction = { type: 'FETCH_COLLECTION_SUCCESS', collection: CollectionResponse }
@@ -26,7 +30,9 @@ export type AnswerCardSuccessAction = { type: 'ANSWER_CARD_SUCCESS', card: CardD
 export type AddDeckRequestAction = { type: 'ADD_DECK_REQUEST', name: string }
 export type AddDeckSuccessAction = { type: 'ADD_DECK_SUCCESS', collection: CollectionResponse }
 
-export type Action = LoadPageAction
+export type Action = ReviewDeckRequestAction
+    | LoadCollectionPageAction
+    | LoadPageAction
     | FetchCollectionRequestAction
     | FetchCollectionSuccessAction
     | FetchCardsRequestAction
@@ -63,11 +69,6 @@ export type ReviewState = {
     +easyInterval: string;
 }
 
-type State =
-    AppState |
-    ReviewState |
-    CollectionState
-
 export type CombinedState = {
     review: ReviewState,
     app: AppState,
@@ -75,7 +76,4 @@ export type CombinedState = {
 }
 
 type PromiseAction = Promise<Action>;
-type GetState = () => State;
-// eslint-disable-next-line
-export type ThunkAction = (dispatch: Dispatch, getState: GetState) => any;
-export type Dispatch = (action: Action | ThunkAction | PromiseAction) => any;
+export type Dispatch = (action: Action | PromiseAction) => any;

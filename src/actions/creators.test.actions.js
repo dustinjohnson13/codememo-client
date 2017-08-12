@@ -4,8 +4,8 @@ import {
     fetchCardsSuccess,
     fetchCollectionRequest,
     fetchCollectionSuccess,
-    fetchDeckRequest,
-    fetchDeckSuccess
+    fetchDeckSuccess,
+    reviewDeckRequest
 } from "./creators";
 import {Card, CardDetail, CardDetailResponse, CollectionResponse, Deck, DeckResponse} from "../services/APIDomain";
 
@@ -22,7 +22,7 @@ export const gotCollection = fetchCollectionSuccess(new CollectionResponse(
         new Deck("deck-6", "Deck6", 80, 27, 23)
     ]));
 
-export const getDeck1 = fetchDeckRequest(deckName);
+export const getDeck1 = reviewDeckRequest(deckName);
 export const gotDeck1 = fetchDeckSuccess(new DeckResponse("deck-1", "Deck1",
     [
         new Card("deck-1-card-0", "OK"),

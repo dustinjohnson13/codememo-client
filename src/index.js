@@ -1,4 +1,4 @@
-// import 'babel-polyfill'
+//@flow
 import thunkMiddleware from 'redux-thunk'
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -16,6 +16,7 @@ import {DelegatingDataService} from "./services/DataService";
 
 const loggerMiddleware = createLogger();
 
+// $FlowFixMe
 let store = createStore(flashcardApp, applyMiddleware(
     thunkMiddleware, // lets us dispatch() functions
     loggerMiddleware // neat middleware that logs actions

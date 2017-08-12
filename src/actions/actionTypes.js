@@ -68,6 +68,12 @@ type State =
     ReviewState |
     CollectionState
 
+export type CombinedState = {
+    // review: ReviewState,
+    app: AppState,
+    // collection: CollectionState
+}
+
 type PromiseAction = Promise<Action>;
 type GetState = () => State;
 // eslint-disable-next-line

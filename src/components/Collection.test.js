@@ -21,7 +21,7 @@ describe('<Collection />', () => {
     let component;
 
     beforeEach(() => {
-        const store = storeFake({});
+        const store = storeFake();
         const wrapper = mount(
             <Provider store={store}>
                 <Collection decks={testDecks} reviewDeck={invokedFunction}/>

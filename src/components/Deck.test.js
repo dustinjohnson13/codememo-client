@@ -25,7 +25,7 @@ describe('<Deck />', () => {
     beforeEach(() => {
         requestedDecks = [];
 
-        const store = storeFake({});
+        const store = storeFake();
         const wrapper = mount(
             <Provider store={store}>
                 <Deck deck={testDeck} reviewDeck={invokedFunction}/>

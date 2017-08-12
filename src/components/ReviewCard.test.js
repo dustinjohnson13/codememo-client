@@ -1,10 +1,11 @@
 //@flow
 import React from 'react';
 import {Provider} from 'react-redux';
-import {storeFake} from "../fakeData/storeFake";
+import {defaultState, storeFake} from "../fakeData/storeFake";
 import ReviewCard from "./ReviewCard";
 import jsdom from 'jsdom';
 import {mount} from 'enzyme';
+import {initialState} from "../reducers/reviewPage";
 
 const doc = jsdom.jsdom('<!doctype html><html><body></body></html>');
 global.document = doc;
@@ -13,7 +14,9 @@ global.window = doc.defaultView;
 describe('<ReviewCard />', () => {
 
     const state = {
+        ...defaultState,
         review: {
+            ...initialState,
             failInterval: '1d',
             hardInterval: '2d',
             goodInterval: '3d',

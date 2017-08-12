@@ -1,6 +1,6 @@
 import React from 'react';
 import {reviewState} from "../fakeData/reviewState";
-import {answerCardRequest, loadCollectionPage} from "../actions/creators";
+import {answerCardRequest} from "../actions/creators";
 import {GOOD} from '../Domain'
 import middlewareFake from "../fakeData/middlewareFake";
 import {mapDispatchToProps, mapStateToProps} from "./ReviewPageContainer";
@@ -13,7 +13,13 @@ describe('<ReviewPageContainer/>', () => {
 
     it('maps deck attributes from state', () => {
         const expectedState = {
-            deckName: 'deck-1', totalCount: 6, newCount: 1, dueCount: 3
+            "answer": "",
+            "deckName": "deck-1",
+            "dueCount": 3,
+            "id": undefined,
+            "newCount": 1,
+            "question": "",
+            "totalCount": 6
         };
         const state = {review: reviewState};
 

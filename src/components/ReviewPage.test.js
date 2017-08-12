@@ -11,14 +11,6 @@ global.document = doc;
 global.window = doc.defaultView;
 
 describe('<ReviewPage />', () => {
-    const state = {
-        review: {
-            failInterval: '1d',
-            hardInterval: '2d',
-            goodInterval: '3d',
-            easyInterval: '4d'
-        }
-    };
 
     let component;
     let requestedBack = false;
@@ -30,7 +22,7 @@ describe('<ReviewPage />', () => {
         requestedBack = false;
 
         const answer = () => {};
-        const store = storeFake(state);
+        const store = storeFake();
         const wrapper = mount(
             <Provider store={store}>
                 <ReviewPage deckName={'SomeDeck'} totalCount={30} dueCount={20} newCount={10} back={back}

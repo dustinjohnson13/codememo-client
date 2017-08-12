@@ -1,4 +1,6 @@
+//@flow
 import thunk from 'redux-thunk'
+import type {Action} from "../actions/actionTypes";
 
 export const middlewareFake = () => {
     const store = {
@@ -7,7 +9,7 @@ export const middlewareFake = () => {
     };
     const next = jest.fn();
 
-    const invoke = (action) => {
+    const invoke = (action: Action) => {
         thunk(store)(next)(action);
     };
 

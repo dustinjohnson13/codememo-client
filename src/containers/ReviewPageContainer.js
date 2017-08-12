@@ -1,9 +1,16 @@
+//@flow
 import {connect} from 'react-redux'
 import {answerCard} from '../actions/creators.js'
 import {loadCollectionPage} from '../actions/creators'
 import ReviewPage from '../components/ReviewPage'
+import type {CombinedState, Dispatch} from "../actions/actionTypes";
+import type {DataService} from "../services/DataService";
 
-export const mapStateToProps = (state, ownProps) => {
+type OwnProps = {
+    dataService: DataService;
+}
+
+export const mapStateToProps = (state: CombinedState, ownProps: OwnProps) => {
     const props = state.review;
 
     return {
@@ -17,12 +24,12 @@ export const mapStateToProps = (state, ownProps) => {
     };
 };
 
-export const mapDispatchToProps = (dispatch, ownProps) => {
+export const mapDispatchToProps = (dispatch: Dispatch, ownProps: OwnProps) => {
     return {
         back: () => {
-            dispatch(loadCollectionPage());
+            dispatch(loadCollectionPage(ownProps.dataService));
         },
-        answerCard: (id, answer) => {
+        answerCard: (id: string, answer: string) => {
             dispatch(answerCard(ownProps.dataService, id, answer))
         }
     }

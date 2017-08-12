@@ -1,12 +1,20 @@
+//@flow
 import {connect} from 'react-redux'
 import {addDeck, fetchCollectionRequest, reviewDeck} from '../actions/creators'
 import CollectionPage from '../components/CollectionPage'
+import type {Dispatch} from "../actions/actionTypes";
+import type {DataService} from "../services/DataService";
+import {Deck} from "../services/APIDomain";
 
-export const mapStateToProps = (state, ownProps) => ({
+type OwnProps = {
+    dataService: DataService;
+}
+
+export const mapStateToProps = (state: { collection: { decks: Array<Deck> } }, ownProps: OwnProps) => ({
     decks: state.collection.decks
 });
 
-export const mapDispatchToProps = (dispatch, ownProps) => {
+export const mapDispatchToProps = (dispatch: Dispatch, ownProps: OwnProps) => {
 
     const dataService = ownProps.dataService;
 
@@ -14,10 +22,10 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
         fetchCollections: () => {
             dispatch(fetchCollectionRequest());
         },
-        reviewDeck: name => {
+        reviewDeck: (name: string) => {
             dispatch(reviewDeck(dataService, name))
         },
-        addDeck: name => {
+        addDeck: (name: string) => {
             dispatch(addDeck(dataService, name))
         }
     }

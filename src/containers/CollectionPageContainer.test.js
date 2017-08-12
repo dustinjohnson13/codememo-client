@@ -5,10 +5,12 @@ import {Deck} from "../components/CollectionPage";
 import {addDeckRequest, fetchCollectionRequest, fetchDeckRequest} from "../actions/creators";
 import {FakeDataService} from "../fakeData/FakeDataService";
 import middlewareFake from "../fakeData/middlewareFake";
+import * as API from '../services/API';
+jest.mock('../services/API'); // Set mock API for module importing
 
 describe('<CollectionPageContainer />', () => {
 
-    const dataService = new FakeDataService();
+    const dataService = API.default;
 
     it('maps decks from state', () => {
         const expectedDecks = collectionState.decks;

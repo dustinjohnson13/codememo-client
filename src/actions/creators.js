@@ -31,6 +31,7 @@ import type {PageType} from "./pages";
 import {Page} from './pages'
 import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "../services/APIDomain";
 import type {DataService} from "../services/DataService";
+import API from '../services/API'
 
 export const loadPage = (page: PageType): LoadPageAction => {
     return {
@@ -172,12 +173,13 @@ function fetchCollection(dataService: DataService) {
 
 const CARDS_TO_RETRIEVE_PER_REQUEST = 10;
 
-function fetchDeck(dataService: DataService, name: string): ThunkAction {
+function fetchDeck(dataService?: DataService, name: string): ThunkAction {
+    // TODO: Remove dataService
     return function (dispatch: Dispatch) {
 
         dispatch(fetchDeckRequest(name));
 
-        return dataService.fetchDeck(name)
+        return API.fetchDeck(name)
             .then(deck => {
                 dispatch(fetchDeckSuccess(deck));
 
@@ -185,7 +187,7 @@ function fetchDeck(dataService: DataService, name: string): ThunkAction {
                 if (dueOrNewCards.length > 0) {
                     const cardsToRetrieve = dueOrNewCards.slice(0, CARDS_TO_RETRIEVE_PER_REQUEST)
                         .reduce((ids, card) => ids.concat(card.id), []);
-                    dispatch(fetchCards(dataService, cardsToRetrieve))
+                    dispatch(fetchCards(API, cardsToRetrieve))
                 }
             });
     }

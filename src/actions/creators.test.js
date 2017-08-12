@@ -1,6 +1,4 @@
 //@flow
-import {FakeDataService} from "../fakeData/FakeDataService";
-
 import configureStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
 import {collectionPage, loadCollectionPage, loadPage, reviewDeck} from "./creators";
@@ -15,10 +13,14 @@ import {
 } from "./creators.test.actions";
 import {collectionState} from '../fakeData/collectionState'
 import {Page} from "./pages";
+import * as API from '../services/API';
+
+jest.mock('../services/API'); // Set mock API for module importing
 
 describe('creators', () => {
 
-    const dataService = new FakeDataService();
+    const dataService = API.default;
+
     const middlewares = [thunk];
     const mockStore = configureStore(middlewares);
 

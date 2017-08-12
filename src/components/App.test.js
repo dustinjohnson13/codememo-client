@@ -10,20 +10,19 @@ import LoadingPage from "../components/LoadingPage";
 import type {PageType} from "../actions/pages";
 import {Page} from "../actions/pages";
 import ReviewPageContainer from "../containers/ReviewPageContainer";
-import CollectionPageContainer from "../containers/CollectionPageContainer";
-import {collectionState} from "../fakeData/collectionState";
 import {reviewState} from "../fakeData/reviewState";
 import {FakeDataService} from "../fakeData/FakeDataService";
-import type {CombinedState} from "../actions/actionTypes";
-import {appState} from "../fakeData/appState";
+import * as API from '../services/API';
+jest.mock('../services/API'); // Set mock API for module importing
 
 const doc = jsdom.jsdom('<!doctype html><html><body></body></html>');
 global.document = doc;
 global.window = doc.defaultView;
 
+
 describe('<App />', () => {
 
-    const dataService = new FakeDataService();
+    const dataService = API.default;
 
     const prepareContainer = (page: ?PageType, state = defaultState) => {
         const store = storeFake(state);

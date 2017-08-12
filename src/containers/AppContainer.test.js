@@ -3,10 +3,12 @@ import React from 'react';
 import {mapStateToProps} from './AppContainer';
 import {Page} from "../actions/pages";
 import {FakeDataService} from "../fakeData/FakeDataService";
+import * as API from '../services/API';
+jest.mock('../services/API'); // Set mock API for module importing
 
 describe('<AppContainer />', () => {
 
-    const dataService = new FakeDataService();
+    const dataService = API.default;
     const ownProps = {dataService: dataService};
 
     it('maps the page to props from state', () => {

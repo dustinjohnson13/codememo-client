@@ -5,11 +5,12 @@ import {GOOD} from '../Domain'
 import middlewareFake from "../fakeData/middlewareFake";
 import {mapDispatchToProps, mapStateToProps} from "./ReviewPageContainer";
 import {Deck} from "../components/CollectionPage";
-import {FakeDataService} from "../fakeData/FakeDataService";
+import * as API from '../services/API';
+jest.mock('../services/API'); // Set mock API for module importing
 
 describe('<ReviewPageContainer/>', () => {
 
-    const dataService = new FakeDataService();
+    const dataService = API.default;
 
     it('maps deck attributes from state', () => {
         const expectedState = {

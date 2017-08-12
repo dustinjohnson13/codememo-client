@@ -3,11 +3,9 @@ import {connect} from 'react-redux'
 import {addDeck, fetchCollectionRequest, reviewDeck} from '../actions/creators'
 import CollectionPage from '../components/CollectionPage'
 import type {Dispatch} from "../actions/actionTypes";
-import type {DataService} from "../services/DataService";
 import {Deck} from "../services/APIDomain";
 
-type OwnProps = {
-}
+type OwnProps = {}
 
 export const mapStateToProps = (state: { collection: { decks: Array<Deck> } }, ownProps: OwnProps) => ({
     decks: state.collection.decks

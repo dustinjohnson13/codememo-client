@@ -11,6 +11,7 @@ import type {PageType} from "../actions/pages";
 import {Page} from "../actions/pages";
 import ReviewPageContainer from "../containers/ReviewPageContainer";
 import {reviewState} from "../fakeData/reviewState";
+
 jest.mock('../services/API'); // Set mock API for module importing
 
 const doc = jsdom.jsdom('<!doctype html><html><body></body></html>');

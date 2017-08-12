@@ -24,7 +24,7 @@ class ReviewCard extends Component<void, Props, State> {
             showingAnswer: false
         };
 
-        (this:any).showAnswer = this.showAnswer.bind(this);
+        (this: any).showAnswer = this.showAnswer.bind(this);
     }
 
     showAnswer() {

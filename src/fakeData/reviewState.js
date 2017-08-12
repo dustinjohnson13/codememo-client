@@ -1,5 +1,5 @@
 //@flow
-import {Deck, DeckResponse} from "../services/APIDomain";
+import {DeckResponse} from "../services/APIDomain";
 
 export const reviewState = {
     deckName: 'deck-1', totalCount: 6, newCount: 1, dueCount: 3,

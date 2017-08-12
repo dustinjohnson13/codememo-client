@@ -6,6 +6,7 @@ import middlewareFake from "../fakeData/middlewareFake";
 import {mapDispatchToProps, mapStateToProps} from "./ReviewPageContainer";
 import {Deck} from "../components/CollectionPage";
 import * as API from '../services/API';
+
 jest.mock('../services/API'); // Set mock API for module importing
 
 describe('<ReviewPageContainer/>', () => {

@@ -18,10 +18,10 @@ describe('reviewPage', () => {
         const previousState = {...initialState};
         const expectedState =
             {
-            deck: deck, answer: '', question: '', toReview: [],
-            deckName: expectedDeckName, totalCount: 5, newCount: 1, dueCount: 2,
-            failInterval: '10m', hardInterval: '1d', goodInterval: '3d', easyInterval: '5d'
-        };
+                deck: deck, answer: '', question: '', toReview: [],
+                deckName: expectedDeckName, totalCount: 5, newCount: 1, dueCount: 2,
+                failInterval: '10m', hardInterval: '1d', goodInterval: '3d', easyInterval: '5d'
+            };
 
         const action = fetchDeckSuccess(deck);
         const actualState = reviewPage(previousState, action);

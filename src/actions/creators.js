@@ -30,7 +30,6 @@ import {
 import type {PageType} from "./pages";
 import {Page} from './pages'
 import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "../services/APIDomain";
-import type {DataService} from "../services/DataService";
 import API from '../services/API'
 
 export const loadPage = (page: PageType): LoadPageAction => {

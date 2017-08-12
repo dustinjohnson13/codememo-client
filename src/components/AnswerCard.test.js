@@ -6,7 +6,6 @@ import AnswerCard from "./AnswerCard";
 import {EASY, FAIL, GOOD, HARD} from '../Domain'
 import jsdom from 'jsdom';
 import {mount} from 'enzyme';
-import {initialState} from "../reducers/reviewPage";
 
 const doc = jsdom.jsdom('<!doctype html><html><body></body></html>');
 global.document = doc;

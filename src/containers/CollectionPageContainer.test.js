@@ -2,10 +2,10 @@ import React from 'react';
 import {mapDispatchToProps, mapStateToProps} from "./CollectionPageContainer";
 import {collectionState} from "../fakeData/collectionState";
 import {Deck} from "../components/CollectionPage";
-import {addDeckRequest, fetchCollectionRequest, fetchDeckRequest} from "../actions/creators";
-import {FakeDataService} from "../fakeData/FakeDataService";
+import {addDeckRequest, fetchCollectionRequest} from "../actions/creators";
 import middlewareFake from "../fakeData/middlewareFake";
 import * as API from '../services/API';
+
 jest.mock('../services/API'); // Set mock API for module importing
 
 describe('<CollectionPageContainer />', () => {

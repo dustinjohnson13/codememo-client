@@ -11,7 +11,6 @@ import flashcardApp from './reducers/index'
 import './styles/index.css';
 import registerServiceWorker from './registerServiceWorker';
 import {loadCollectionPage} from "./actions/creators";
-import dataService from "./services/API";
 
 const loggerMiddleware = createLogger();
 
@@ -25,7 +24,7 @@ store.dispatch(loadCollectionPage());
 
 ReactDOM.render(
     <Provider store={store}>
-        <AppContainer />
+        <AppContainer/>
     </Provider>,
     document.getElementById('root')
 );

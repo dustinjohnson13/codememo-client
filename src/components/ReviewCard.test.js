@@ -26,7 +26,8 @@ describe('<ReviewCard />', () => {
 
     let component;
     beforeEach(() => {
-        const answer = () => {};
+        const answer = () => {
+        };
         const store = storeFake(state);
         const wrapper = mount(
             <Provider store={store}>

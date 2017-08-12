@@ -4,10 +4,8 @@ import {answerCard} from '../actions/creators.js'
 import {loadCollectionPage} from '../actions/creators'
 import ReviewPage from '../components/ReviewPage'
 import type {CombinedState, Dispatch} from "../actions/actionTypes";
-import type {DataService} from "../services/DataService";
 
-type OwnProps = {
-}
+type OwnProps = {}
 
 export const mapStateToProps = (state: CombinedState, ownProps: OwnProps) => {
     const props = state.review;

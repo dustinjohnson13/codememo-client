@@ -7,7 +7,6 @@ import type {DataService} from "../services/DataService";
 import {Deck} from "../services/APIDomain";
 
 type OwnProps = {
-    dataService: DataService;
 }
 
 export const mapStateToProps = (state: { collection: { decks: Array<Deck> } }, ownProps: OwnProps) => ({

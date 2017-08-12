@@ -11,25 +11,20 @@ import type {PageType} from "../actions/pages";
 import {Page} from "../actions/pages";
 import ReviewPageContainer from "../containers/ReviewPageContainer";
 import {reviewState} from "../fakeData/reviewState";
-import {FakeDataService} from "../fakeData/FakeDataService";
-import * as API from '../services/API';
 jest.mock('../services/API'); // Set mock API for module importing
 
 const doc = jsdom.jsdom('<!doctype html><html><body></body></html>');
 global.document = doc;
 global.window = doc.defaultView;
 
-
 describe('<App />', () => {
-
-    const dataService = API.default;
 
     const prepareContainer = (page: ?PageType, state = defaultState) => {
         const store = storeFake(state);
 
         const wrapper = mount(
             <Provider store={store}>
-                <App dataService={dataService} page={page} nospin={true}/>
+                <App page={page} nospin={true}/>
             </Provider>
         );
 
@@ -64,14 +59,14 @@ describe('<App />', () => {
 
         const app = prepareContainer(Page.REVIEW, {...defaultState, review: reviewState});
 
-        const reviewPage = <ReviewPageContainer dataService={dataService}/>;
+        const reviewPage = <ReviewPageContainer/>;
         expect(app.contains(reviewPage)).toEqual(true);
     });
 
     // it('displays the collection page when specified', () => {
     //     const app = prepareContainer(Page.COLLECTION, {...defaultState, collection: collectionState});
     //
-    //     const expected = <CollectionPageContainer dataService={dataService}/>;
+    //     const expected = <CollectionPageContainer/>;
     //     expect(app.contains(expected)).toEqual(true);
     // });
 });

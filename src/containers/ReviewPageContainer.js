@@ -7,7 +7,6 @@ import type {CombinedState, Dispatch} from "../actions/actionTypes";
 import type {DataService} from "../services/DataService";
 
 type OwnProps = {
-    dataService: DataService;
 }
 
 export const mapStateToProps = (state: CombinedState, ownProps: OwnProps) => {

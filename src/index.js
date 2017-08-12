@@ -25,7 +25,7 @@ store.dispatch(loadCollectionPage());
 
 ReactDOM.render(
     <Provider store={store}>
-        <AppContainer dataService={dataService}/>
+        <AppContainer />
     </Provider>,
     document.getElementById('root')
 );

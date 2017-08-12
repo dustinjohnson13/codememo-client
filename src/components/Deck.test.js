@@ -2,7 +2,6 @@
 import React from 'react';
 import {Provider} from 'react-redux';
 import {storeFake} from "../fakeData/storeFake";
-import {Collection, CollectionPage} from "./CollectionPage";
 import Deck from './Deck'
 import jsdom from 'jsdom';
 import {mount} from 'enzyme';

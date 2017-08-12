@@ -1,16 +1,26 @@
+//@flow
 import React, {Component} from 'react';
 import {Button} from 'reactstrap';
 import '../styles/ReviewPage.css';
 import {EASY, FAIL, GOOD, HARD} from '../Domain'
 
+type Foo = {
+    answerCard: any,
+    failInterval: string,
+    hardInterval: string,
+    goodInterval: string,
+    easyInterval: string
+};
+
 class AnswerCard extends Component {
-    constructor(props) {
+
+    constructor(props: Foo) {
         super(props);
 
-        this.fail = this.fail.bind(this);
-        this.hard = this.hard.bind(this);
-        this.good = this.good.bind(this);
-        this.easy = this.easy.bind(this);
+        (this: any).fail = this.fail.bind(this);
+        (this: any).hard = this.hard.bind(this);
+        (this: any).good = this.good.bind(this);
+        (this: any).easy = this.easy.bind(this);
     };
 
     fail() {

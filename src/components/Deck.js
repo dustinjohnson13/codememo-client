@@ -1,11 +1,18 @@
+//@flow
 import React, {Component} from 'react';
 import {Col, Row} from 'reactstrap';
+import {Deck as APIDeck} from "../services/APIDomain";
+
+type Props = {
+    reviewDeck: any;
+    deck: APIDeck;
+}
 
 class Deck extends Component {
-    constructor(props) {
+    constructor(props: Props) {
         super(props);
 
-        this.review = this.review.bind(this);
+        (this: any).review = this.review.bind(this);
     }
 
     review() {

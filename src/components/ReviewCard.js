@@ -1,16 +1,30 @@
+//@flow
 import React, {Component} from 'react';
 import '../styles/ReviewPage.css';
 import AnswerCardContainer from '../containers/AnswerCardContainer';
 import {Button} from 'reactstrap';
 
-class ReviewCard extends Component {
-    constructor(props) {
+type Props = {
+    id: string,
+    answer: string,
+    question: string,
+    answerCard: any
+}
+
+type State = {
+    showingAnswer: boolean
+}
+
+class ReviewCard extends Component<void, Props, State> {
+    state: State;
+
+    constructor(props: Props) {
         super(props);
         this.state = {
             showingAnswer: false
         };
 
-        this.showAnswer = this.showAnswer.bind(this);
+        (this:any).showAnswer = this.showAnswer.bind(this);
     }
 
     showAnswer() {

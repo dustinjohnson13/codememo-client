@@ -1,9 +1,22 @@
+//@flow
 import React, {Component} from 'react';
 import {Button} from 'reactstrap';
 import '../styles/ReviewPage.css';
 import ReviewCard from "./ReviewCard";
 
 class ReviewPage extends Component {
+    props: {
+        id: string,
+        back: any,
+        deckName: string,
+        totalCount: number,
+        dueCount: number,
+        newCount: number,
+        question: string,
+        answer: string,
+        answerCard: any
+    };
+
     render() {
         return (
             <div>

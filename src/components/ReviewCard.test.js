@@ -1,3 +1,4 @@
+//@flow
 import React from 'react';
 import {Provider} from 'react-redux';
 import {storeFake} from "../fakeData/storeFake";
@@ -22,10 +23,11 @@ describe('<ReviewCard />', () => {
 
     let component;
     beforeEach(() => {
+        const answer = () => {};
         const store = storeFake(state);
         const wrapper = mount(
             <Provider store={store}>
-                <ReviewCard question='What is the capital of Peru?' answer="Lima"/>
+                <ReviewCard question='What is the capital of Peru?' answer="Lima" answerCard={answer} id='card-1'/>
             </Provider>
         );
 

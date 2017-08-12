@@ -1,3 +1,4 @@
+//@flow
 import React, {Component} from 'react';
 import Deck from './Deck'
 import {Col, Row} from 'reactstrap';

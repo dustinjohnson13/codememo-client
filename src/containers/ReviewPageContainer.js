@@ -27,10 +27,10 @@ export const mapStateToProps = (state: CombinedState, ownProps: OwnProps) => {
 export const mapDispatchToProps = (dispatch: Dispatch, ownProps: OwnProps) => {
     return {
         back: () => {
-            dispatch(loadCollectionPage(ownProps.dataService));
+            dispatch(loadCollectionPage());
         },
         answerCard: (id: string, answer: string) => {
-            dispatch(answerCard(ownProps.dataService, id, answer))
+            dispatch(answerCard(id, answer))
         }
     }
 };

@@ -21,7 +21,7 @@ let store = createStore(flashcardApp, applyMiddleware(
     loggerMiddleware // neat middleware that logs actions
 ));
 
-store.dispatch(loadCollectionPage(dataService));
+store.dispatch(loadCollectionPage());
 
 ReactDOM.render(
     <Provider store={store}>

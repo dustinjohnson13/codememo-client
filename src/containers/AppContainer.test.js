@@ -8,8 +8,7 @@ jest.mock('../services/API'); // Set mock API for module importing
 
 describe('<AppContainer />', () => {
 
-    const dataService = API.default;
-    const ownProps = {dataService: dataService};
+    const ownProps = {};
 
     it('maps the page to props from state', () => {
         const expectedPage = Page.REVIEW;
@@ -18,13 +17,5 @@ describe('<AppContainer />', () => {
         const props = mapStateToProps(state, ownProps);
 
         expect(props.page).toEqual(expectedPage);
-    });
-
-    it('maps the dataService to props from ownProps', () => {
-        const state = {app: {page: Page.REVIEW}};
-
-        const props = mapStateToProps(state, ownProps);
-
-        expect(props.dataService).toEqual(dataService);
     });
 });

@@ -16,17 +16,15 @@ export const mapStateToProps = (state: { collection: { decks: Array<Deck> } }, o
 
 export const mapDispatchToProps = (dispatch: Dispatch, ownProps: OwnProps) => {
 
-    const dataService = ownProps.dataService;
-
     return {
         fetchCollections: () => {
             dispatch(fetchCollectionRequest());
         },
         reviewDeck: (name: string) => {
-            dispatch(reviewDeck(dataService, name))
+            dispatch(reviewDeck(name))
         },
         addDeck: (name: string) => {
-            dispatch(addDeck(dataService, name))
+            dispatch(addDeck(name))
         }
     }
 };

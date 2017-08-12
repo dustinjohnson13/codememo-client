@@ -114,7 +114,7 @@ export const answerCardSuccess = (response: CardDetail): AnswerCardSuccessAction
     }
 };
 
-export function loadCollectionPage(dataService?: DataService): ThunkAction {
+export function loadCollectionPage(): ThunkAction {
     return function (dispatch: Dispatch, getState: Function) {
         return new Promise((resolve, reject) => {
             const state = getState();
@@ -129,15 +129,15 @@ export function loadCollectionPage(dataService?: DataService): ThunkAction {
     }
 }
 
-export function reviewDeck(dataService?: DataService, name: string) {
+export function reviewDeck(name: string) {
     return function (dispatch: Dispatch, getState: Function) {
         return new Promise((resolve, reject) => {
-            dispatch(fetchDeck(dataService, name))
+            dispatch(fetchDeck(name))
         }).then(() => dispatch(loadPage(Page.REVIEW)))
     }
 }
 
-export function addDeck(dataService?: DataService, name: string) {
+export function addDeck(name: string) {
     return function (dispatch: Dispatch) {
 
         dispatch(addDeckRequest(name));
@@ -147,7 +147,7 @@ export function addDeck(dataService?: DataService, name: string) {
     }
 }
 
-export function answerCard(dataService?: DataService, id: string, answer: string) {
+export function answerCard(id: string, answer: string) {
     return function (dispatch: Dispatch) {
 
         dispatch(answerCardRequest(id, answer));
@@ -159,7 +159,7 @@ export function answerCard(dataService?: DataService, id: string, answer: string
     }
 }
 
-function fetchCollection(dataService?: DataService) {
+function fetchCollection() {
     return function (dispatch: Dispatch) {
         dispatch(fetchCollectionRequest());
 
@@ -173,8 +173,7 @@ function fetchCollection(dataService?: DataService) {
 
 const CARDS_TO_RETRIEVE_PER_REQUEST = 10;
 
-function fetchDeck(dataService?: DataService, name: string): ThunkAction {
-    // TODO: Remove dataService
+function fetchDeck(name: string): ThunkAction {
     return function (dispatch: Dispatch) {
 
         dispatch(fetchDeckRequest(name));
@@ -187,13 +186,13 @@ function fetchDeck(dataService?: DataService, name: string): ThunkAction {
                 if (dueOrNewCards.length > 0) {
                     const cardsToRetrieve = dueOrNewCards.slice(0, CARDS_TO_RETRIEVE_PER_REQUEST)
                         .reduce((ids, card) => ids.concat(card.id), []);
-                    dispatch(fetchCards(API, cardsToRetrieve))
+                    dispatch(fetchCards(cardsToRetrieve))
                 }
             });
     }
 }
 
-function fetchCards(dataService?: DataService, ids: Array<string>) {
+function fetchCards(ids: Array<string>) {
     return function (dispatch: Dispatch): Promise<FetchCardsSuccessAction> {
 
         dispatch(fetchCardsRequest(ids));

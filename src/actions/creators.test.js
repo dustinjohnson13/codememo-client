@@ -34,7 +34,7 @@ describe('creators', () => {
             collectionPage()
         ];
 
-        store.dispatch(loadCollectionPage(dataService)).then(() => {
+        store.dispatch(loadCollectionPage()).then(() => {
             expect(store.getActions()).toEqual(expectedActions);
         });
     });
@@ -48,7 +48,7 @@ describe('creators', () => {
             collectionPage()
         ];
 
-        store.dispatch(loadCollectionPage(dataService)).then(() => {
+        store.dispatch(loadCollectionPage()).then(() => {
             expect(store.getActions()).toEqual(expectedActions);
         });
     });
@@ -64,7 +64,7 @@ describe('creators', () => {
             loadPage(Page.REVIEW)];
 
         // $FlowFixMe
-        store.dispatch(reviewDeck(dataService, deckName)).then(() => {
+        store.dispatch(reviewDeck(deckName)).then(() => {
             expect(store.getActions()).toEqual(expectedActions);
         });
     });

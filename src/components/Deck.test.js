@@ -37,7 +37,7 @@ describe('<Deck />', () => {
 
     it('can request to review deck', () => {
         app.find('.deck').simulate('click');
-        expect(requestedDecks).toEqual(['Deck1']);
+        expect(requestedDecks).toEqual(['deck-1']);
     });
 
     it('shows due count', () => {

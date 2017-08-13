@@ -9,6 +9,7 @@ import {
 } from "./creators";
 import {Card, CardDetail, CardDetailResponse, CollectionResponse, Deck, DeckResponse} from "../services/APIDomain";
 
+export const deckId = 'deck-1';
 export const deckName = 'Deck1';
 
 export const getCollection = fetchCollectionRequest();

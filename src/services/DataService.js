@@ -8,7 +8,7 @@ export interface DataService {
 
     fetchCollection(): Promise<CollectionResponse>;
 
-    fetchDeck(name: string): Promise<DeckResponse>;
+    fetchDeck(id: string): Promise<DeckResponse>;
 
     fetchCards(ids: Array<string>): Promise<CardDetailResponse>;
 
@@ -47,9 +47,9 @@ export class DelegatingDataService implements DataService {
         });
     }
 
-    fetchDeck(name: string): Promise<DeckResponse> {
+    fetchDeck(id: string): Promise<DeckResponse> {
         return new Promise((resolve, reject) => {
-            setTimeout(() => this.delegate.fetchDeck(name).then(resolve), this.timeoutDelay);
+            setTimeout(() => this.delegate.fetchDeck(id).then(resolve), this.timeoutDelay);
         });
     }
 

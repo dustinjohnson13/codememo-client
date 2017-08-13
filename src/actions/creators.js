@@ -79,17 +79,17 @@ export const addDeckSuccess = (response: CollectionResponse): AddDeckSuccessActi
     };
 };
 
-export const reviewDeckRequest = (name: string): ReviewDeckRequestAction => {
+export const reviewDeckRequest = (id: string): ReviewDeckRequestAction => {
     return {
         type: REVIEW_DECK_REQUEST,
-        name
+        id
     }
 };
 
-export const fetchDeckRequest = (name: string): FetchDeckRequestAction => {
+export const fetchDeckRequest = (id: string): FetchDeckRequestAction => {
     return {
         type: FETCH_DECK_REQUEST,
-        name
+        id
     }
 };
 
@@ -177,7 +177,7 @@ export function* answerCard(action: AnswerCardRequestAction): Generator<AnswerCa
 const CARDS_TO_RETRIEVE_PER_REQUEST = 10;
 
 export function* reviewDeck(action: ReviewDeckRequestAction): Generator<ReviewDeckRequestAction, any, void> {
-    const deck = yield call(API.fetchDeck, action.name);
+    const deck = yield call(API.fetchDeck, action.id);
     // $FlowFixMe
     yield put(fetchDeckSuccess(deck));
 

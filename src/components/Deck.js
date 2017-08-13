@@ -16,7 +16,7 @@ class Deck extends Component {
     }
 
     review() {
-        this.props.reviewDeck(this.props.deck.name)
+        this.props.reviewDeck(this.props.deck.id)
     }
 
     render() {

@@ -18,14 +18,14 @@ export const ADD_CARD_SUCCESS = 'ADD_CARD_SUCCESS';
 export const FETCH_CARDS_REQUEST = 'FETCH_CARDS_REQUEST';
 export const FETCH_CARDS_SUCCESS = 'FETCH_CARDS_SUCCESS';
 
-export type ReviewDeckRequestAction = { type: 'REVIEW_DECK_REQUEST', name: string }
+export type ReviewDeckRequestAction = { type: 'REVIEW_DECK_REQUEST', id: string }
 export type LoadCollectionPageAction = { type: 'LOAD_COLLECTION_PAGE' };
 export type LoadPageAction = { type: 'LOAD_PAGE', page: PageType };
 export type FetchCollectionRequestAction = { type: 'FETCH_COLLECTION_REQUEST' }
 export type FetchCollectionSuccessAction = { type: 'FETCH_COLLECTION_SUCCESS', collection: CollectionResponse }
 export type FetchCardsRequestAction = { type: 'FETCH_CARDS_REQUEST', ids: Array<string> }
 export type FetchCardsSuccessAction = { type: 'FETCH_CARDS_SUCCESS', cards: Array<CardDetail> }
-export type FetchDeckRequestAction = { type: 'FETCH_DECK_REQUEST', name: string }
+export type FetchDeckRequestAction = { type: 'FETCH_DECK_REQUEST', id: string }
 export type FetchDeckSuccessAction = { type: 'FETCH_DECK_SUCCESS', deck: DeckResponse }
 export type AnswerCardRequestAction = { type: 'ANSWER_CARD_REQUEST', id: string, answer: string }
 export type AnswerCardSuccessAction = { type: 'ANSWER_CARD_SUCCESS', card: CardDetail }

@@ -90,9 +90,9 @@ export class FakeDataService {
         return Promise.resolve(collectionResponse);
     }
 
-    fetchDeck(name: string): Promise<DeckResponse> {
+    fetchDeck(id: string): Promise<DeckResponse> {
         const currentTime = this.clock.epochSeconds();
-        const deck = this.collectionStore.find(it => it.name === name);
+        const deck = this.collectionStore.find(it => it.id === id);
         if (deck) {
             const cards = deck.cards.map(it => {
                 const status = (it.due) ? currentTime > it.due ? 'DUE' : 'OK' : 'NEW';
@@ -101,7 +101,7 @@ export class FakeDataService {
             const deckResponse = new DeckResponse(deck.id, deck.name, cards);
             return Promise.resolve(deckResponse);
         } else {
-            return Promise.reject(`Unable to find deck with name [${name}]`)
+            return Promise.reject(`Unable to find deck with id [${id}]`)
         }
     }
 

@@ -16,7 +16,7 @@ import {call, put, select} from 'redux-saga/effects'
 import {CardDetail, CollectionResponse} from "../services/APIDomain";
 import {Page} from "./pages";
 import * as selectors from './selectors'
-import {deckName, getDeck1DueCards, gotDeck1} from "./creators.test.actions";
+import {deckId, getDeck1DueCards, gotDeck1} from "./creators.test.actions";
 import API from '../services/API';
 
 jest.mock('../services/API'); // Set mock API for module importing
@@ -76,10 +76,10 @@ describe('creators', () => {
 
     it('fetches deck and loads review page', () => {
 
-        const gen = reviewDeck(reviewDeckRequest(deckName));
+        const gen = reviewDeck(reviewDeckRequest(deckId));
 
         expect(gen.next().value)
-            .toEqual(call(API.fetchDeck, deckName));
+            .toEqual(call(API.fetchDeck, deckId));
 
         //$FlowFixMe
         expect(gen.next(gotDeck1.deck).value)

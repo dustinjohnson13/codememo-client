@@ -23,13 +23,14 @@ describe('<CollectionPageContainer />', () => {
 
     it('maps reviewDeck to the appropriate action', () => {
 
-        const expectedActions = [reviewDeckRequest('Deck1')];
+        const deckId = 'deck-1';
+        const expectedActions = [reviewDeckRequest(deckId)];
 
         const actions = [];
         const invoke = (action: Action) => actions.push(action);
 
         const {reviewDeck} = mapDispatchToProps(invoke, {});
-        reviewDeck('Deck1');
+        reviewDeck(deckId);
 
         expect(actions).toEqual(expectedActions);
     });

@@ -1,6 +1,5 @@
 import React from 'react';
 import {Input, InputGroup} from 'reactstrap';
-import '../styles/CollectionPage.css';
 import ModalWrapper from "./ModalWrapper";
 
 class AddDeckModal extends React.Component {

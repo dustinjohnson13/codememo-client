@@ -28,6 +28,11 @@ export const mapDispatchToProps = (dispatch: Dispatch, ownProps: OwnProps) => {
         answerCard: (id: string, answer: string) => {
             const action = answerCardRequest(id, answer);
             dispatch(action)
+        },
+        addCard: (deckId: string, question: string, answer: string) => {
+            // const action = addCar(id, answer);
+            // dispatch(action)
+            console.log('Add card: ', deckId, question, answer)
         }
     }
 };

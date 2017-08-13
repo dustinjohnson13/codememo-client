@@ -1,0 +1,7 @@
+.question-group, .answer-group {
+  height: 150px;
+}
+
+.answer-group {
+  margin-top: 15px;
+}

@@ -1,6 +1,5 @@
 import React from 'react';
 import {Button, Modal, ModalBody, ModalFooter, ModalHeader} from 'reactstrap';
-import '../styles/CollectionPage.css';
 
 class ModalWrapper extends React.Component {
     constructor(props) {

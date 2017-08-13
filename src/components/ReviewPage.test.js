@@ -23,11 +23,13 @@ describe('<ReviewPage />', () => {
 
         const answer = () => {
         };
+        const add = () => {
+        };
         const store = storeFake();
         const wrapper = mount(
             <Provider store={store}>
                 <ReviewPage deckName={'SomeDeck'} totalCount={30} dueCount={20} newCount={10} back={back}
-                            id='deck1' question='q1' answer='a1' answerCard={answer}/>
+                            id='deck1' question='q1' answer='a1' answerCard={answer} addCard={add}/>
             </Provider>
         );
 

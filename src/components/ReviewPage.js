@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 import {Button} from 'reactstrap';
 import '../styles/ReviewPage.css';
 import ReviewCard from "./ReviewCard";
+import AddCardModal from "./AddCardModal";
 
 class ReviewPage extends Component {
     props: {
@@ -14,7 +15,8 @@ class ReviewPage extends Component {
         newCount: number,
         question: string,
         answer: string,
-        answerCard: any
+        answerCard: any,
+        addCard: any
     };
 
     render() {
@@ -22,7 +24,8 @@ class ReviewPage extends Component {
             <div>
                 <div className="menu">
                     <a className="back" onClick={this.props.back}>&lt;&nbsp;Back</a>
-                    <Button>Add</Button><Button>Edit</Button><Button>Find</Button>
+                    <AddCardModal deckId='deck-1' addCard={this.props.addCard}/>
+                    <Button>Edit</Button><Button>Find</Button>
                     <a className="tools">Tools</a>
                 </div>
                 <h3>{this.props.deckName}</h3>

@@ -37,7 +37,7 @@ class ReviewCard extends Component<void, Props, State> {
         const answerSection = this.state.showingAnswer ?
             <div>
                 <div className="review-answer">{this.props.answer}</div>
-                <AnswerCardContainer id={this.props.id}/>
+                <AnswerCardContainer id={this.props.id} answered={this.showAnswer}/>
             </div>
             : <Button className="show-answer" onClick={this.showAnswer}>Show Answer</Button>;
 

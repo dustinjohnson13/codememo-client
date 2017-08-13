@@ -20,6 +20,9 @@ class ReviewPage extends Component {
     };
 
     render() {
+        const reviewSection = (this.props.question === '') ? <div>Congratulations, you're caught up!</div> :
+            <ReviewCard question={this.props.question} answer={this.props.answer}
+                        answerCard={this.props.answerCard} id={this.props.id}/>;
         return (
             <div>
                 <div className="menu">
@@ -30,11 +33,10 @@ class ReviewPage extends Component {
                 </div>
                 <h3>{this.props.deckName}</h3>
                 <h5>{this.props.totalCount} cards (
-                    <span className="due-count">{this.props.dueCount}</span> due,
+                    <span className="due-count">{this.props.dueCount}</span> due,&nbsp;
                     <span className="new-count">{this.props.newCount}</span> new)</h5>
 
-                <ReviewCard question={this.props.question} answer={this.props.answer}
-                            answerCard={this.props.answerCard} id={this.props.id}/>
+                {reviewSection}
             </div>
         );
     }

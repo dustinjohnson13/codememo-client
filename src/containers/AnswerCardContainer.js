@@ -7,6 +7,7 @@ import {answerCardRequest} from "../actions/creators";
 type OwnProps = {
     id: string;
     answerCard: any;
+    answered: any;
 }
 
 export const mapStateToProps = (state: CombinedState, ownProps: OwnProps) => {
@@ -23,7 +24,8 @@ export const mapStateToProps = (state: CombinedState, ownProps: OwnProps) => {
 export const mapDispatchToProps = (dispatch: Dispatch, ownProps: OwnProps) => {
     return {
         answerCard: (answer: string) => {
-            dispatch(answerCardRequest(ownProps.id, answer))
+            dispatch(answerCardRequest(ownProps.id, answer));
+            ownProps.answered();
         }
     }
 };

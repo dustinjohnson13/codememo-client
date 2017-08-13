@@ -28,12 +28,16 @@ describe('<AnswerCardContainer />', () => {
             answered.push(action);
         };
 
+        let calledBack = 0;
+        const callback = () => calledBack++;
+
         const idProp = 'some-id';
-        const props = mapDispatchToProps(dispatcher, {id: idProp});
+        const props = mapDispatchToProps(dispatcher, {id: idProp, answered: callback});
 
         props.answerCard(HARD);
         props.answerCard(GOOD);
 
         expect(answered).toEqual([answerCardRequest(idProp, HARD), answerCardRequest(idProp, GOOD)]);
+        expect(calledBack).toEqual(2);
     });
 });

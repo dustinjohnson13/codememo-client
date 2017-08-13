@@ -24,7 +24,8 @@ class AddDeckModal extends React.Component {
     render() {
         return (
             <div>
-                <ModalWrapper title="Create Deck" toggleText="Create Deck" confirmAction={this.deckConfirmed}>
+                <ModalWrapper title="Create Deck" toggleText="Create Deck"
+                              closeOnConfirmation={true} confirmAction={this.deckConfirmed}>
                     <InputGroup>
                         <Input placeholder="deck name" value={this.state.name} onChange={this.handleChange}/>
                     </InputGroup>

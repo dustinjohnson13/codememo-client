@@ -14,7 +14,9 @@ class ModalWrapper extends React.Component {
 
     confirmed() {
         this.props.confirmAction();
-        this.toggle();
+        if (this.props.closeOnConfirmation) {
+            this.toggle();
+        }
     }
 
     toggle() {

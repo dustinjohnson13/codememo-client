@@ -23,12 +23,14 @@ class AddCardModal extends React.Component {
 
     addCard() {
         this.props.addCard(this.props.deckId, this.state.question, this.state.answer);
+        this.setState({answer: '', question: ''});
     }
 
     render() {
         return (
             <span>
-                <ModalWrapper title="New Card" toggleText="Add" confirmAction={this.addCard}>
+                <ModalWrapper title="New Card" toggleText="Add" closeOnConfirmation={false}
+                              confirmAction={this.addCard}>
                     <InputGroup className="question-group">
                         <Input type="textarea" placeholder="question" value={this.state.question}
                                onChange={this.handleQuestionChange}/>

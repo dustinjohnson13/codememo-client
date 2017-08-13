@@ -1,11 +1,9 @@
 //@flow
 import {
     answerCard,
-    answerCardFunc,
     answerCardRequest,
     answerCardSuccess,
     fetchCollection,
-    fetchDeckFunc,
     loadCollectionPage,
     loadPage,
     reviewDeck,
@@ -16,7 +14,7 @@ import {CardDetail, CollectionResponse} from "../services/APIDomain";
 import {Page} from "./pages";
 import * as selectors from './selectors'
 import {deckName, getDeck1DueCards, gotDeck1} from "./creators.test.actions";
-import type {CollectionState} from "./actionTypes";
+import API from '../services/API';
 
 jest.mock('../services/API'); // Set mock API for module importing
 
@@ -31,7 +29,7 @@ describe('creators', () => {
 
         const action = answerCardRequest('deck-1-card-0', 'GOOD');
         const gen = answerCard(action);
-        expect(gen.next().value).toEqual(call(answerCardFunc, action.id, action.answer));
+        expect(gen.next().value).toEqual(call(API.answerCard, action.id, action.answer));
 
         const newCard = new CardDetail(action.id, 'question', 'answer', 9000);
         //$FlowFixMe
@@ -67,7 +65,7 @@ describe('creators', () => {
         const gen = reviewDeck(reviewDeckRequest(deckName));
 
         expect(gen.next().value)
-            .toEqual(call(fetchDeckFunc, deckName));
+            .toEqual(call(API.fetchDeck, deckName));
 
         //$FlowFixMe
         expect(gen.next(gotDeck1.deck).value)

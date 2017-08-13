@@ -23,6 +23,13 @@ export class DelegatingDataService implements DataService {
     constructor(clock: Clock) {
         this.timeoutDelay = 250;
         this.delegate = new FakeDataService(clock);
+
+        (this: any).answerCard = this.answerCard.bind(this);
+        (this: any).addDeck = this.addDeck.bind(this);
+        (this: any).fetchCollection = this.fetchCollection.bind(this);
+        (this: any).fetchDeck = this.fetchDeck.bind(this);
+        (this: any).fetchCards = this.fetchCards.bind(this);
+        (this: any).answerCard = this.answerCard.bind(this);
     }
 
     addDeck(name: string): Promise<CollectionResponse> {

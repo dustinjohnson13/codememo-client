@@ -137,34 +137,13 @@ export function* loadCollectionPage(): Generator<LoadCollectionPageAction, any, 
 }
 
 export function* addDeck(action: AddDeckRequestAction): Generator<AddDeckRequestAction, any, void> {
-    const deck = yield call(addDeckFunc, action.name);
+    const deck = yield call(API.addDeck, action.name);
     // $FlowFixMe
     yield put(addDeckSuccess(deck));
 }
 
-// TODO: Use channels instead of promises?: https://github.com/redux-saga/redux-saga/issues/508
-export function addDeckFunc(name: string): DeckResponse {
-    return API.addDeck(name);
-}
-
-export function answerCardFunc(id: string, answer: string) {
-    return API.answerCard(id, answer);
-}
-
-export function fetchDeckFunc(name: string): DeckResponse {
-    return API.fetchDeck(name);
-}
-
-export function fetchCardsFunc(ids: Array<string>): CardDetailResponse {
-    return API.fetchCards(ids);
-}
-
-export function fetchCollectionFuncs(): CollectionResponse {
-    return API.fetchCollection();
-}
-
 export function* answerCard(action: AnswerCardRequestAction): Generator<AnswerCardRequestAction, any, void> {
-    const card = yield call(answerCardFunc, action.id, action.answer);
+    const card = yield call(API.answerCard, action.id, action.answer);
     // $FlowFixMe
     yield put(answerCardSuccess(card));
 }
@@ -172,7 +151,7 @@ export function* answerCard(action: AnswerCardRequestAction): Generator<AnswerCa
 const CARDS_TO_RETRIEVE_PER_REQUEST = 10;
 
 export function* reviewDeck(action: ReviewDeckRequestAction): Generator<ReviewDeckRequestAction, any, void> {
-    const deck = yield call(fetchDeckFunc, action.name);
+    const deck = yield call(API.fetchDeck, action.name);
     // $FlowFixMe
     yield put(fetchDeckSuccess(deck));
 
@@ -188,13 +167,13 @@ export function* reviewDeck(action: ReviewDeckRequestAction): Generator<ReviewDe
 }
 
 export function* fetchCollection(action: FetchCollectionRequestAction): Generator<FetchCollectionRequestAction, any, void> {
-    const response = yield call(fetchCollectionFuncs);
+    const response = yield call(API.fetchCollection);
     // $FlowFixMe
     yield put(fetchCollectionSuccess(response));
 }
 
 export function* fetchCards(action: FetchCardsRequestAction): Generator<FetchCardsRequestAction, any, void> {
-    const response = yield call(fetchCardsFunc, action.ids);
+    const response = yield call(API.fetchCards, action.ids);
     // $FlowFixMe
     yield put(fetchCardsSuccess(response));
 }

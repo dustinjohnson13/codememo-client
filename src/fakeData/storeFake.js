@@ -1,8 +1,5 @@
 //@flow
 import type {CombinedState} from "../actions/actionTypes";
-import {appState} from "./appState";
-import {reviewState} from "./reviewState";
-import {collectionState} from "./collectionState";
 import {DeckResponse} from "../services/APIDomain";
 
 export const defaultState = {

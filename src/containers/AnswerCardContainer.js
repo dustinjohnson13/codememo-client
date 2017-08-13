@@ -2,6 +2,7 @@
 import {connect} from 'react-redux'
 import AnswerCard from '../components/AnswerCard'
 import type {CombinedState, Dispatch} from "../actions/actionTypes";
+import {answerCardRequest} from "../actions/creators";
 
 type OwnProps = {
     id: string;
@@ -21,8 +22,8 @@ export const mapStateToProps = (state: CombinedState, ownProps: OwnProps) => {
 
 export const mapDispatchToProps = (dispatch: Dispatch, ownProps: OwnProps) => {
     return {
-        answerCard: (answer: any) => {
-            ownProps.answerCard(ownProps.id, answer);
+        answerCard: (answer: string) => {
+            dispatch(answerCardRequest(ownProps.id, answer))
         }
     }
 };

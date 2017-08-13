@@ -10,7 +10,9 @@ import LoadingPage from "../components/LoadingPage";
 import type {PageType} from "../actions/pages";
 import {Page} from "../actions/pages";
 import ReviewPageContainer from "../containers/ReviewPageContainer";
+import CollectionPageContainer from "../containers/CollectionPageContainer";
 import {reviewState} from "../fakeData/reviewState";
+import {Deck} from "../services/APIDomain";
 
 jest.mock('../services/API'); // Set mock API for module importing
 
@@ -21,6 +23,7 @@ global.window = doc.defaultView;
 describe('<App />', () => {
 
     const prepareContainer = (page: ?PageType, state = defaultState) => {
+        // $FlowFixMe
         const store = storeFake(state);
 
         const wrapper = mount(
@@ -64,10 +67,11 @@ describe('<App />', () => {
         expect(app.contains(reviewPage)).toEqual(true);
     });
 
-    // it('displays the collection page when specified', () => {
-    //     const app = prepareContainer(Page.COLLECTION, {...defaultState, collection: collectionState});
-    //
-    //     const expected = <CollectionPageContainer/>;
-    //     expect(app.contains(expected)).toEqual(true);
-    // });
+    it('displays the collection page when specified', () => {
+        // $FlowFixMe
+        const app = prepareContainer(Page.COLLECTION, {collection: {decks: [new Deck('deck-1-card-1', 'Deck1', 80, 27, 23)]}});
+
+        const expected = <CollectionPageContainer/>;
+        expect(app.contains(expected)).toEqual(true);
+    });
 });

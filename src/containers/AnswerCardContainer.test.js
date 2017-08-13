@@ -3,6 +3,7 @@ import React from 'react';
 import {mapDispatchToProps, mapStateToProps} from "./AnswerCardContainer";
 import {reviewState} from "../fakeData/reviewState";
 import {GOOD, HARD} from '../Domain'
+import {answerCardRequest} from "../actions/creators";
 
 describe('<AnswerCardContainer />', () => {
 
@@ -23,18 +24,16 @@ describe('<AnswerCardContainer />', () => {
 
     it('answerCard will invoke function with id and difficulty', () => {
         let answered = [];
-        const f = (id, answer) => {
-            answered.push({id, answer});
-        };
         const dispatcher = (action) => {
+            answered.push(action);
         };
 
         const idProp = 'some-id';
-        const props = mapDispatchToProps(dispatcher, {answerCard: f, id: idProp});
+        const props = mapDispatchToProps(dispatcher, {id: idProp});
 
         props.answerCard(HARD);
         props.answerCard(GOOD);
 
-        expect(answered).toEqual([{id: idProp, answer: HARD}, {id: idProp, answer: GOOD}]);
+        expect(answered).toEqual([answerCardRequest(idProp, HARD), answerCardRequest(idProp, GOOD)]);
     });
 });

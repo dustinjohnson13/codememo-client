@@ -2,7 +2,7 @@ import React from 'react';
 import {mapDispatchToProps, mapStateToProps} from "./CollectionPageContainer";
 import {collectionState} from "../fakeData/collectionState";
 import {Deck} from "../components/CollectionPage";
-import {addDeckRequest, fetchCollectionRequest, reviewDeckRequest} from "../actions/creators";
+import {addDeckRequest, reviewDeckRequest} from "../actions/creators";
 import * as API from '../services/API';
 
 jest.mock('../services/API'); // Set mock API for module importing
@@ -19,17 +19,6 @@ describe('<CollectionPageContainer />', () => {
 
         expect(props).toEqual({decks: expectedDecks});
 
-    });
-
-    it('maps fetchCollections to the appropriate action', () => {
-        const dispatchedActions = [];
-        const dispatcher = (action) => dispatchedActions.push(action);
-
-        const props = mapDispatchToProps(dispatcher, {});
-
-        props.fetchCollections();
-
-        expect(dispatchedActions).toEqual([fetchCollectionRequest()]);
     });
 
     it('maps reviewDeck to the appropriate action', () => {

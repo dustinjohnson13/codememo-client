@@ -13,6 +13,8 @@ export interface DataService {
     fetchCards(ids: Array<string>): Promise<CardDetailResponse>;
 
     answerCard(id: string, answer: string): Promise<CardDetail>;
+
+    addCard(deckId: string, question: string, answer: string): Promise<CardDetail>;
 }
 
 export class DelegatingDataService implements DataService {
@@ -59,6 +61,12 @@ export class DelegatingDataService implements DataService {
     answerCard(id: string, answer: string): Promise<CardDetail> {
         return new Promise((resolve, reject) => {
             setTimeout(() => this.delegate.answerCard(id, answer).then(resolve), this.timeoutDelay);
+        });
+    }
+
+    addCard(deckId: string, question: string, answer: string): Promise<CardDetail> {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => this.delegate.addCard(deckId, question, answer).then(resolve), this.timeoutDelay);
         });
     }
 }

@@ -16,11 +16,16 @@ export class FakeDataService {
     collectionStore: domain.Deck[];
     idCounter: number;
 
-    constructor(clock: Clock | void) {
+    constructor(clock: Clock | void, decks?: Array<domain.Deck>) {
         this.clock = (clock) ? clock : new FrozenClock();
         this.collectionStore = [];
         this.idCounter = 1;
-        this.createCollectionStore();
+
+        if (decks) {
+            this.collectionStore = decks;
+        } else {
+            this.createCollectionStore();
+        }
     }
 
     createDecks() {
@@ -42,16 +47,18 @@ export class FakeDataService {
         const currentTime = this.clock.epochSeconds();
         const deckId = `deck-${idNum}`;
 
-        for (let i = 0; i < totalCount; i++) {
-            let dueTime = null;
-            if (i < goodCount) {
-                dueTime = currentTime + (10000 * i);
-            } else if (i < (goodCount + dueCount)) {
-                dueTime = currentTime - (10000 * i);
-            }
+        if (idNumber) {
+            for (let i = 0; i < totalCount; i++) {
+                let dueTime = null;
+                if (i < goodCount) {
+                    dueTime = currentTime + (10000 * i);
+                } else if (i < (goodCount + dueCount)) {
+                    dueTime = currentTime - (10000 * i);
+                }
 
-            const card = new domain.Card(`${deckId}-card-${i}`, `Question Number ${i}?`, `Answer Number ${i}`, dueTime);
-            cards.push(card);
+                const card = new domain.Card(`${deckId}-card-${i}`, `Question Number ${i}?`, `Answer Number ${i}`, dueTime);
+                cards.push(card);
+            }
         }
 
         const deck = new domain.Deck(deckId, name, cards);
@@ -131,6 +138,25 @@ export class FakeDataService {
         }
 
         return Promise.reject(`Unable to find card with id [${id}]`)
+    }
+
+    addCard(deckId: string, question: string, answer: string): Promise<CardDetail> {
+        for (let deck of this.collectionStore) {
+            if (deckId === deck.id) {
+                const cardId = `${deckId}-card-${this.idCounter++}`;
+                const card = new domain.Card(cardId, question, answer, null);
+                const newCards = [...deck.cards, card];
+                const newDeck = new domain.Deck(deckId, deck.name, newCards);
+
+                this.collectionStore = [
+                    ...this.collectionStore.filter((deck) => deck.id !== deckId),
+                    newDeck
+                ];
+
+                return Promise.resolve(new CardDetail(cardId, question, answer, null));
+            }
+        }
+        return Promise.reject(`Unable to find deck with id [${deckId}]`)
     }
 
 }

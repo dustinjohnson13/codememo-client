@@ -1,6 +1,6 @@
 //@flow
 import type {Action, ReviewState} from "../actions/actionTypes";
-import {ANSWER_CARD_SUCCESS, FETCH_CARDS_SUCCESS, FETCH_DECK_SUCCESS} from '../actions/actionTypes'
+import {ADD_CARD_SUCCESS, ANSWER_CARD_SUCCESS, FETCH_CARDS_SUCCESS, FETCH_DECK_SUCCESS} from '../actions/actionTypes'
 import {Card, DeckResponse} from "../services/APIDomain";
 
 export const initialState = {
@@ -62,6 +62,15 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
             return getViewState({
                 ...state,
                 toReview: cards
+            });
+        case ADD_CARD_SUCCESS:
+            const addedCard = action.card;
+            const newToReview = [...state.toReview, addedCard];
+            const deckCardsPlusAddedCard = [...state.deck.cards, new Card(addedCard.id, 'NEW')];
+            return getViewState({
+                ...state,
+                toReview: newToReview,
+                deck: new DeckResponse(state.deck.id, state.deck.name, deckCardsPlusAddedCard)
             });
         case ANSWER_CARD_SUCCESS:
             const newCard = action.card;

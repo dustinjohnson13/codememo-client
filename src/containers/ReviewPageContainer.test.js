@@ -1,6 +1,6 @@
 import React from 'react';
 import {reviewState} from "../fakeData/reviewState";
-import {answerCardRequest} from "../actions/creators";
+import {addCardRequest, answerCardRequest} from "../actions/creators";
 import {GOOD} from '../Domain'
 import {mapDispatchToProps, mapStateToProps} from "./ReviewPageContainer";
 import {Deck} from "../components/CollectionPage";
@@ -49,6 +49,23 @@ describe('<ReviewPageContainer/>', () => {
 
         const {answerCard} = mapDispatchToProps(invoke, {});
         answerCard('deck-1-card-0', GOOD);
+
+        expect(actions).toEqual(expectedActions);
+    });
+
+    it('maps addCard', () => {
+
+        const deckId = 'deck-1';
+        const question = 'Some Question';
+        const answer = 'Some Answer';
+
+        const expectedActions = [addCardRequest(deckId, question, answer)];
+
+        const actions = [];
+        const invoke = (action: Action) => actions.push(action);
+
+        const {addCard} = mapDispatchToProps(invoke, {});
+        addCard(deckId, question, answer);
 
         expect(actions).toEqual(expectedActions);
     });

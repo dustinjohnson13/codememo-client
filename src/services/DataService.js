@@ -32,6 +32,7 @@ export class DelegatingDataService implements DataService {
         (this: any).fetchDeck = this.fetchDeck.bind(this);
         (this: any).fetchCards = this.fetchCards.bind(this);
         (this: any).answerCard = this.answerCard.bind(this);
+        (this: any).addCard = this.addCard.bind(this);
     }
 
     addDeck(name: string): Promise<CollectionResponse> {

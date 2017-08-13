@@ -30,10 +30,12 @@ class AddCardModal extends React.Component {
             <span>
                 <ModalWrapper title="New Card" toggleText="Add" confirmAction={this.addCard}>
                     <InputGroup className="question-group">
-                        <Input type="textarea" placeholder="question" value={this.state.question} onChange={this.handleQuestionChange}/>
+                        <Input type="textarea" placeholder="question" value={this.state.question}
+                               onChange={this.handleQuestionChange}/>
                     </InputGroup>
                     <InputGroup className="answer-group">
-                        <Input type="textarea" placeholder="answer" value={this.state.answer} onChange={this.handleAnswerChange}/>
+                        <Input type="textarea" placeholder="answer" value={this.state.answer}
+                               onChange={this.handleAnswerChange}/>
                     </InputGroup>
                 </ModalWrapper>
             </span>

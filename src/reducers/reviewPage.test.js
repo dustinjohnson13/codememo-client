@@ -1,6 +1,6 @@
 //@flow
 import reviewPage, {initialState} from './reviewPage';
-import {answerCardSuccess, fetchCardsSuccess, fetchDeckSuccess} from '../actions/creators'
+import {addCardSuccess, answerCardSuccess, fetchCardsSuccess, fetchDeckSuccess} from '../actions/creators'
 import {Card, CardDetail, CardDetailResponse, DeckResponse} from "../services/APIDomain";
 
 describe('reviewPage', () => {
@@ -12,6 +12,37 @@ describe('reviewPage', () => {
         new Card('deck-1-card-30', 'DUE'), new Card('deck-1-card-31', 'DUE'),
         new Card('5', 'OK'), new Card('6', 'OK')];
     const deck = new DeckResponse(expectedDeckID, expectedDeckName, cards);
+
+    it('adds new card on add card success', () => {
+
+        const response = new CardDetail('deck-1-card-99', 'Some Question', 'Some Answer', null);
+
+        const previousState = {
+            ...initialState,
+            deck: deck,
+            totalCount: 5,
+            newCount: 1,
+            dueCount: 2,
+            toReview: [
+                new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', -299999),
+                new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', -309999),
+                new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', null)
+            ]
+        };
+
+        const newCards = [...cards, new Card('deck-1-card-99', 'NEW')];
+        const expectedDeck = new DeckResponse(expectedDeckID, expectedDeckName, newCards);
+        const expectedToReview = [...previousState.toReview, response];
+
+        const action = addCardSuccess(response);
+        const actualState = reviewPage(previousState, action);
+
+        expect(actualState.deck).toEqual(expectedDeck);
+        expect(actualState.totalCount).toEqual(6);
+        expect(actualState.newCount).toEqual(2);
+        expect(actualState.dueCount).toEqual(2);
+        expect(actualState.toReview).toEqual(expectedToReview);
+    });
 
     it('adds deck information on fetch deck success', () => {
 

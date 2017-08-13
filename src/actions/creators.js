@@ -1,6 +1,8 @@
 //@flow
 import type {
     Action,
+    AddCardRequestAction,
+    AddCardSuccessAction,
     AddDeckRequestAction,
     AddDeckSuccessAction,
     AnswerCardRequestAction,
@@ -16,6 +18,8 @@ import type {
     ReviewDeckRequestAction
 } from "./actionTypes";
 import {
+    ADD_CARD_REQUEST,
+    ADD_CARD_SUCCESS,
     ADD_DECK_REQUEST,
     ADD_DECK_SUCCESS,
     ANSWER_CARD_REQUEST,
@@ -125,6 +129,22 @@ export const answerCardSuccess = (response: CardDetail): AnswerCardSuccessAction
     }
 };
 
+export const addCardRequest = (id: string, question: string, answer: string): AddCardRequestAction => {
+    return {
+        type: ADD_CARD_REQUEST,
+        id: id,
+        answer: answer,
+        question: question
+    }
+};
+
+export const addCardSuccess = (response: CardDetail): AddCardSuccessAction => {
+    return {
+        type: ADD_CARD_SUCCESS,
+        card: response
+    }
+};
+
 export function* loadCollectionPage(): Generator<LoadCollectionPageAction, any, void> {
     const collection = yield select(selectors.collection);
     //$FlowFixMe
@@ -140,6 +160,12 @@ export function* addDeck(action: AddDeckRequestAction): Generator<AddDeckRequest
     const deck = yield call(API.addDeck, action.name);
     // $FlowFixMe
     yield put(addDeckSuccess(deck));
+}
+
+export function* addCard(action: AddCardRequestAction): Generator<AddCardRequestAction, any, void> {
+    const card = yield call(API.addCard, action.id, action.question, action.answer);
+    // $FlowFixMe
+    yield put(addCardSuccess(card));
 }
 
 export function* answerCard(action: AnswerCardRequestAction): Generator<AnswerCardRequestAction, any, void> {
@@ -180,6 +206,7 @@ export function* fetchCards(action: FetchCardsRequestAction): Generator<FetchCar
 
 // TODO: Are these the correct generics?
 export function* saga(): Generator<Action, any, void> {
+    yield takeEvery(ADD_CARD_REQUEST, addCard);
     yield takeEvery(ANSWER_CARD_REQUEST, answerCard);
     yield takeEvery(REVIEW_DECK_REQUEST, reviewDeck);
     yield takeEvery(FETCH_CARDS_REQUEST, fetchCards);

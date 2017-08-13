@@ -1,6 +1,6 @@
 //@flow
 import {connect} from 'react-redux'
-import {answerCardRequest, collectionPage} from '../actions/creators'
+import {addCardRequest, answerCardRequest, collectionPage} from '../actions/creators'
 import ReviewPage from '../components/ReviewPage'
 import type {CombinedState, Dispatch} from "../actions/actionTypes";
 
@@ -30,9 +30,7 @@ export const mapDispatchToProps = (dispatch: Dispatch, ownProps: OwnProps) => {
             dispatch(action)
         },
         addCard: (deckId: string, question: string, answer: string) => {
-            // const action = addCar(id, answer);
-            // dispatch(action)
-            console.log('Add card: ', deckId, question, answer)
+            dispatch(addCardRequest(deckId, question, answer));
         }
     }
 };

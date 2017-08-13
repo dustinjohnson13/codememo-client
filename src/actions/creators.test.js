@@ -1,5 +1,8 @@
 //@flow
 import {
+    addCard,
+    addCardRequest,
+    addCardSuccess,
     answerCard,
     answerCardRequest,
     answerCardSuccess,
@@ -24,6 +27,17 @@ describe('creators', () => {
     // Still need tests for these two:
     // yield takeEvery(ADD_DECK_REQUEST, addDeck);
     // yield takeEvery(LOAD_COLLECTION_PAGE, loadCollectionPage);
+
+    it('sends new card to the API and returns the new card detail', () => {
+
+        const action = addCardRequest('deck-1', 'Some Question', 'Some Answer');
+        const gen = addCard(action);
+        expect(gen.next().value).toEqual(call(API.addCard, action.id, action.question, action.answer));
+
+        const newCard = new CardDetail('deck-1-card-0', 'Some Question', 'Some Answer', null);
+        //$FlowFixMe
+        expect(gen.next(newCard).value).toEqual(put(addCardSuccess(newCard)));
+    });
 
     it('sends the card answer to the API and returns the new card detail', () => {
 

@@ -1,5 +1,5 @@
 //@flow
-import {CardDetail, CollectionResponse, DeckResponse} from "../services/APIDomain";
+import {CardDetail, CollectionResponse, Deck, DeckResponse} from "../services/APIDomain";
 import type {PageType} from "./pages";
 
 export const REVIEW_DECK_REQUEST = 'REVIEW_DECK_REQUEST';
@@ -50,7 +50,7 @@ export type AppState = {
 }
 
 export type CollectionState = {
-    +collection: ?CollectionResponse;
+    +decks: ?Array<Deck>;
 }
 
 export type ReviewState = {

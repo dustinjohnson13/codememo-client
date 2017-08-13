@@ -8,7 +8,7 @@ describe('collectionPage', () => {
     it('adds decks on fetch collection success', () => {
         const collection = new CollectionResponse([new Deck('deck1', 'Deck1', 80, 27, 23)]);
 
-        const previousState = {collection: null};
+        const previousState = {decks: null};
         const expectedState = {decks: collection.decks};
 
         const actualState = collectionPage(previousState, fetchCollectionSuccess(collection));
@@ -19,7 +19,7 @@ describe('collectionPage', () => {
     it('adds decks on add deck success', () => {
         const collection = new CollectionResponse([new Deck('deck1', 'Deck1', 80, 27, 23)]);
 
-        const previousState = {collection: null};
+        const previousState = {decks: null};
         const expectedState = {decks: collection.decks};
 
         const actualState = collectionPage(previousState, addDeckSuccess(collection));

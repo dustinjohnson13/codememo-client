@@ -2,21 +2,17 @@
 import type {Action, CollectionState} from "../actions/actionTypes";
 import {ADD_DECK_SUCCESS, FETCH_COLLECTION_SUCCESS} from '../actions/actionTypes'
 
-export const getViewState = (state: CollectionState) => {
-    const collection = state.collection;
-    const decks = collection ? collection.decks : [];
-    return {
-        decks: decks
-    }
-};
+export const getViewState = (state: CollectionState) => ({
+    decks: state.decks ? state.decks : []
+});
 
-const collectionPage = (state: CollectionState = {collection: null}, action: Action) => {
+const collectionPage = (state: CollectionState = {decks: null}, action: Action) => {
     switch (action.type) {
         case FETCH_COLLECTION_SUCCESS:
         case ADD_DECK_SUCCESS:
             return getViewState({
                 ...state,
-                collection: action.collection
+                decks: action.collection.decks
             });
         default:
             return state;

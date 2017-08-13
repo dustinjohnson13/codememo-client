@@ -127,9 +127,8 @@ export const answerCardSuccess = (response: CardDetail): AnswerCardSuccessAction
 
 export function* loadCollectionPage(): Generator<LoadCollectionPageAction, any, void> {
     const collection = yield select(selectors.collection);
-    console.log(collection);
     //$FlowFixMe
-    if (collection === null || collection.collection === null) {
+    if (!collection.decks) {
         yield call(fetchCollection);
         yield put(loadPage(Page.COLLECTION));
     } else {

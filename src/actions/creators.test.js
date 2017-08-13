@@ -16,6 +16,7 @@ import {CardDetail, CollectionResponse} from "../services/APIDomain";
 import {Page} from "./pages";
 import * as selectors from './selectors'
 import {deckName, getDeck1DueCards, gotDeck1} from "./creators.test.actions";
+import type {CollectionState} from "./actionTypes";
 
 jest.mock('../services/API'); // Set mock API for module importing
 
@@ -53,7 +54,7 @@ describe('creators', () => {
         expect(gen.next().value).toEqual(select(selectors.collection));
 
         //$FlowFixMe
-        let next = gen.next(null);
+        let next = gen.next({decks: null});
         expect(next.value).toEqual(call(fetchCollection));
 
         //$FlowFixMe

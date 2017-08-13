@@ -15,7 +15,6 @@ import {collectionPage, saga} from "./actions/creators";
 const sagaMiddleware = createSagaMiddleware();
 const loggerMiddleware = createLogger();
 
-// $FlowFixMe
 let store = createStore(flashcardApp, applyMiddleware(
     sagaMiddleware,
     loggerMiddleware // neat middleware that logs actions

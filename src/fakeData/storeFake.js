@@ -3,13 +3,21 @@ import type {CombinedState} from "../actions/actionTypes";
 import {appState} from "./appState";
 import {reviewState} from "./reviewState";
 import {collectionState} from "./collectionState";
+import {DeckResponse} from "../services/APIDomain";
 
 export const defaultState = {
-    app: appState,
-    review: reviewState,
-    collection: collectionState
+    app: {page: null},
+    review: {
+        deckName: 'deck-1', totalCount: 6, newCount: 1, dueCount: 3,
+        failInterval: '10m', hardInterval: '1d', goodInterval: '3d', easyInterval: '5d',
+        toReview: [], answer: '', question: '', deck: new DeckResponse('deck-1', 'Deck1', [])
+    },
+    collection: {
+        decks: []
+    }
 };
 
+//$FlowFixMe
 export const storeFake = (state: CombinedState = defaultState) => {
     return {
         default: () => {

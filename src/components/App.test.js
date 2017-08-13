@@ -23,7 +23,6 @@ global.window = doc.defaultView;
 describe('<App />', () => {
 
     const prepareContainer = (page: ?PageType, state = defaultState) => {
-        // $FlowFixMe
         const store = storeFake(state);
 
         const wrapper = mount(
@@ -68,7 +67,6 @@ describe('<App />', () => {
     });
 
     it('displays the collection page when specified', () => {
-        // $FlowFixMe
         const app = prepareContainer(Page.COLLECTION, {collection: {decks: [new Deck('deck-1-card-1', 'Deck1', 80, 27, 23)]}});
 
         const expected = <CollectionPageContainer/>;

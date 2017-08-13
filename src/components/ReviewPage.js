@@ -2,7 +2,7 @@
 import React, {Component} from 'react';
 import {Button} from 'reactstrap';
 import '../styles/ReviewPage.css';
-import ReviewCard from "./ReviewCard";
+import ReviewCardContainer from "../containers/ReviewCardContainer";
 import AddCardModal from "./AddCardModal";
 
 class ReviewPage extends Component {
@@ -16,13 +16,13 @@ class ReviewPage extends Component {
         question: string,
         answer: string,
         answerCard: any,
-        addCard: any
+        addCard: any,
+        showAnswer: any
     };
 
     render() {
         const reviewSection = (this.props.question === '') ? <div>Congratulations, you're caught up!</div> :
-            <ReviewCard question={this.props.question} answer={this.props.answer}
-                        answerCard={this.props.answerCard} id={this.props.id}/>;
+            <ReviewCardContainer/>;
         return (
             <div>
                 <div className="menu">

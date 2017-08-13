@@ -1,6 +1,13 @@
 //@flow
 import reviewPage, {initialState} from './reviewPage';
-import {addCardSuccess, answerCardSuccess, fetchCardsSuccess, fetchDeckSuccess} from '../actions/creators'
+import {
+    addCardSuccess,
+    answerCardSuccess,
+    fetchCardsSuccess,
+    fetchDeckSuccess,
+    hideAnswer,
+    showAnswer
+} from '../actions/creators'
 import {Card, CardDetail, CardDetailResponse, DeckResponse} from "../services/APIDomain";
 
 describe('reviewPage', () => {
@@ -13,9 +20,12 @@ describe('reviewPage', () => {
         new Card('5', 'OK'), new Card('6', 'OK')];
     const deck = new DeckResponse(expectedDeckID, expectedDeckName, cards);
 
+    const addCardResponse = new CardDetail('deck-1-card-99', 'Some Question', 'Some Answer', null);
+
+
     it('adds new card on add card success', () => {
 
-        const response = new CardDetail('deck-1-card-99', 'Some Question', 'Some Answer', null);
+        const response = addCardResponse;
 
         const previousState = {
             ...initialState,
@@ -44,12 +54,56 @@ describe('reviewPage', () => {
         expect(actualState.toReview).toEqual(expectedToReview);
     });
 
+    it('hides answer when requested', () => {
+
+        const previousState = {
+            ...initialState,
+            deck: deck,
+            totalCount: 5,
+            newCount: 1,
+            dueCount: 2,
+            toReview: [
+                new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', -299999),
+                new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', -309999),
+                new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', null)
+            ],
+            showingAnswer: true
+        };
+
+        const action = hideAnswer();
+        const actualState = reviewPage(previousState, action);
+
+        expect(actualState.showingAnswer).toEqual(false);
+    });
+
+    it('shows answer when requested', () => {
+
+        const previousState = {
+            ...initialState,
+            deck: deck,
+            totalCount: 5,
+            newCount: 1,
+            dueCount: 2,
+            toReview: [
+                new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', -299999),
+                new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', -309999),
+                new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', null)
+            ],
+            showingAnswer: false
+        };
+
+        const action = showAnswer();
+        const actualState = reviewPage(previousState, action);
+
+        expect(actualState.showingAnswer).toEqual(true);
+    });
+
     it('adds deck information on fetch deck success', () => {
 
         const previousState = {...initialState};
         const expectedState =
             {
-                deck: deck, answer: '', question: '', toReview: [],
+                deck: deck, answer: '', question: '', toReview: [], showingAnswer: false,
                 deckName: expectedDeckName, totalCount: 5, newCount: 1, dueCount: 2,
                 failInterval: '10m', hardInterval: '1d', goodInterval: '3d', easyInterval: '5d'
             };
@@ -80,7 +134,8 @@ describe('reviewPage', () => {
             hardInterval: "1d",
             newCount: 1,
             totalCount: 5,
-            toReview: cardsResponse.cards
+            toReview: cardsResponse.cards,
+            showingAnswer: false
         };
 
         const action = fetchCardsSuccess(cardsResponse);
@@ -115,7 +170,8 @@ describe('reviewPage', () => {
             ), new CardDetail('deck-1-card-32',
                 'Question Number 32?',
                 'Answer Number 32',
-                null)]
+                null)],
+            showingAnswer: false
         };
 
         const expectedCards = [{id: 'deck-1-card-32', status: 'NEW'},
@@ -145,7 +201,8 @@ describe('reviewPage', () => {
                 question: 'Question Number 32?',
                 answer: 'Answer Number 32',
                 due: null
-            }]
+            }],
+            showingAnswer: false
         };
 
         const action = answerCardSuccess(new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', 86400));

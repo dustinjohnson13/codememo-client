@@ -1,6 +1,13 @@
 //@flow
 import type {Action, ReviewState} from "../actions/actionTypes";
-import {ADD_CARD_SUCCESS, ANSWER_CARD_SUCCESS, FETCH_CARDS_SUCCESS, FETCH_DECK_SUCCESS} from '../actions/actionTypes'
+import {
+    ADD_CARD_SUCCESS,
+    ANSWER_CARD_SUCCESS,
+    FETCH_CARDS_SUCCESS,
+    FETCH_DECK_SUCCESS,
+    HIDE_ANSWER,
+    SHOW_ANSWER
+} from '../actions/actionTypes'
 import {Card, DeckResponse} from "../services/APIDomain";
 
 export const initialState = {
@@ -15,7 +22,8 @@ export const initialState = {
     failInterval: '',
     hardInterval: '',
     goodInterval: '',
-    easyInterval: ''
+    easyInterval: '',
+    showingAnswer: false
 };
 
 export const getViewState = (state: ReviewState): ReviewState => {
@@ -45,12 +53,23 @@ export const getViewState = (state: ReviewState): ReviewState => {
         failInterval: '10m',
         hardInterval: '1d',
         goodInterval: '3d',
-        easyInterval: '5d'
+        easyInterval: '5d',
+        showingAnswer: state.showingAnswer
     };
 };
 
 const reviewPage = (state: ReviewState = initialState, action: Action) => {
     switch (action.type) {
+        case HIDE_ANSWER:
+            return getViewState({
+                ...state,
+                showingAnswer: false
+            });
+        case SHOW_ANSWER:
+            return getViewState({
+                ...state,
+                showingAnswer: true
+            });
         case FETCH_DECK_SUCCESS:
             const deck = action.deck;
             return getViewState({

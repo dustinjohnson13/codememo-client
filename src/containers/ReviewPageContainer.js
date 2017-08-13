@@ -13,10 +13,7 @@ export const mapStateToProps = (state: CombinedState, ownProps: OwnProps) => {
         deckName: props.deckName,
         newCount: props.newCount,
         dueCount: props.dueCount,
-        totalCount: props.totalCount,
-        question: props.question,
-        answer: props.answer,
-        id: props.toReview.length > 0 ? props.toReview[0].id : undefined
+        totalCount: props.totalCount
     };
 };
 

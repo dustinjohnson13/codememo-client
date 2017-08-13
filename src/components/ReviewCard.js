@@ -5,41 +5,22 @@ import AnswerCardContainer from '../containers/AnswerCardContainer';
 import {Button} from 'reactstrap';
 
 type Props = {
-    id: string,
+    cardId: string,
     answer: string,
     question: string,
-    answerCard: any
+    showingAnswer: boolean,
+    showAnswer: any
 }
 
-type State = {
-    showingAnswer: boolean
-}
-
-class ReviewCard extends Component<void, Props, State> {
-    state: State;
-
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            showingAnswer: false
-        };
-
-        (this: any).showAnswer = this.showAnswer.bind(this);
-    }
-
-    showAnswer() {
-        this.setState({
-            showingAnswer: !this.state.showingAnswer
-        });
-    }
+class ReviewCard extends Component<void, Props, void> {
 
     render() {
-        const answerSection = this.state.showingAnswer ?
+        const answerSection = this.props.showingAnswer ?
             <div>
                 <div className="review-answer">{this.props.answer}</div>
-                <AnswerCardContainer id={this.props.id} answered={this.showAnswer}/>
+                <AnswerCardContainer id={this.props.cardId}/>
             </div>
-            : <Button className="show-answer" onClick={this.showAnswer}>Show Answer</Button>;
+            : <Button className="show-answer" onClick={this.props.showAnswer}>Show Answer</Button>;
 
         return (
             <div className="review-card">

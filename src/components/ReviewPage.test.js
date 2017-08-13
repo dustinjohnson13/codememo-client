@@ -17,6 +17,8 @@ describe('<ReviewPage />', () => {
     const back = () => {
         requestedBack = true;
     };
+    const showAnswer = () => {
+    };
 
     beforeEach(() => {
         requestedBack = false;
@@ -29,7 +31,8 @@ describe('<ReviewPage />', () => {
         const wrapper = mount(
             <Provider store={store}>
                 <ReviewPage deckName={'SomeDeck'} totalCount={30} dueCount={20} newCount={10} back={back}
-                            id='deck1' question='q1' answer='a1' answerCard={answer} addCard={add}/>
+                            id='deck1' question='q1' answer='a1' answerCard={answer} addCard={add}
+                            showAnswer={showAnswer}/>
             </Provider>
         );
 

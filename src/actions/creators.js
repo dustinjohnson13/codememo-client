@@ -13,9 +13,11 @@ import type {
     FetchCollectionSuccessAction,
     FetchDeckRequestAction,
     FetchDeckSuccessAction,
+    HideAnswerAction,
     LoadCollectionPageAction,
     LoadPageAction,
-    ReviewDeckRequestAction
+    ReviewDeckRequestAction,
+    ShowAnswerAction
 } from "./actionTypes";
 import {
     ADD_CARD_REQUEST,
@@ -30,9 +32,11 @@ import {
     FETCH_COLLECTION_SUCCESS,
     FETCH_DECK_REQUEST,
     FETCH_DECK_SUCCESS,
+    HIDE_ANSWER,
     LOAD_COLLECTION_PAGE,
     LOAD_PAGE,
-    REVIEW_DECK_REQUEST
+    REVIEW_DECK_REQUEST,
+    SHOW_ANSWER
 } from "./actionTypes"
 import type {PageType} from "./pages";
 import {Page} from './pages'
@@ -40,6 +44,14 @@ import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "
 import API from '../services/API'
 import {call, put, select, takeEvery} from 'redux-saga/effects'
 import * as selectors from './selectors';
+
+export const hideAnswer = (): HideAnswerAction => {
+    return {type: HIDE_ANSWER};
+};
+
+export const showAnswer = (): ShowAnswerAction => {
+    return {type: SHOW_ANSWER};
+};
 
 export const loadPage = (page: PageType): LoadPageAction => {
     return {

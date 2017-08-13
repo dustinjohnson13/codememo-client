@@ -6,6 +6,7 @@ import ReviewCard from "./ReviewCard";
 import jsdom from 'jsdom';
 import {mount} from 'enzyme';
 import {initialState} from "../reducers/reviewPage";
+import type {ReviewState} from "../actions/actionTypes";
 
 const doc = jsdom.jsdom('<!doctype html><html><body></body></html>');
 global.document = doc;
@@ -13,38 +14,50 @@ global.window = doc.defaultView;
 
 describe('<ReviewCard />', () => {
 
-    const state = {
-        ...defaultState,
-        review: {
-            ...initialState,
-            failInterval: '1d',
-            hardInterval: '2d',
-            goodInterval: '3d',
-            easyInterval: '4d'
-        }
-    };
+    const prepare = ((state: ReviewState, showingAnswer: boolean) => {
 
-    let component;
-    beforeEach(() => {
+        const combinedState = {
+            ...defaultState,
+            review: state
+        };
+
         const answer = () => {
         };
-        const store = storeFake(state);
+        const showAnswer = () => {
+        };
+        const store = storeFake(combinedState);
         const wrapper = mount(
             <Provider store={store}>
-                <ReviewCard question='What is the capital of Peru?' answer="Lima" answerCard={answer} id='card-1'/>
+                <ReviewCard question='What is the capital of Peru?' showingAnswer={showingAnswer}
+                            showAnswer={showAnswer} answer="Lima" answerCard={answer} cardId='card-1'/>
             </Provider>
         );
 
-        component = wrapper.find(ReviewCard);
+        return wrapper.find(ReviewCard);
     });
 
     it('shows the question', () => {
-        const collection = component.find('.review-question');
+        const collection = prepare(initialState, false).find('.review-question');
         expect(collection.length).toEqual(1);
         expect(collection.text()).toEqual('What is the capital of Peru?');
     });
 
-    it('shows the answer only when the show answer button is pressed', () => {
+    it('shows the answer when state requests it', () => {
+
+        const component = prepare(initialState, true);
+
+        const answerSelector = '.review-answer';
+
+        let answer = component.find(answerSelector);
+        expect(answer.length).toEqual(1);
+
+        const showAnswer = component.find('.show-answer');
+        expect(showAnswer.length).toEqual(0);
+    });
+
+    it('hides the answer when state requests it', () => {
+
+        const component = prepare(initialState, false);
 
         const answerSelector = '.review-answer';
 
@@ -53,10 +66,5 @@ describe('<ReviewCard />', () => {
 
         const showAnswer = component.find('.show-answer');
         expect(showAnswer.length).toEqual(1);
-        showAnswer.simulate('click');
-
-        answer = component.find(answerSelector);
-        expect(answer.length).toEqual(1);
-        expect(answer.text()).toEqual('Lima');
     });
 });

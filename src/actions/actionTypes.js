@@ -17,6 +17,8 @@ export const ADD_CARD_REQUEST = 'ADD_CARD_REQUEST';
 export const ADD_CARD_SUCCESS = 'ADD_CARD_SUCCESS';
 export const FETCH_CARDS_REQUEST = 'FETCH_CARDS_REQUEST';
 export const FETCH_CARDS_SUCCESS = 'FETCH_CARDS_SUCCESS';
+export const HIDE_ANSWER = 'HIDE_ANSWER';
+export const SHOW_ANSWER = 'SHOW_ANSWER';
 
 export type ReviewDeckRequestAction = { type: 'REVIEW_DECK_REQUEST', id: string }
 export type LoadCollectionPageAction = { type: 'LOAD_COLLECTION_PAGE' };
@@ -27,6 +29,8 @@ export type FetchCardsRequestAction = { type: 'FETCH_CARDS_REQUEST', ids: Array<
 export type FetchCardsSuccessAction = { type: 'FETCH_CARDS_SUCCESS', cards: Array<CardDetail> }
 export type FetchDeckRequestAction = { type: 'FETCH_DECK_REQUEST', id: string }
 export type FetchDeckSuccessAction = { type: 'FETCH_DECK_SUCCESS', deck: DeckResponse }
+export type HideAnswerAction = { type: 'HIDE_ANSWER' }
+export type ShowAnswerAction = { type: 'SHOW_ANSWER' }
 export type AnswerCardRequestAction = { type: 'ANSWER_CARD_REQUEST', id: string, answer: string }
 export type AnswerCardSuccessAction = { type: 'ANSWER_CARD_SUCCESS', card: CardDetail }
 export type AddCardRequestAction = { type: 'ADD_CARD_REQUEST', id: string, question: string, answer: string }
@@ -34,9 +38,12 @@ export type AddCardSuccessAction = { type: 'ADD_CARD_SUCCESS', card: CardDetail 
 export type AddDeckRequestAction = { type: 'ADD_DECK_REQUEST', name: string }
 export type AddDeckSuccessAction = { type: 'ADD_DECK_SUCCESS', collection: CollectionResponse }
 
-export type Action = ReviewDeckRequestAction
+export type Action =
+    ShowAnswerAction
+    | ReviewDeckRequestAction
     | LoadCollectionPageAction
     | LoadPageAction
+    | HideAnswerAction
     | FetchCollectionRequestAction
     | FetchCollectionSuccessAction
     | FetchCardsRequestAction
@@ -73,6 +80,7 @@ export type ReviewState = {
     +hardInterval: string;
     +goodInterval: string;
     +easyInterval: string;
+    +showingAnswer: boolean;
 }
 
 export type CombinedState = {

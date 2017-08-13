@@ -4,22 +4,16 @@ import {addCardRequest, answerCardRequest} from "../actions/creators";
 import {GOOD} from '../Domain'
 import {mapDispatchToProps, mapStateToProps} from "./ReviewPageContainer";
 import {Deck} from "../components/CollectionPage";
-import * as API from '../services/API';
 
 jest.mock('../services/API'); // Set mock API for module importing
 
 describe('<ReviewPageContainer/>', () => {
 
-    const dataService = API.default;
-
     it('maps deck attributes from state', () => {
         const expectedState = {
-            "answer": "",
             "deckName": "deck-1",
             "dueCount": 3,
-            "id": undefined,
             "newCount": 1,
-            "question": "",
             "totalCount": 6
         };
         const state = {review: reviewState};
@@ -40,7 +34,7 @@ describe('<ReviewPageContainer/>', () => {
     //     expect(dispatchedActions).toEqual([loadCollectionPage()]);
     // });
 
-    it('maps answerCard', () => {
+    it('maps answer card', () => {
 
         const expectedActions = [answerCardRequest('deck-1-card-0', GOOD)];
 
@@ -53,7 +47,7 @@ describe('<ReviewPageContainer/>', () => {
         expect(actions).toEqual(expectedActions);
     });
 
-    it('maps addCard', () => {
+    it('maps add card', () => {
 
         const deckId = 'deck-1';
         const question = 'Some Question';

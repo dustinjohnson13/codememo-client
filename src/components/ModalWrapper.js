@@ -27,7 +27,7 @@ class ModalWrapper extends React.Component {
     render() {
         return (
             <div>
-                <Button color="primary" onClick={this.toggle}>Create Deck</Button>
+                <Button color="primary" onClick={this.toggle}>{this.props.toggleText}</Button>
                 <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
                     <ModalHeader toggle={this.toggle}>{this.props.title}</ModalHeader>
                     <ModalBody>

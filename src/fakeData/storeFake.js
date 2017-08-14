@@ -1,6 +1,7 @@
 //@flow
 import type {CombinedState} from "../actions/actionTypes";
 import {DeckResponse} from "../services/APIDomain";
+import {collectionState} from "./collectionState";
 
 export const defaultState = {
     app: {page: null},
@@ -10,9 +11,7 @@ export const defaultState = {
         toReview: [], answer: '', question: '', deck: new DeckResponse('deck-1', 'Deck1', []),
         showingAnswer: false
     },
-    collection: {
-        decks: []
-    }
+    collection: collectionState
 };
 
 //$FlowFixMe

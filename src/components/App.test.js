@@ -12,7 +12,7 @@ import {Page} from "../actions/pages";
 import ReviewPageContainer from "../containers/ReviewPageContainer";
 import CollectionPageContainer from "../containers/CollectionPageContainer";
 import {reviewState} from "../fakeData/reviewState";
-import {Deck} from "../services/APIDomain";
+import {collectionState} from "../fakeData/collectionState";
 
 jest.mock('../services/API'); // Set mock API for module importing
 
@@ -67,7 +67,7 @@ describe('<App />', () => {
     });
 
     it('displays the collection page when specified', () => {
-        const app = prepareContainer(Page.COLLECTION, {collection: {decks: [new Deck('deck-1-card-1', 'Deck1', 80, 27, 23)]}});
+        const app = prepareContainer(Page.COLLECTION, {collection: collectionState});
 
         const expected = <CollectionPageContainer/>;
         expect(app.contains(expected)).toEqual(true);

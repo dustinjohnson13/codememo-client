@@ -4,8 +4,15 @@ import {Container} from 'reactstrap';
 import '../styles/CollectionPage.css';
 import AddDeckModal from "./AddDeckModal";
 import Collection from './Collection'
+import {Deck} from "../services/APIDomain";
 
-class CollectionPage extends Component {
+type Props = {
+    decks: Array<Deck>,
+    reviewDeck: any,
+    addDeck: any
+}
+
+class CollectionPage extends Component<void, Props, void> {
 
     render() {
         return (

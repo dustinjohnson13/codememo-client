@@ -7,8 +7,9 @@ import type {CombinedState, Dispatch} from "../actions/actionTypes";
 type OwnProps = {}
 
 export const mapStateToProps = (state: CombinedState, ownProps: OwnProps) => {
+    const decks = state.collection.decks.map(id => state.collection.decksById[id]);
     return {
-        decks: state.collection.decks
+        decks: decks
     }
 };
 

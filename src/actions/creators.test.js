@@ -18,6 +18,8 @@ import {Page} from "./pages";
 import * as selectors from './selectors'
 import {deckId, getDeck1DueCards, gotDeck1} from "./creators.test.actions";
 import API from '../services/API';
+import {collectionState} from "../fakeData/collectionState";
+import {initialState} from "../reducers/collectionPage";
 
 jest.mock('../services/API'); // Set mock API for module importing
 
@@ -58,7 +60,7 @@ describe('creators', () => {
         expect(gen.next().value).toEqual(select(selectors.collection));
 
         //$FlowFixMe
-        let next = gen.next(new CollectionResponse([]));
+        let next = gen.next(collectionState);
         expect(next.value).toEqual(put(loadPage(Page.COLLECTION)));
     });
 
@@ -68,7 +70,7 @@ describe('creators', () => {
         expect(gen.next().value).toEqual(select(selectors.collection));
 
         //$FlowFixMe
-        let next = gen.next({decks: null});
+        let next = gen.next(initialState);
         expect(next.value).toEqual(call(fetchCollection));
 
         //$FlowFixMe

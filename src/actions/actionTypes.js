@@ -63,7 +63,8 @@ export type AppState = {
 }
 
 export type CollectionState = {
-    +decks: ?Array<Deck>;
+    +decks: Array<string>;
+    +decksById: { [string]: Deck };
 }
 
 export type ReviewState = {

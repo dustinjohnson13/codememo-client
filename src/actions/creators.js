@@ -162,12 +162,10 @@ export const addCardSuccess = (response: CardDetail): AddCardSuccessAction => {
 export function* loadCollectionPage(): Generator<LoadCollectionPageAction, any, void> {
     const collection = yield select(selectors.collection);
     // $FlowFixMe
-    if (!collection.decks) {
+    if (collection.decks.length === 0) {
         yield call(fetchCollection);
-        yield put(loadPage(Page.COLLECTION));
-    } else {
-        yield put(loadPage(Page.COLLECTION));
     }
+    yield put(loadPage(Page.COLLECTION));
 }
 
 export function* addDeck(action: AddDeckRequestAction): Generator<AddDeckRequestAction, any, void> {

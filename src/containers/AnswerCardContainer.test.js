@@ -22,19 +22,20 @@ describe('<AnswerCardContainer />', () => {
     });
 
     it('answerCard will hide answer section and send an answer request', () => {
+        const deckId = 'some-deck-id';
         const cardId = 'some-id';
         const expectedActions = [
             hideAnswer(),
-            answerCardRequest(cardId, HARD),
+            answerCardRequest(cardId, deckId, HARD),
             hideAnswer(),
-            answerCardRequest(cardId, GOOD)];
+            answerCardRequest(cardId, deckId, GOOD)];
 
         let answered = [];
         const dispatcher = (action) => {
             answered.push(action);
         };
 
-        const props = mapDispatchToProps(dispatcher, {id: cardId});
+        const props = mapDispatchToProps(dispatcher, {id: cardId, deckId: deckId});
 
         props.answerCard(HARD);
         props.answerCard(GOOD);

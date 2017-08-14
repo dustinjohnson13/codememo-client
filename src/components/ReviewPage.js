@@ -15,7 +15,6 @@ class ReviewPage extends Component {
         newCount: number,
         question: string,
         answer: string,
-        answerCard: any,
         addCard: any,
         showAnswer: any
     };

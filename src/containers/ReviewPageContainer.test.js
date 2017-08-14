@@ -1,7 +1,6 @@
 import React from 'react';
 import {reviewState} from "../fakeData/reviewState";
-import {addCardRequest, answerCardRequest} from "../actions/creators";
-import {GOOD} from '../Domain'
+import {addCardRequest, collectionPage} from "../actions/creators";
 import {mapDispatchToProps, mapStateToProps} from "./ReviewPageContainer";
 import {Deck} from "../components/CollectionPage";
 
@@ -24,27 +23,14 @@ describe('<ReviewPageContainer/>', () => {
 
     });
 
-    // it('maps back to the appropriate action', () => {
-    //     const dispatchedActions = [];
-    //     const dispatcher = (action: Action) => dispatchedActions.push(action);
-    //
-    //     const props = mapDispatchToProps(dispatcher, {});
-    //     props.back();
-    //
-    //     expect(dispatchedActions).toEqual([loadCollectionPage()]);
-    // });
+    it('maps back to the appropriate action', () => {
+        const dispatchedActions = [];
+        const dispatcher = (action: Action) => dispatchedActions.push(action);
 
-    it('maps answer card', () => {
+        const props = mapDispatchToProps(dispatcher, {});
+        props.back();
 
-        const expectedActions = [answerCardRequest('deck-1-card-0', GOOD)];
-
-        const actions = [];
-        const invoke = (action: Action) => actions.push(action);
-
-        const {answerCard} = mapDispatchToProps(invoke, {});
-        answerCard('deck-1-card-0', GOOD);
-
-        expect(actions).toEqual(expectedActions);
+        expect(dispatchedActions).toEqual([collectionPage()]);
     });
 
     it('maps add card', () => {

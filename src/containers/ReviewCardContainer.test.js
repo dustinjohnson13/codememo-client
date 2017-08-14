@@ -3,6 +3,7 @@ import {showAnswer} from "../actions/creators";
 import {mapDispatchToProps, mapStateToProps} from "./ReviewCardContainer";
 import {Deck} from "../components/CollectionPage";
 import {reviewState} from "../fakeData/reviewState";
+import {DeckResponse} from "../services/APIDomain";
 
 jest.mock('../services/API'); // Set mock API for module importing
 
@@ -17,13 +18,15 @@ describe('<ReviewCardContainer/>', () => {
             review: {
                 ...reviewState,
                 question: expectedQuestion, answer: expectedAnswer,
-                showingAnswer: expectedShowingAnswer
+                showingAnswer: expectedShowingAnswer,
+                deck: new DeckResponse('deck-2', 'Deck2', [])
             }
         };
 
         const expectedProps = {
             answer: expectedAnswer,
             cardId: undefined,
+            deckId: 'deck-2',
             showingAnswer: expectedShowingAnswer,
             question: expectedQuestion
         };

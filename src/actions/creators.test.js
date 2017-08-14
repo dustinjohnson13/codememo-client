@@ -12,9 +12,10 @@ import {
     reviewDeck,
     reviewDeckRequest
 } from "./creators";
-import {call, put} from 'redux-saga/effects'
+import {call, put, select} from 'redux-saga/effects'
 import {CardDetail, CollectionResponse} from "../services/APIDomain";
 import {Page} from "./pages";
+import * as selectors from './selectors'
 import {deckId, getDeck1DueCards, gotDeck1} from "./creators.test.actions";
 import API from '../services/API';
 
@@ -40,30 +41,31 @@ describe('creators', () => {
 
     it('sends the card answer to the API and returns the new card detail', () => {
 
-        const action = answerCardRequest('deck-1-card-0', 'GOOD');
+        const deckId = 'deck-1';
+        const action = answerCardRequest('deck-1-card-0', deckId, 'GOOD');
+
         const gen = answerCard(action);
         expect(gen.next().value).toEqual(call(API.answerCard, action.id, action.answer));
 
         const newCard = new CardDetail(action.id, 'question', 'answer', 9000);
         //$FlowFixMe
-        expect(gen.next(newCard).value).toEqual(put(answerCardSuccess(newCard)));
+        expect(gen.next(newCard).value).toEqual(put(answerCardSuccess(newCard, deckId)));
     });
 
-    // TODO: Currently there is no way to keep the collection overview in sync
-    // after reviews are done (the due and new counts are incorrect)
-    // it('loads collection page automatically when collection available', () => {
-    //
-    //     const gen = loadCollectionPage();
-    //     expect(gen.next().value).toEqual(select(selectors.collection));
-    //
-    //     let next = gen.next(new CollectionResponse([]));
-    //     expect(next.value).toEqual(put(loadPage(Page.COLLECTION)));
-    // });
+    it('loads collection page automatically when collection available', () => {
+
+        const gen = loadCollectionPage();
+        expect(gen.next().value).toEqual(select(selectors.collection));
+
+        //$FlowFixMe
+        let next = gen.next(new CollectionResponse([]));
+        expect(next.value).toEqual(put(loadPage(Page.COLLECTION)));
+    });
 
     it('loads collection page after fetching collection when its absent', () => {
 
         const gen = loadCollectionPage();
-        // expect(gen.next().value).toEqual(select(selectors.collection));
+        expect(gen.next().value).toEqual(select(selectors.collection));
 
         //$FlowFixMe
         let next = gen.next({decks: null});

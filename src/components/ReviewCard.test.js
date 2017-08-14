@@ -29,7 +29,8 @@ describe('<ReviewCard />', () => {
         const wrapper = mount(
             <Provider store={store}>
                 <ReviewCard question='What is the capital of Peru?' showingAnswer={showingAnswer}
-                            showAnswer={showAnswer} answer="Lima" answerCard={answer} cardId='card-1'/>
+                            showAnswer={showAnswer} answer="Lima" answerCard={answer} cardId='card-1'
+                            deckId='deck-1'/>
             </Provider>
         );
 

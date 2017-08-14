@@ -42,7 +42,8 @@ import type {PageType} from "./pages";
 import {Page} from './pages'
 import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "../services/APIDomain";
 import API from '../services/API'
-import {call, put, takeEvery} from 'redux-saga/effects'
+import {call, put, select, takeEvery} from 'redux-saga/effects'
+import * as selectors from './selectors';
 
 export const hideAnswer = (): HideAnswerAction => {
     return {type: HIDE_ANSWER};
@@ -125,18 +126,20 @@ export const fetchCardsSuccess = (response: CardDetailResponse): FetchCardsSucce
     }
 };
 
-export const answerCardRequest = (id: string, answer: string): AnswerCardRequestAction => {
+export const answerCardRequest = (id: string, deckId: string, answer: string): AnswerCardRequestAction => {
     return {
         type: ANSWER_CARD_REQUEST,
         id: id,
+        deckId: deckId,
         answer: answer
     }
 };
 
-export const answerCardSuccess = (response: CardDetail): AnswerCardSuccessAction => {
+export const answerCardSuccess = (response: CardDetail, deckId: string): AnswerCardSuccessAction => {
     return {
         type: ANSWER_CARD_SUCCESS,
-        card: response
+        card: response,
+        deckId: deckId
     }
 };
 
@@ -157,13 +160,14 @@ export const addCardSuccess = (response: CardDetail): AddCardSuccessAction => {
 };
 
 export function* loadCollectionPage(): Generator<LoadCollectionPageAction, any, void> {
-    // const collection = yield select(selectors.collection);
-    // if (!collection.decks) {
-    yield call(fetchCollection);
-    yield put(loadPage(Page.COLLECTION));
-    // } else {
-    //     yield put(loadPage(Page.COLLECTION));
-    // }
+    const collection = yield select(selectors.collection);
+    // $FlowFixMe
+    if (!collection.decks) {
+        yield call(fetchCollection);
+        yield put(loadPage(Page.COLLECTION));
+    } else {
+        yield put(loadPage(Page.COLLECTION));
+    }
 }
 
 export function* addDeck(action: AddDeckRequestAction): Generator<AddDeckRequestAction, any, void> {
@@ -181,7 +185,7 @@ export function* addCard(action: AddCardRequestAction): Generator<AddCardRequest
 export function* answerCard(action: AnswerCardRequestAction): Generator<AnswerCardRequestAction, any, void> {
     const card = yield call(API.answerCard, action.id, action.answer);
     // $FlowFixMe
-    yield put(answerCardSuccess(card));
+    yield put(answerCardSuccess(card, action.deckId));
 }
 
 const CARDS_TO_RETRIEVE_PER_REQUEST = 10;

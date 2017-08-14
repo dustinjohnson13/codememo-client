@@ -205,7 +205,7 @@ describe('reviewPage', () => {
             showingAnswer: false
         };
 
-        const action = answerCardSuccess(new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', 86400));
+        const action = answerCardSuccess(new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', 86400), 'deck-1');
         const actualState = reviewPage(previousState, action);
 
         expect(actualState).toEqual(expectedState);

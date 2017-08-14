@@ -13,6 +13,7 @@ export const mapStateToProps = (state: CombinedState, ownProps: OwnProps) => {
         question: props.question,
         answer: props.answer,
         cardId: props.toReview.length > 0 ? props.toReview[0].id : undefined,
+        deckId: props.deck.id,
         showingAnswer: props.showingAnswer
     };
 };

@@ -6,6 +6,7 @@ import {answerCardRequest, hideAnswer} from "../actions/creators";
 
 type OwnProps = {
     id: string;
+    deckId: string;
     answerCard: any
 }
 
@@ -24,7 +25,7 @@ export const mapDispatchToProps = (dispatch: Dispatch, ownProps: OwnProps) => {
     return {
         answerCard: (answer: string) => {
             dispatch(hideAnswer());
-            dispatch(answerCardRequest(ownProps.id, answer));
+            dispatch(answerCardRequest(ownProps.id, ownProps.deckId, answer));
         }
     }
 };

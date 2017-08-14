@@ -26,7 +26,7 @@ describe('<ReviewCardContainer/>', () => {
 
         const expectedProps = {
             answer: expectedAnswer,
-            cardId: undefined,
+            cardId: 'deck-1-card-30',
             deckId: 'deck-1',
             showingAnswer: expectedShowingAnswer,
             question: expectedQuestion

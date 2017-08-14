@@ -68,12 +68,12 @@ export type CollectionState = {
 }
 
 export type ReviewState = {
-    +toReview: Array<CardDetail>;
+    +dueCards: Array<CardDetail>;
+    +newCards: Array<CardDetail>;
     +deckName: string;
     +deckId: string;
+    +cardId: string;
     +totalCount: number;
-    +newCount: number;
-    +dueCount: number;
     // TODO: Should these stay here?
     +question: string;
     +answer: string;

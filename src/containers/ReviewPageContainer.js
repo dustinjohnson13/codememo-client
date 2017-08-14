@@ -11,8 +11,8 @@ export const mapStateToProps = (state: CombinedState, ownProps: OwnProps) => {
 
     return {
         deckName: props.deckName,
-        newCount: props.newCount,
-        dueCount: props.dueCount,
+        newCount: props.newCards.length,
+        dueCount: props.dueCards.length,
         totalCount: props.totalCount
     };
 };

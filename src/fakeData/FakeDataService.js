@@ -49,11 +49,12 @@ export class FakeDataService {
 
         if (idNumber) {
             for (let i = 0; i < totalCount; i++) {
+                const multiplier = i + 1;
                 let dueTime = null;
                 if (i < goodCount) {
-                    dueTime = currentTime + (10000 * i);
+                    dueTime = currentTime + (10000 * multiplier);
                 } else if (i < (goodCount + dueCount)) {
-                    dueTime = currentTime - (10000 * i);
+                    dueTime = currentTime - (10000 * multiplier);
                 }
 
                 const card = new domain.Card(`${deckId}-card-${i}`, `Question Number ${i}?`, `Answer Number ${i}`, dueTime);

@@ -12,10 +12,9 @@ import {
     reviewDeck,
     reviewDeckRequest
 } from "./creators";
-import {call, put, select} from 'redux-saga/effects'
+import {call, put} from 'redux-saga/effects'
 import {CardDetail, CollectionResponse} from "../services/APIDomain";
 import {Page} from "./pages";
-import * as selectors from './selectors'
 import {deckId, getDeck1DueCards, gotDeck1} from "./creators.test.actions";
 import API from '../services/API';
 
@@ -50,20 +49,21 @@ describe('creators', () => {
         expect(gen.next(newCard).value).toEqual(put(answerCardSuccess(newCard)));
     });
 
-    it('loads collection page automatically when collection available', () => {
-
-        const gen = loadCollectionPage();
-        expect(gen.next().value).toEqual(select(selectors.collection));
-
-        //$FlowFixMe
-        let next = gen.next(new CollectionResponse([]));
-        expect(next.value).toEqual(put(loadPage(Page.COLLECTION)));
-    });
+    // TODO: Currently there is no way to keep the collection overview in sync
+    // after reviews are done (the due and new counts are incorrect)
+    // it('loads collection page automatically when collection available', () => {
+    //
+    //     const gen = loadCollectionPage();
+    //     expect(gen.next().value).toEqual(select(selectors.collection));
+    //
+    //     let next = gen.next(new CollectionResponse([]));
+    //     expect(next.value).toEqual(put(loadPage(Page.COLLECTION)));
+    // });
 
     it('loads collection page after fetching collection when its absent', () => {
 
         const gen = loadCollectionPage();
-        expect(gen.next().value).toEqual(select(selectors.collection));
+        // expect(gen.next().value).toEqual(select(selectors.collection));
 
         //$FlowFixMe
         let next = gen.next({decks: null});

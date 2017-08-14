@@ -186,8 +186,6 @@ export function* answerCard(action: AnswerCardRequestAction): Generator<AnswerCa
     yield put(answerCardSuccess(card, action.deckId));
 }
 
-const CARDS_TO_RETRIEVE_PER_REQUEST = 10;
-
 export function* reviewDeck(action: ReviewDeckRequestAction): Generator<ReviewDeckRequestAction, any, void> {
     const deck = yield call(API.fetchDeck, action.id);
     // $FlowFixMe
@@ -196,9 +194,7 @@ export function* reviewDeck(action: ReviewDeckRequestAction): Generator<ReviewDe
     // $FlowFixMe
     const dueOrNewCards = deck.cards.filter(card => card.status !== 'OK');
     if (dueOrNewCards.length > 0) {
-        const cardsToRetrieve = dueOrNewCards.slice(0, CARDS_TO_RETRIEVE_PER_REQUEST)
-            .reduce((ids, card) => ids.concat(card.id), []);
-        yield put(fetchCardsRequest(cardsToRetrieve));
+        yield put(fetchCardsRequest(dueOrNewCards.map(card => card.id)));
     }
 
     yield put(loadPage(Page.REVIEW));

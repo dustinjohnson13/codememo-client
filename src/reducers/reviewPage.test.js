@@ -29,7 +29,6 @@ describe('reviewPage', () => {
 
         const previousState = {
             ...initialState,
-            deck: deck,
             totalCount: 5,
             newCount: 1,
             dueCount: 2,
@@ -41,13 +40,11 @@ describe('reviewPage', () => {
         };
 
         const newCards = [...cards, new Card('deck-1-card-99', 'NEW')];
-        const expectedDeck = new DeckResponse(expectedDeckID, expectedDeckName, newCards);
         const expectedToReview = [...previousState.toReview, response];
 
         const action = addCardSuccess(response);
         const actualState = reviewPage(previousState, action);
 
-        expect(actualState.deck).toEqual(expectedDeck);
         expect(actualState.totalCount).toEqual(6);
         expect(actualState.newCount).toEqual(2);
         expect(actualState.dueCount).toEqual(2);
@@ -101,11 +98,12 @@ describe('reviewPage', () => {
     it('adds deck information on fetch deck success', () => {
 
         const previousState = {...initialState};
+        // TODO: Breakup the deck instance
         const expectedState =
             {
-                deck: deck, answer: '', question: '', toReview: [], showingAnswer: false,
-                deckName: expectedDeckName, totalCount: 5, newCount: 1, dueCount: 2,
-                failInterval: '10m', hardInterval: '1d', goodInterval: '3d', easyInterval: '5d'
+                ...previousState,
+                deckName: expectedDeckName, deckId: expectedDeckID,
+                totalCount: 5, newCount: 1, dueCount: 2
             };
 
         const action = fetchDeckSuccess(deck);
@@ -114,28 +112,24 @@ describe('reviewPage', () => {
         expect(actualState).toEqual(expectedState);
     });
 
-    it('adds question and answer on fetch cards success', () => {
+    it('adds question, answer, answer intervals, and cards for review on fetch cards success', () => {
 
         const cardDetails = [new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', -299999),
             new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', -309999),
             new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', null)];
         const cardsResponse = new CardDetailResponse(cardDetails);
 
-        const previousState = {...initialState, deck: deck};
+        const previousState = {...initialState};
         const expectedState = {
-            deck: deck,
+            ...previousState,
+            // TODO: Break up the cards for review
+            toReview: cardsResponse.cards,
             answer: "Answer Number 30",
             question: "Question Number 30?",
-            deckName: expectedDeckName,
-            dueCount: 2,
             easyInterval: "5d",
             failInterval: "10m",
             goodInterval: "3d",
-            hardInterval: "1d",
-            newCount: 1,
-            totalCount: 5,
-            toReview: cardsResponse.cards,
-            showingAnswer: false
+            hardInterval: "1d"
         };
 
         const action = fetchCardsSuccess(cardsResponse);
@@ -144,18 +138,13 @@ describe('reviewPage', () => {
         expect(actualState).toEqual(expectedState);
     });
 
-    it('loads next question and answer on answer card', () => {
+    it('resets answer card state on answer card', () => {
 
         const previousState = {
-            deck: deck,
+            ...initialState,
             answer: "Answer Number 30",
             question: "Question Number 30?",
-            deckName: expectedDeckName,
             dueCount: 2,
-            easyInterval: "5d",
-            failInterval: "10m",
-            goodInterval: "3d",
-            hardInterval: "1d",
             newCount: 1,
             totalCount: 5,
             toReview: [new CardDetail(
@@ -171,37 +160,19 @@ describe('reviewPage', () => {
                 'Question Number 32?',
                 'Answer Number 32',
                 null)],
-            showingAnswer: false
+            showingAnswer: true
         };
 
-        const expectedCards = [{id: 'deck-1-card-32', status: 'NEW'},
-            {id: 'deck-1-card-31', status: 'DUE'},
-            {id: '5', status: 'OK'}, {id: '6', status: 'OK'}, {id: 'deck-1-card-30', status: 'OK'}];
-        const expectedDeck = {id: expectedDeckID, name: expectedDeckName, cards: expectedCards};
+        const expectedToReviewList = previousState.toReview.slice(1);
 
         const expectedState = {
+            ...previousState,
             answer: "Answer Number 31",
-            deckName: expectedDeckName,
-            deck: expectedDeck,
             question: "Question Number 31?",
             dueCount: 1,
-            easyInterval: "5d",
-            failInterval: "10m",
-            goodInterval: "3d",
-            hardInterval: "1d",
             newCount: 1,
             totalCount: 5,
-            toReview: [{
-                id: 'deck-1-card-31',
-                question: 'Question Number 31?',
-                answer: 'Answer Number 31',
-                due: -309999
-            }, {
-                id: 'deck-1-card-32',
-                question: 'Question Number 32?',
-                answer: 'Answer Number 32',
-                due: null
-            }],
+            toReview: expectedToReviewList,
             showingAnswer: false
         };
 

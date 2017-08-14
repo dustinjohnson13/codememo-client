@@ -1,16 +1,11 @@
 //@flow
 import type {CombinedState} from "../actions/actionTypes";
-import {DeckResponse} from "../services/APIDomain";
 import {collectionState} from "./collectionState";
+import {reviewState} from "./reviewState";
 
 export const defaultState = {
     app: {page: null},
-    review: {
-        deckName: 'deck-1', totalCount: 6, newCount: 1, dueCount: 3,
-        failInterval: '10m', hardInterval: '1d', goodInterval: '3d', easyInterval: '5d',
-        toReview: [], answer: '', question: '', deck: new DeckResponse('deck-1', 'Deck1', []),
-        showingAnswer: false
-    },
+    review: reviewState,
     collection: collectionState
 };
 

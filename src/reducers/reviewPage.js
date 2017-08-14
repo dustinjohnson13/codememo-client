@@ -8,12 +8,11 @@ import {
     HIDE_ANSWER,
     SHOW_ANSWER
 } from '../actions/actionTypes'
-import {Card, DeckResponse} from "../services/APIDomain";
 
 export const initialState = {
     toReview: [],
-    deck: new DeckResponse('', '', []),
     deckName: '',
+    deckId: '',
     totalCount: 0,
     newCount: 0,
     dueCount: 0,
@@ -26,37 +25,7 @@ export const initialState = {
     showingAnswer: false
 };
 
-export const getViewState = (state: ReviewState): ReviewState => {
-    const deck = state.deck;
-    const cardsForReview = state.toReview;
-
-    const deckName = deck ? deck.name : '';
-    const totalCount = deck ? deck.cards.length : 0;
-    const newCount = deck ? deck.cards.filter(it => it.status === 'NEW').length : 0;
-    const dueCount = deck ? deck.cards.filter(it => it.status === 'DUE').length : 0;
-    let question = '';
-    let answer = '';
-    if (cardsForReview.length !== 0) {
-        question = cardsForReview[0].question;
-        answer = cardsForReview[0].answer;
-    }
-
-    return {
-        toReview: cardsForReview,
-        deck: deck,
-        deckName: deckName,
-        totalCount: totalCount,
-        newCount: newCount,
-        dueCount: dueCount,
-        question: question,
-        answer: answer,
-        failInterval: '10m',
-        hardInterval: '1d',
-        goodInterval: '3d',
-        easyInterval: '5d',
-        showingAnswer: state.showingAnswer
-    };
-};
+export const getViewState = (state: ReviewState): ReviewState => state;
 
 const reviewPage = (state: ReviewState = initialState, action: Action) => {
     switch (action.type) {
@@ -72,41 +41,61 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
             });
         case FETCH_DECK_SUCCESS:
             const deck = action.deck;
+            const totalCount = deck ? deck.cards.length : 0;
+            const newCount = deck ? deck.cards.filter(it => it.status === 'NEW').length : 0;
+            const dueCount = deck ? deck.cards.filter(it => it.status === 'DUE').length : 0;
+
             return getViewState({
                 ...state,
-                deck: deck
+                deckName: deck.name,
+                deckId: deck.id,
+                totalCount: totalCount,
+                newCount: newCount,
+                dueCount: dueCount
+
             });
         case FETCH_CARDS_SUCCESS:
             const cards = action.cards;
+            const cardsForReview = cards;
+            let question = '';
+            let answer = '';
+            if (cardsForReview.length !== 0) {
+                question = cardsForReview[0].question;
+                answer = cardsForReview[0].answer;
+            }
+
             return getViewState({
                 ...state,
-                toReview: cards
+                toReview: cards,
+                question: question,
+                answer: answer,
+                failInterval: '10m',
+                hardInterval: '1d',
+                goodInterval: '3d',
+                easyInterval: '5d'
             });
         case ADD_CARD_SUCCESS:
             const addedCard = action.card;
             const newToReview = [...state.toReview, addedCard];
-            const deckCardsPlusAddedCard = [...state.deck.cards, new Card(addedCard.id, 'NEW')];
             return getViewState({
                 ...state,
-                toReview: newToReview,
-                deck: new DeckResponse(state.deck.id, state.deck.name, deckCardsPlusAddedCard)
+                totalCount: state.totalCount + 1,
+                newCount: state.newCount + 1,
+                toReview: newToReview
             });
         case ANSWER_CARD_SUCCESS:
-            const newCard = action.card;
-            const reviewedCard = state.toReview.find(card => card.question === state.question && card.answer === state.answer);
-            const reviewedDeckCard = state.deck.cards.find(card => newCard.id === card.id);
-
-            const newDeckCards = state.deck.cards.filter(card => card !== reviewedDeckCard);
-            if (reviewedDeckCard) {
-                newDeckCards.push(new Card(reviewedDeckCard.id, 'OK'));
-            }
-
-            const newDeck = new DeckResponse(state.deck.id, state.deck.name, newDeckCards);
+            const reviewedCard = action.card;
+            const minusReviewedCard = state.toReview.filter(card => card.id !== reviewedCard.id);
+            const doneReviewing = minusReviewedCard.length === 0;
 
             return getViewState({
                 ...state,
-                toReview: state.toReview.filter(card => card !== reviewedCard),
-                deck: newDeck
+                toReview: minusReviewedCard,
+                question: doneReviewing ? '' : minusReviewedCard[0].question,
+                answer: doneReviewing ? '' : minusReviewedCard[0].answer,
+                dueCount: state.dueCount > 0 ? state.dueCount - 1 : state.dueCount,
+                newCount: state.dueCount > 0 ? state.newCount : state.newCount - 1,
+                showingAnswer: false
             });
         default:
             return state;

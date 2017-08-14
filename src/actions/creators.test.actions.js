@@ -111,7 +111,17 @@ export const getDeck1DueCards = fetchCardsRequest(
     [
         "deck-1-card-30", "deck-1-card-31", "deck-1-card-32", "deck-1-card-33",
         "deck-1-card-34", "deck-1-card-35", "deck-1-card-36", "deck-1-card-37",
-        "deck-1-card-38", "deck-1-card-39"
+        "deck-1-card-38", "deck-1-card-39", "deck-1-card-40",
+        "deck-1-card-41", "deck-1-card-42", "deck-1-card-43", "deck-1-card-44",
+        "deck-1-card-45", "deck-1-card-46", "deck-1-card-47", "deck-1-card-48",
+        "deck-1-card-49", "deck-1-card-50", "deck-1-card-51", "deck-1-card-52",
+        "deck-1-card-53", "deck-1-card-54", "deck-1-card-55", "deck-1-card-56",
+        "deck-1-card-57", "deck-1-card-58", "deck-1-card-59", "deck-1-card-60",
+        "deck-1-card-61", "deck-1-card-62", "deck-1-card-63", "deck-1-card-64",
+        "deck-1-card-65", "deck-1-card-66", "deck-1-card-67", "deck-1-card-68",
+        "deck-1-card-69", "deck-1-card-70", "deck-1-card-71", "deck-1-card-72",
+        "deck-1-card-73", "deck-1-card-74", "deck-1-card-75", "deck-1-card-76",
+        "deck-1-card-77", "deck-1-card-78", "deck-1-card-79"
     ]);
 
 export const gotDeck1DueCards = fetchCardsSuccess(new CardDetailResponse([

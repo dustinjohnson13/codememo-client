@@ -69,8 +69,8 @@ export type CollectionState = {
 
 export type ReviewState = {
     +toReview: Array<CardDetail>;
-    +deck: DeckResponse;
     +deckName: string;
+    +deckId: string;
     +totalCount: number;
     +newCount: number;
     +dueCount: number;

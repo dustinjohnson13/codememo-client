@@ -8,6 +8,7 @@ import {
     HIDE_ANSWER,
     SHOW_ANSWER
 } from '../actions/actionTypes'
+import {ONE_DAY_IN_SECONDS} from "../services/APIDomain";
 
 export const initialState = {
     dueCards: [],
@@ -57,10 +58,19 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
             let question = '';
             let answer = '';
             let cardId = '';
+            let failInterval = '';
+            let hardInterval = '';
+            let goodInterval = '';
+            let easyInterval = '';
             if (cardsForReview.length !== 0) {
-                question = cardsForReview[0].question;
-                answer = cardsForReview[0].answer;
-                cardId = cardsForReview[0].id;
+                const forReview = cardsForReview[0];
+                question = forReview.question;
+                answer = forReview.answer;
+                cardId = forReview.id;
+                failInterval = userFriendlyInterval(forReview.failInterval);
+                hardInterval = userFriendlyInterval(forReview.hardInterval);
+                goodInterval = userFriendlyInterval(forReview.goodInterval);
+                easyInterval = userFriendlyInterval(forReview.easyInterval);
             }
 
             return getViewState({
@@ -70,10 +80,10 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
                 question: question,
                 answer: answer,
                 cardId: cardId,
-                failInterval: '10m',
-                hardInterval: '1d',
-                goodInterval: '3d',
-                easyInterval: '5d'
+                failInterval: failInterval,
+                hardInterval: hardInterval,
+                goodInterval: goodInterval,
+                easyInterval: easyInterval
             });
         case ADD_CARD_SUCCESS:
             const addedCard = action.card;
@@ -81,6 +91,11 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
             const questionAfterAddCard = reviewNewCard ? addedCard.question : state.question;
             const answerAfterAddCard = reviewNewCard ? addedCard.answer : state.answer;
             const cardIdAfterAddCard = reviewNewCard ? addedCard.id : state.cardId;
+            const failIntervalAfterAddCard = reviewNewCard ? userFriendlyInterval(addedCard.failInterval) : state.failInterval;
+            const hardIntervalAfterAddCard = reviewNewCard ? userFriendlyInterval(addedCard.hardInterval) : state.hardInterval;
+            const goodIntervalAfterAddCard = reviewNewCard ? userFriendlyInterval(addedCard.goodInterval) : state.goodInterval;
+            const easyIntervalAfterAddCard = reviewNewCard ? userFriendlyInterval(addedCard.easyInterval) : state.easyInterval;
+
             return getViewState({
                 ...state,
                 totalCount: state.totalCount + 1,
@@ -88,6 +103,10 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
                 question: questionAfterAddCard,
                 answer: answerAfterAddCard,
                 cardId: cardIdAfterAddCard,
+                failInterval: failIntervalAfterAddCard,
+                hardInterval: hardIntervalAfterAddCard,
+                goodInterval: goodIntervalAfterAddCard,
+                easyInterval: easyIntervalAfterAddCard,
                 showingAnswer: false
             });
         case ANSWER_CARD_SUCCESS:
@@ -97,7 +116,6 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
             const numDueCards = dueCardsMinusReviewed.length;
             const numNewCards = newCardsMinusReviewed.length;
             const doneReviewing = numDueCards === 0 && numNewCards === 0;
-
             return getViewState({
                 ...state,
                 dueCards: dueCardsMinusReviewed,
@@ -105,11 +123,26 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
                 question: doneReviewing ? '' : numDueCards > 0 ? dueCardsMinusReviewed[0].question : newCardsMinusReviewed[0].question,
                 answer: doneReviewing ? '' : numDueCards > 0 ? dueCardsMinusReviewed[0].answer : newCardsMinusReviewed[0].answer,
                 cardId: doneReviewing ? '' : numDueCards > 0 ? dueCardsMinusReviewed[0].id : newCardsMinusReviewed[0].id,
+                failInterval: doneReviewing ? '' : userFriendlyInterval(dueCardsMinusReviewed[0].failInterval),
+                hardInterval: doneReviewing ? '' : userFriendlyInterval(dueCardsMinusReviewed[0].hardInterval),
+                goodInterval: doneReviewing ? '' : userFriendlyInterval(dueCardsMinusReviewed[0].goodInterval),
+                easyInterval: doneReviewing ? '' : userFriendlyInterval(dueCardsMinusReviewed[0].easyInterval),
                 showingAnswer: false
             });
         default:
             return state;
     }
+};
+
+const userFriendlyInterval = (intervalSeconds: number): string => {
+    let daysOrHours = intervalSeconds / ONE_DAY_IN_SECONDS;
+    let unit = 'd';
+    if (daysOrHours < 1) {
+        const secondsPerHour = 3600;
+        daysOrHours = intervalSeconds / secondsPerHour;
+        unit = 'h';
+    }
+    return Math.round(daysOrHours) + unit;
 };
 
 export default reviewPage

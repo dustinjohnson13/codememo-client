@@ -1,7 +1,15 @@
 //@flow
 import collectionPage, {initialState} from './collectionPage';
 import {addCardSuccess, addDeckSuccess, answerCardSuccess, fetchCollectionSuccess} from '../actions/creators'
-import {CardDetail, CollectionResponse, Deck} from "../services/APIDomain";
+import {
+    CardDetail,
+    CollectionResponse,
+    Deck,
+    FOUR_DAYS_IN_SECONDS,
+    HALF_DAY_IN_SECONDS,
+    ONE_DAY_IN_SECONDS,
+    TWO_DAYS_IN_SECONDS
+} from "../services/APIDomain";
 
 describe('collectionPage', () => {
 
@@ -54,7 +62,8 @@ describe('collectionPage', () => {
             }
         };
 
-        const action = addCardSuccess(new CardDetail('some-card', 'some question', 'some answer', 9999999), 'deck2');
+        const action = addCardSuccess(new CardDetail('some-card', 'some question', 'some answer',
+            HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, 9999999), 'deck2');
         const actualState = collectionPage(initialState, action);
 
         expect(actualState).toEqual(expectedState);
@@ -70,7 +79,9 @@ describe('collectionPage', () => {
             }
         };
 
-        const actualState = collectionPage(twoDecksWithDueAndNewCardsState, answerCardSuccess(new CardDetail('some-card', 'some question', 'some answer', 9999999), 'deck2'));
+        const card = new CardDetail('some-card', 'some question', 'some answer', HALF_DAY_IN_SECONDS,
+            ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, 9999999);
+        const actualState = collectionPage(twoDecksWithDueAndNewCardsState, answerCardSuccess(card, 'deck2'));
 
         expect(actualState).toEqual(expectedState);
     });
@@ -86,7 +97,7 @@ describe('collectionPage', () => {
             decksById: {'deck1': new Deck('deck1', 'Deck1', 80, 0, 22), 'deck2': new Deck('deck2', 'Deck2', 80, 27, 23)}
         };
 
-        const actualState = collectionPage(previousState, answerCardSuccess(new CardDetail('some-card', 'some question', 'some answer', 9999999), 'deck1'));
+        const actualState = collectionPage(previousState, answerCardSuccess(new CardDetail('some-card', 'some question', 'some answer', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, 9999999), 'deck1'));
 
         expect(actualState).toEqual(expectedState);
     });
@@ -95,7 +106,7 @@ describe('collectionPage', () => {
         const previousState = twoDecksWithDueAndNewCardsState;
         const expectedState = twoDecksWithDueAndNewCardsState;
 
-        const actualState = collectionPage(previousState, answerCardSuccess(new CardDetail('some-card', 'some question', 'some answer', 9999999), 'unknown-deck'));
+        const actualState = collectionPage(previousState, answerCardSuccess(new CardDetail('some-card', 'some question', 'some answer', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, 9999999), 'unknown-deck'));
 
         expect(actualState).toEqual(expectedState);
     });
@@ -107,7 +118,7 @@ describe('collectionPage', () => {
         };
         const expectedState = previousState;
 
-        const actualState = collectionPage(previousState, answerCardSuccess(new CardDetail('some-card', 'some question', 'some answer', 9999999), 'deck1'));
+        const actualState = collectionPage(previousState, answerCardSuccess(new CardDetail('some-card', 'some question', 'some answer', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, 9999999), 'deck1'));
 
         expect(actualState).toEqual(expectedState);
     });

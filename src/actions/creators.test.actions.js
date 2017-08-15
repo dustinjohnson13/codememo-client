@@ -7,7 +7,18 @@ import {
     fetchDeckSuccess,
     reviewDeckRequest
 } from "./creators";
-import {Card, CardDetail, CardDetailResponse, CollectionResponse, Deck, DeckResponse} from "../services/APIDomain";
+import {
+    Card,
+    CardDetail,
+    CardDetailResponse,
+    CollectionResponse,
+    Deck,
+    DeckResponse,
+    FOUR_DAYS_IN_SECONDS,
+    HALF_DAY_IN_SECONDS,
+    ONE_DAY_IN_SECONDS,
+    TWO_DAYS_IN_SECONDS
+} from "../services/APIDomain";
 
 export const deckId = 'deck-1';
 export const deckName = 'Deck1';
@@ -128,50 +139,70 @@ export const gotDeck1DueCards = fetchCardsSuccess(new CardDetailResponse([
     new CardDetail('deck-1-card-30',
         'Question Number 30?',
         'Answer Number 30',
+        HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS,
+        FOUR_DAYS_IN_SECONDS,
         -299999
     ),
     new CardDetail('deck-1-card-31',
         'Question Number 31?',
         'Answer Number 31',
+        HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS,
+        FOUR_DAYS_IN_SECONDS,
         -309999
     ),
     new CardDetail('deck-1-card-32',
         'Question Number 32?',
         'Answer Number 32',
+        HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS,
+        FOUR_DAYS_IN_SECONDS,
         -319999
     ),
     new CardDetail('deck-1-card-33',
         'Question Number 33?',
         'Answer Number 33',
+        HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS,
+        FOUR_DAYS_IN_SECONDS,
         -329999
     ),
     new CardDetail('deck-1-card-34',
         'Question Number 34?',
         'Answer Number 34',
+        HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS,
+        FOUR_DAYS_IN_SECONDS,
         -339999
     ),
     new CardDetail('deck-1-card-35',
         'Question Number 35?',
         'Answer Number 35',
+        HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS,
+        FOUR_DAYS_IN_SECONDS,
         -349999
     ),
     new CardDetail('deck-1-card-36',
         'Question Number 36?',
         'Answer Number 36',
+        HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS,
+        FOUR_DAYS_IN_SECONDS,
         -359999
     ),
     new CardDetail('deck-1-card-37',
         'Question Number 37?',
         'Answer Number 37',
+        HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS,
+        FOUR_DAYS_IN_SECONDS,
         -369999
     ),
     new CardDetail('deck-1-card-38',
         'Question Number 38?',
         'Answer Number 38',
+        HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS,
+        FOUR_DAYS_IN_SECONDS,
         -379999
     ),
     new CardDetail('deck-1-card-39',
         'Question Number 39?',
         'Answer Number 39',
+        HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS,
+        FOUR_DAYS_IN_SECONDS,
         -389999
     )]));

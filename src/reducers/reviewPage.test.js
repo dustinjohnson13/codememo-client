@@ -8,7 +8,16 @@ import {
     hideAnswer,
     showAnswer
 } from '../actions/creators'
-import {Card, CardDetail, CardDetailResponse, DeckResponse} from "../services/APIDomain";
+import {
+    Card,
+    CardDetail,
+    CardDetailResponse,
+    DeckResponse,
+    FOUR_DAYS_IN_SECONDS,
+    HALF_DAY_IN_SECONDS,
+    ONE_DAY_IN_SECONDS,
+    TWO_DAYS_IN_SECONDS
+} from "../services/APIDomain";
 
 describe('reviewPage', () => {
 
@@ -20,7 +29,7 @@ describe('reviewPage', () => {
         new Card('5', 'OK'), new Card('6', 'OK')];
     const deck = new DeckResponse(expectedDeckID, expectedDeckName, cards);
 
-    const addCardResponse = new CardDetail('deck-1-card-99', 'Some Question', 'Some Answer', null);
+    const addCardResponse = new CardDetail('deck-1-card-99', 'Some Question', 'Some Answer', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, null);
 
     it('adds new card on add card success', () => {
 
@@ -30,11 +39,11 @@ describe('reviewPage', () => {
             ...initialState,
             totalCount: 5,
             dueCards: [
-                new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', -299999),
-                new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', -309999)
+                new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, -299999),
+                new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, -309999)
             ],
             newCards: [
-                new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', null)
+                new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, null)
             ]
         };
 
@@ -67,6 +76,10 @@ describe('reviewPage', () => {
         expect(actualState.question).toEqual(response.question);
         expect(actualState.answer).toEqual(response.answer);
         expect(actualState.cardId).toEqual(response.id);
+        expect(actualState.failInterval).toEqual("12h");
+        expect(actualState.hardInterval).toEqual("1d");
+        expect(actualState.goodInterval).toEqual("2d");
+        expect(actualState.easyInterval).toEqual("4d");
     });
 
     it('hides answer after adding card', () => {
@@ -131,28 +144,28 @@ describe('reviewPage', () => {
 
     it('adds question, answer, answer intervals, and cards for review on fetch cards success', () => {
 
-        const cardDetails = [new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', -299999),
-            new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', -309999),
-            new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', null)];
+        const cardDetails = [new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, -299999),
+            new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, -309999),
+            new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, null)];
         const cardsResponse = new CardDetailResponse(cardDetails);
 
         const previousState = {...initialState};
         const expectedState = {
             ...previousState,
             dueCards: [
-                new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', -299999),
-                new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', -309999)
+                new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, -299999),
+                new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, -309999)
             ],
             newCards: [
-                new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', null)
+                new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, null)
             ],
             answer: "Answer Number 30",
             question: "Question Number 30?",
             cardId: 'deck-1-card-30',
-            easyInterval: "5d",
-            failInterval: "10m",
-            goodInterval: "3d",
-            hardInterval: "1d"
+            failInterval: "12h",
+            hardInterval: "1d",
+            goodInterval: "2d",
+            easyInterval: "4d"
         };
 
         const action = fetchCardsSuccess(cardsResponse);
@@ -173,16 +186,22 @@ describe('reviewPage', () => {
                 'deck-1-card-30',
                 'Question Number 30?',
                 'Answer Number 30',
+                HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS,
+                FOUR_DAYS_IN_SECONDS,
                 -299999
             ), new CardDetail('deck-1-card-31',
                 'Question Number 31?',
                 'Answer Number 31',
+                HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS,
+                FOUR_DAYS_IN_SECONDS,
                 -309999
             )],
             newCards: [
                 new CardDetail('deck-1-card-32',
                     'Question Number 32?',
                     'Answer Number 32',
+                    HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS,
+                    FOUR_DAYS_IN_SECONDS,
                     null)
             ],
             showingAnswer: true
@@ -194,13 +213,17 @@ describe('reviewPage', () => {
             ...previousState,
             answer: "Answer Number 31",
             question: "Question Number 31?",
+            failInterval: "12h",
+            hardInterval: "1d",
+            goodInterval: "2d",
+            easyInterval: "4d",
             cardId: 'deck-1-card-31',
             totalCount: 5,
             dueCards: expectedDueCards,
             showingAnswer: false
         };
 
-        const action = answerCardSuccess(new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', 86400), 'deck-1');
+        const action = answerCardSuccess(new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, 86400), 'deck-1');
         const actualState = reviewPage(previousState, action);
 
         expect(actualState).toEqual(expectedState);

@@ -1,7 +1,17 @@
 //@flow
 import type {Clock} from "../services/APIDomain";
 import * as api from '../services/APIDomain'
-import {Card as APICard, CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from '../services/APIDomain'
+import {
+    Card as APICard,
+    CardDetail,
+    CardDetailResponse,
+    CollectionResponse,
+    DeckResponse,
+    FOUR_DAYS_IN_SECONDS,
+    HALF_DAY_IN_SECONDS,
+    ONE_DAY_IN_SECONDS,
+    TWO_DAYS_IN_SECONDS
+} from '../services/APIDomain'
 
 class FrozenClock implements Clock {
     epochSeconds(): number {
@@ -118,7 +128,9 @@ export class FakeDataService {
         }
 
         const cardJsonArray = cardsForIds.map((card: Card) => {
-            return new CardDetail(card.id, card.question, card.answer, card.due)
+            return new CardDetail(card.id, card.question, card.answer,
+                HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS,
+                FOUR_DAYS_IN_SECONDS, card.due)
         });
         const cardResponse = new CardDetailResponse(cardJsonArray);
         return Promise.resolve(cardResponse);
@@ -153,7 +165,9 @@ export class FakeDataService {
                     newDeck
                 ];
 
-                return Promise.resolve(new CardDetail(cardId, question, answer, null));
+                return Promise.resolve(new CardDetail(cardId, question, answer,
+                    HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS,
+                    FOUR_DAYS_IN_SECONDS, null));
             }
         }
         return Promise.reject(`Unable to find deck with id [${deckId}]`)

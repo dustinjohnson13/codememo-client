@@ -15,7 +15,16 @@ import {
     reviewDeckRequest
 } from "./creators";
 import {call, put, select} from 'redux-saga/effects'
-import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "../services/APIDomain";
+import {
+    CardDetail,
+    CardDetailResponse,
+    CollectionResponse,
+    DeckResponse,
+    FOUR_DAYS_IN_SECONDS,
+    HALF_DAY_IN_SECONDS,
+    ONE_DAY_IN_SECONDS,
+    TWO_DAYS_IN_SECONDS
+} from "../services/APIDomain";
 import {Page} from "./pages";
 import * as selectors from './selectors'
 import {deckId, deckName, getDeck1DueCards, gotDeck1} from "./creators.test.actions";
@@ -38,7 +47,8 @@ describe('creators', () => {
         const gen = addCard(action);
         expect(gen.next().value).toEqual(call(API.addCard, action.id, action.question, action.answer));
 
-        const newCard = new CardDetail('deck-1-card-0', 'Some Question', 'Some Answer', null);
+        const newCard = new CardDetail('deck-1-card-0', 'Some Question', 'Some Answer', HALF_DAY_IN_SECONDS,
+            ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, null);
         //$FlowFixMe
         expect(gen.next(newCard).value).toEqual(put(addCardSuccess(newCard, 'deck-1')));
     });
@@ -51,7 +61,8 @@ describe('creators', () => {
         const gen = answerCard(action);
         expect(gen.next().value).toEqual(call(API.answerCard, action.id, action.answer));
 
-        const newCard = new CardDetail(action.id, 'question', 'answer', 9000);
+        const newCard = new CardDetail(action.id, 'question', 'answer', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS,
+            TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, 9000);
         //$FlowFixMe
         expect(gen.next(newCard).value).toEqual(put(answerCardSuccess(newCard, deckId)));
     });

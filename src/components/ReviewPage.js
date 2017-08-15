@@ -26,7 +26,7 @@ class ReviewPage extends Component {
             <div>
                 <div className="menu">
                     <a className="back" onClick={this.props.back}>&lt;&nbsp;Back</a>
-                    <AddCardModal deckId='deck-1' addCard={this.props.addCard}/>
+                    <AddCardModal deckId={this.props.id} addCard={this.props.addCard}/>
                     <Button>Edit</Button><Button>Find</Button>
                     <a className="tools">Tools</a>
                 </div>

@@ -1,6 +1,6 @@
 //@flow
 import type {Action, CollectionState} from "../actions/actionTypes";
-import {ADD_DECK_SUCCESS, ANSWER_CARD_SUCCESS, FETCH_COLLECTION_SUCCESS} from '../actions/actionTypes'
+import {ADD_CARD_SUCCESS, ADD_DECK_SUCCESS, ANSWER_CARD_SUCCESS, FETCH_COLLECTION_SUCCESS} from '../actions/actionTypes'
 import {Deck} from "../services/APIDomain";
 
 export const getViewState = (state: CollectionState) => state;
@@ -20,6 +20,17 @@ const collectionPage = (state: CollectionState = initialState, action: Action) =
                 ...state,
                 decks: incomingDecks.map(deck => deck.id),
                 decksById: incomingDecksById
+            });
+        case ADD_CARD_SUCCESS:
+            let decksByIdWithAddedCard = {...state.decksById};
+            const deckForAddedCard = decksByIdWithAddedCard[action.deckId];
+            if (deckForAddedCard) {
+                decksByIdWithAddedCard[action.deckId] = new Deck(deckForAddedCard.id, deckForAddedCard.name,
+                    deckForAddedCard.totalCount + 1, deckForAddedCard.dueCount, deckForAddedCard.newCount + 1);
+            }
+            return getViewState({
+                ...state,
+                decksById: decksByIdWithAddedCard
             });
         case ANSWER_CARD_SUCCESS:
             let decksById = state.decksById;

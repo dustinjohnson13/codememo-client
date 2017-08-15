@@ -1,6 +1,6 @@
 //@flow
 import collectionPage, {initialState} from './collectionPage';
-import {addDeckSuccess, answerCardSuccess, fetchCollectionSuccess} from '../actions/creators'
+import {addCardSuccess, addDeckSuccess, answerCardSuccess, fetchCollectionSuccess} from '../actions/creators'
 import {CardDetail, CollectionResponse, Deck} from "../services/APIDomain";
 
 describe('collectionPage', () => {
@@ -36,6 +36,30 @@ describe('collectionPage', () => {
 
         expect(actualState).toEqual(expectedState);
     });
+
+    it('increases new count when a new card is added', () => {
+        const initialState = {
+            decks: ['deck1', 'deck2'],
+            decksById: {
+                'deck1': new Deck('deck1', 'Deck1', 80, 27, 23),
+                'deck2': new Deck('deck2', 'Deck2', 0, 0, 0)
+            }
+        };
+
+        const expectedState = {
+            decks: ['deck1', 'deck2'],
+            decksById: {
+                'deck1': new Deck('deck1', 'Deck1', 80, 27, 23),
+                'deck2': new Deck('deck2', 'Deck2', 1, 0, 1)
+            }
+        };
+
+        const action = addCardSuccess(new CardDetail('some-card', 'some question', 'some answer', 9999999), 'deck2');
+        const actualState = collectionPage(initialState, action);
+
+        expect(actualState).toEqual(expectedState);
+    });
+
 
     it('decreases due count when a due card is successfully answer', () => {
         const expectedState = {

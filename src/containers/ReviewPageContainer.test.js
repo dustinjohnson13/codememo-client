@@ -10,7 +10,8 @@ describe('<ReviewPageContainer/>', () => {
 
     it('maps deck attributes from state', () => {
         const expectedState = {
-            "deckName": "deck-1",
+            "id": "deck-1",
+            "deckName": "Deck1",
             "dueCount": 2,
             "newCount": 1,
             "totalCount": 6

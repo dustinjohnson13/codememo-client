@@ -2,7 +2,7 @@
 import {CardDetail} from "../services/APIDomain";
 
 export const reviewState = {
-    deckName: 'deck-1', deckId: 'deck-1', cardId: 'deck-1-card-30', totalCount: 6,
+    deckName: 'Deck1', deckId: 'deck-1', cardId: 'deck-1-card-30', totalCount: 6,
     failInterval: '10m', hardInterval: '1d', goodInterval: '3d', easyInterval: '5d',
     answer: '', question: '', showingAnswer: false,
     dueCards: [

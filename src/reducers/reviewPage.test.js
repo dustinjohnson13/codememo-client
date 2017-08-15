@@ -44,7 +44,7 @@ describe('reviewPage', () => {
         const newCards = [...cards, new Card('deck-1-card-99', 'NEW')];
         const expectedNewCards = [...previousState.newCards, response];
 
-        const action = addCardSuccess(response);
+        const action = addCardSuccess(response, 'deck-1');
         const actualState = reviewPage(previousState, action);
 
         expect(actualState.totalCount).toEqual(6);

@@ -152,10 +152,11 @@ export const addCardRequest = (id: string, question: string, answer: string): Ad
     }
 };
 
-export const addCardSuccess = (response: CardDetail): AddCardSuccessAction => {
+export const addCardSuccess = (response: CardDetail, deckId: string): AddCardSuccessAction => {
     return {
         type: ADD_CARD_SUCCESS,
-        card: response
+        card: response,
+        deckId: deckId
     }
 };
 
@@ -177,7 +178,7 @@ export function* addDeck(action: AddDeckRequestAction): Generator<AddDeckRequest
 export function* addCard(action: AddCardRequestAction): Generator<AddCardRequestAction, any, void> {
     const card = yield call(API.addCard, action.id, action.question, action.answer);
     // $FlowFixMe
-    yield put(addCardSuccess(card));
+    yield put(addCardSuccess(card, action.id));
 }
 
 export function* answerCard(action: AnswerCardRequestAction): Generator<AnswerCardRequestAction, any, void> {
@@ -195,6 +196,8 @@ export function* reviewDeck(action: ReviewDeckRequestAction): Generator<ReviewDe
     const dueOrNewCards = deck.cards.filter(card => card.status !== 'OK');
     if (dueOrNewCards.length > 0) {
         yield put(fetchCardsRequest(dueOrNewCards.map(card => card.id)));
+    } else {
+        yield put(fetchCardsSuccess(new CardDetailResponse([])));
     }
 
     yield put(loadPage(Page.REVIEW));

@@ -34,7 +34,7 @@ export type ShowAnswerAction = { type: 'SHOW_ANSWER' }
 export type AnswerCardRequestAction = { type: 'ANSWER_CARD_REQUEST', id: string, deckId: string, answer: string }
 export type AnswerCardSuccessAction = { type: 'ANSWER_CARD_SUCCESS', card: CardDetail, deckId: string }
 export type AddCardRequestAction = { type: 'ADD_CARD_REQUEST', id: string, question: string, answer: string }
-export type AddCardSuccessAction = { type: 'ADD_CARD_SUCCESS', card: CardDetail }
+export type AddCardSuccessAction = { type: 'ADD_CARD_SUCCESS', card: CardDetail, deckId: string }
 export type AddDeckRequestAction = { type: 'ADD_DECK_REQUEST', name: string }
 export type AddDeckSuccessAction = { type: 'ADD_DECK_SUCCESS', collection: CollectionResponse }
 

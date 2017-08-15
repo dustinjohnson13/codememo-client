@@ -10,6 +10,7 @@ export const mapStateToProps = (state: CombinedState, ownProps: OwnProps) => {
     const props = state.review;
 
     return {
+        id: props.deckId,
         deckName: props.deckName,
         newCount: props.newCards.length,
         dueCount: props.dueCards.length,

@@ -6,17 +6,19 @@ import {
     answerCard,
     answerCardRequest,
     answerCardSuccess,
+    fetchCardsSuccess,
     fetchCollection,
+    fetchDeckSuccess,
     loadCollectionPage,
     loadPage,
     reviewDeck,
     reviewDeckRequest
 } from "./creators";
 import {call, put, select} from 'redux-saga/effects'
-import {CardDetail, CollectionResponse} from "../services/APIDomain";
+import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "../services/APIDomain";
 import {Page} from "./pages";
 import * as selectors from './selectors'
-import {deckId, getDeck1DueCards, gotDeck1} from "./creators.test.actions";
+import {deckId, deckName, getDeck1DueCards, gotDeck1} from "./creators.test.actions";
 import API from '../services/API';
 import {collectionState} from "../fakeData/collectionState";
 import {initialState} from "../reducers/collectionPage";
@@ -38,7 +40,7 @@ describe('creators', () => {
 
         const newCard = new CardDetail('deck-1-card-0', 'Some Question', 'Some Answer', null);
         //$FlowFixMe
-        expect(gen.next(newCard).value).toEqual(put(addCardSuccess(newCard)));
+        expect(gen.next(newCard).value).toEqual(put(addCardSuccess(newCard, 'deck-1')));
     });
 
     it('sends the card answer to the API and returns the new card detail', () => {
@@ -92,6 +94,24 @@ describe('creators', () => {
         //$FlowFixMe
         expect(gen.next(getDeck1DueCards.ids).value)
             .toEqual(put(getDeck1DueCards));
+
+        expect(gen.next().value).toEqual(put(loadPage(Page.REVIEW)));
+    });
+
+    it('sends no cards fetch response when review deck requested for zero card deck', () => {
+
+        const gen = reviewDeck(reviewDeckRequest(deckId));
+
+        expect(gen.next().value)
+            .toEqual(call(API.fetchDeck, deckId));
+
+        const deckResponse = new DeckResponse(deckId, deckName, []);
+        //$FlowFixMe
+        expect(gen.next(deckResponse).value)
+            .toEqual(put(fetchDeckSuccess(deckResponse)));
+
+        expect(gen.next().value)
+            .toEqual(put(fetchCardsSuccess(new CardDetailResponse([]))));
 
         expect(gen.next().value).toEqual(put(loadPage(Page.REVIEW)));
     });

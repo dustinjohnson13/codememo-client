@@ -80,12 +80,15 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
             const reviewNewCard = state.question === '';
             const questionAfterAddCard = reviewNewCard ? addedCard.question : state.question;
             const answerAfterAddCard = reviewNewCard ? addedCard.answer : state.answer;
+            const cardIdAfterAddCard = reviewNewCard ? addedCard.id : state.cardId;
             return getViewState({
                 ...state,
                 totalCount: state.totalCount + 1,
                 newCards: [...state.newCards, addedCard],
                 question: questionAfterAddCard,
-                answer: answerAfterAddCard
+                answer: answerAfterAddCard,
+                cardId: cardIdAfterAddCard,
+                showingAnswer: false
             });
         case ANSWER_CARD_SUCCESS:
             const reviewedCard = action.card;

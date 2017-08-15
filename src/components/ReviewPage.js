@@ -8,19 +8,18 @@ import AddCardModal from "./AddCardModal";
 class ReviewPage extends Component {
     props: {
         id: string,
-        back: any,
         deckName: string,
         totalCount: number,
         dueCount: number,
         newCount: number,
-        question: string,
-        answer: string,
+        back: any,
         addCard: any,
         showAnswer: any
     };
 
     render() {
-        const reviewSection = (this.props.question === '') ? <div>Congratulations, you're caught up!</div> :
+        const reviewSection = (this.props.dueCount === 0 && this.props.newCount === 0) ?
+            <div>Congratulations, you're caught up!</div> :
             <ReviewCardContainer/>;
         return (
             <div>

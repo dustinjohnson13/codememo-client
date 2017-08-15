@@ -49,7 +49,7 @@ describe('reviewPage', () => {
         expect(actualState.newCards).toEqual(expectedNewCards);
     });
 
-    it('adds question/answer on add card success if there are no cards for review', () => {
+    it('adds question/answer/id for added card if there are no cards for review', () => {
 
         const response = addCardResponse;
 
@@ -66,6 +66,24 @@ describe('reviewPage', () => {
 
         expect(actualState.question).toEqual(response.question);
         expect(actualState.answer).toEqual(response.answer);
+        expect(actualState.cardId).toEqual(response.id);
+    });
+
+    it('hides answer after adding card', () => {
+
+        const response = addCardResponse;
+
+        const previousState = {
+            ...initialState,
+            dueCards: [],
+            newCards: [],
+            showingAnswer: true
+        };
+
+        const action = addCardSuccess(response, 'deck-1');
+        const actualState = reviewPage(previousState, action);
+
+        expect(actualState.showingAnswer).toEqual(false);
     });
 
     it('hides answer when requested', () => {

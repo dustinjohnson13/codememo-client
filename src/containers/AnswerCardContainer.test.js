@@ -2,7 +2,7 @@ import React from 'react';
 
 import {mapDispatchToProps, mapStateToProps} from "./AnswerCardContainer";
 import {reviewState} from "../fakeData/reviewState";
-import {GOOD, HARD} from '../Domain'
+import {GOOD, HARD} from '../services/APIDomain'
 import {answerCardRequest, hideAnswer} from "../actions/creators";
 
 describe('<AnswerCardContainer />', () => {

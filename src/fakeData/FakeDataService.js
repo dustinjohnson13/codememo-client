@@ -1,8 +1,7 @@
 //@flow
-import * as domain from '../Domain.js'
+import type {Clock} from "../services/APIDomain";
 import * as api from '../services/APIDomain'
 import {Card as APICard, CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from '../services/APIDomain'
-import type {Clock} from "../Domain";
 
 class FrozenClock implements Clock {
     epochSeconds(): number {
@@ -13,10 +12,10 @@ class FrozenClock implements Clock {
 // Creates a deck with 27 due cards, 23 new cards, and 80 total cards
 export class FakeDataService {
     clock: Clock;
-    collectionStore: domain.Deck[];
+    collectionStore: Deck[];
     idCounter: number;
 
-    constructor(clock: Clock | void, decks?: Array<domain.Deck>) {
+    constructor(clock: Clock | void, decks?: Array<Deck>) {
         this.clock = (clock) ? clock : new FrozenClock();
         this.collectionStore = [];
         this.idCounter = 1;
@@ -57,12 +56,12 @@ export class FakeDataService {
                     dueTime = currentTime - (86400 * multiplier);
                 }
 
-                const card = new domain.Card(`${deckId}-card-${i}`, `Question Number ${i}?`, `Answer Number ${i}`, dueTime);
+                const card = new Card(`${deckId}-card-${i}`, `Question Number ${i}?`, `Answer Number ${i}`, dueTime);
                 cards.push(card);
             }
         }
 
-        const deck = new domain.Deck(deckId, name, cards);
+        const deck = new Deck(deckId, name, cards);
         this.collectionStore = [
             ...this.collectionStore,
             deck
@@ -118,7 +117,7 @@ export class FakeDataService {
             }
         }
 
-        const cardJsonArray = cardsForIds.map((card: domain.Card) => {
+        const cardJsonArray = cardsForIds.map((card: Card) => {
             return new CardDetail(card.id, card.question, card.answer, card.due)
         });
         const cardResponse = new CardDetailResponse(cardJsonArray);
@@ -145,9 +144,9 @@ export class FakeDataService {
         for (let deck of this.collectionStore) {
             if (deckId === deck.id) {
                 const cardId = `${deckId}-card-${this.idCounter++}`;
-                const card = new domain.Card(cardId, question, answer, null);
+                const card = new Card(cardId, question, answer, null);
                 const newCards = [...deck.cards, card];
-                const newDeck = new domain.Deck(deckId, deck.name, newCards);
+                const newDeck = new Deck(deckId, deck.name, newCards);
 
                 this.collectionStore = [
                     ...this.collectionStore.filter((deck) => deck.id !== deckId),
@@ -159,5 +158,47 @@ export class FakeDataService {
         }
         return Promise.reject(`Unable to find deck with id [${deckId}]`)
     }
+}
 
+class Deck {
+
+    id: string;
+    name: string;
+    cards: Array<Card>;
+
+    constructor(id: string, name: string, cards: Array<Card>) {
+        this.id = id;
+        this.name = name;
+        this.cards = cards;
+    }
+
+    getNew() {
+        return this.cards.filter((it) => it.isNew())
+    }
+
+    getDue(clock: Clock) {
+        return this.cards.filter((it) => it.isDue(clock))
+    }
+}
+
+class Card {
+    id: string;
+    question: string;
+    answer: string;
+    due: ?number;
+
+    constructor(id: string, question: string, answer: string, due: ?number) {
+        this.id = id;
+        this.question = question;
+        this.answer = answer;
+        this.due = due;
+    }
+
+    isNew() {
+        return this.due === null
+    }
+
+    isDue(clock: Clock) {
+        return this.due && this.due < clock.epochSeconds();
+    }
 }

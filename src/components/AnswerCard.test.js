@@ -3,7 +3,7 @@ import React from 'react';
 import {Provider} from 'react-redux';
 import {storeFake} from "../fakeData/storeFake";
 import AnswerCard from "./AnswerCard";
-import {EASY, FAIL, GOOD, HARD} from '../Domain'
+import {EASY, FAIL, GOOD, HARD} from '../services/APIDomain'
 import jsdom from 'jsdom';
 import {mount} from 'enzyme';
 

@@ -2,7 +2,7 @@
 import React, {Component} from 'react';
 import {Button} from 'reactstrap';
 import '../styles/ReviewPage.css';
-import {EASY, FAIL, GOOD, HARD} from '../Domain'
+import {EASY, FAIL, GOOD, HARD} from '../services/APIDomain'
 
 type Foo = {
     answerCard: any,

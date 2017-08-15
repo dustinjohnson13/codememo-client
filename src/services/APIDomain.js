@@ -1,4 +1,13 @@
 //@flow
+export interface Clock {
+    epochSeconds(): number;
+}
+
+export const FAIL = 'FAIL';
+export const HARD = 'HARD';
+export const GOOD = 'GOOD';
+export const EASY = 'EASY';
+
 export class Card {
     id: string;
     status: string; // TODO: Create enum
@@ -67,4 +76,18 @@ export class CollectionResponse {
         this.decks = decks;
         this.error = error;
     }
+}
+
+export interface DataService {
+    addDeck(name: string): Promise<CollectionResponse>;
+
+    fetchCollection(): Promise<CollectionResponse>;
+
+    fetchDeck(id: string): Promise<DeckResponse>;
+
+    fetchCards(ids: Array<string>): Promise<CardDetailResponse>;
+
+    answerCard(id: string, answer: string): Promise<CardDetail>;
+
+    addCard(deckId: string, question: string, answer: string): Promise<CardDetail>;
 }

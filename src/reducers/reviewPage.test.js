@@ -22,7 +22,6 @@ describe('reviewPage', () => {
 
     const addCardResponse = new CardDetail('deck-1-card-99', 'Some Question', 'Some Answer', null);
 
-
     it('adds new card on add card success', () => {
 
         const response = addCardResponse;
@@ -30,8 +29,6 @@ describe('reviewPage', () => {
         const previousState = {
             ...initialState,
             totalCount: 5,
-            newCount: 1,
-            dueCount: 2,
             dueCards: [
                 new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', -299999),
                 new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', -309999)
@@ -41,15 +38,34 @@ describe('reviewPage', () => {
             ]
         };
 
-        const newCards = [...cards, new Card('deck-1-card-99', 'NEW')];
+        const expectedDueCards = previousState.dueCards;
         const expectedNewCards = [...previousState.newCards, response];
 
         const action = addCardSuccess(response, 'deck-1');
         const actualState = reviewPage(previousState, action);
 
         expect(actualState.totalCount).toEqual(6);
-        expect(actualState.dueCards).toEqual(previousState.dueCards);
+        expect(actualState.dueCards).toEqual(expectedDueCards);
         expect(actualState.newCards).toEqual(expectedNewCards);
+    });
+
+    it('adds question/answer on add card success if there are no cards for review', () => {
+
+        const response = addCardResponse;
+
+        const previousState = {
+            ...initialState,
+            question: '',
+            answer: '',
+            dueCards: [],
+            newCards: []
+        };
+
+        const action = addCardSuccess(response, 'deck-1');
+        const actualState = reviewPage(previousState, action);
+
+        expect(actualState.question).toEqual(response.question);
+        expect(actualState.answer).toEqual(response.answer);
     });
 
     it('hides answer when requested', () => {

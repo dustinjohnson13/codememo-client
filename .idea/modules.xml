@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/flashcard-app.iml" filepath="$PROJECT_DIR$/flashcard-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/codememo-client.iml" filepath="$PROJECT_DIR$/codememo-client.iml" />
     </modules>
   </component>
 </project>

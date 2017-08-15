@@ -1,5 +1,5 @@
 {
-  "name": "flashcard-app",
+  "name": "codememo-client",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

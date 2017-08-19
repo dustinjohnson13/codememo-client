@@ -11,21 +11,7 @@ describe('SQLite3Dao', () => {
     let service
 
     beforeEach(async () => {
-        const sequelize = new Sequelize('database', 'username', 'password', {
-            host: 'localhost',
-            dialect: 'sqlite',
-
-            pool: {
-                max: 5,
-                min: 0,
-                idle: 10000
-            },
-
-            // SQLite only
-            storage: ':memory:'
-        })
-
-        service = new SQLite3Dao(sequelize)
+        service = createService()
 
         await service.init(true).catch((err) => {
             console.log("Error!")
@@ -370,7 +356,25 @@ describe('SQLite3Dao', () => {
     })
 })
 
-const loadCollectionData = () => {
+export const createService = () => {
+    const sequelize = new Sequelize('database', 'username', 'password', {
+        host: 'localhost',
+        dialect: 'sqlite',
+
+        pool: {
+            max: 5,
+            min: 0,
+            idle: 10000
+        },
+
+        // SQLite only
+        storage: ':memory:'
+    })
+
+    return new SQLite3Dao(sequelize)
+}
+
+export const loadCollectionData = () => {
     return UserEntity.create({
         email: 'someEmail@blah.com'
     }).then((user) => {

@@ -51,6 +51,14 @@ export const CardEntity = modelDefiner.define('card', {
     }
 })
 
+const hydrateDeck = (entity: DeckEntity) => {
+    return new Deck(entity.id, entity.collectionId, entity.name)
+}
+
+const hydrateCard = (entity: CardEntity) => {
+    return new Card(entity.id, entity.deckId, entity.question, entity.answer, entity.due)
+}
+
 export class SQLite3Dao {
 
     sequelize: Sequelize
@@ -183,15 +191,34 @@ export class SQLite3Dao {
     }
 
     findCard(id: number): Promise<Card> {
-        return CardEntity.findById(id).then((entity) =>
-            new Card(entity.id, entity.deckId, entity.question, entity.answer, entity.due))
+        return CardEntity.findById(id).then(entity => hydrateCard(entity))
     }
 
     findDeck(id: number): Promise<Deck> {
-        return DeckEntity.findById(id).then((entity) => new Deck(entity.id, entity.collectionId, entity.name))
+        return DeckEntity.findById(id).then((entity) => hydrateDeck(entity))
     }
 
     findCollection(id: number): Promise<Collection> {
         return CollectionEntity.findById(id).then((entity) => new Collection(entity.id, entity.userId))
+    }
+
+    findDecksByCollectionId(collectionId: number): Promise<Array<Deck>> {
+        const q = DeckEntity.findAll({
+            where: {
+                collectionId: collectionId
+            }
+        })
+        return q.then(entities => {
+            return entities.map(hydrateDeck)
+        })
+    }
+
+    findCardsByDeckId(deckId: number): Promise<Array<Card>> {
+        const q = CardEntity.findAll({
+            where: {
+                deckId: deckId
+            }
+        })
+        return q.then(entities => entities.map(hydrateCard))
     }
 }

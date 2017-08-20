@@ -1,5 +1,5 @@
 //@flow
-import {CollectionResponse, DeckResponse} from "./APIDomain"
+import {CardDetail, CollectionResponse, DeckResponse} from "./APIDomain"
 import DaoDelegatingDataService from "./DaoDelegatingDataService"
 import User from "../entity/User"
 import Collection from "../entity/Collection"
@@ -52,7 +52,7 @@ function testWithDaoImplementation(createDao: any) {
         })
 
         it('can add new deck', (done) => {
-            // expect.assertions(5)
+            expect.assertions(5)
 
             const deckName = "My New Deck"
 
@@ -68,7 +68,7 @@ function testWithDaoImplementation(createDao: any) {
             })
         })
 
-        it('can fetch decks', (done) => {
+        it('can fetch collection', (done) => {
             expect.assertions(5)
 
             service.fetchCollection(TEST_USER_EMAIL).then((actual: CollectionResponse) => {
@@ -84,18 +84,37 @@ function testWithDaoImplementation(createDao: any) {
             })
         })
 
-        // it('can add new card', () => {
-        //     const deckId = "deck-1"
-        //     const question = 'The question'
-        //     const answer = 'The answer'
-        //
-        //     serviceWithDefaultDecks().addCard(deckId, question, answer).then((actual: CardDetail) => {
-        //         expect(actual.id).toMatch(/^deck-1-card-\d$/)
-        //         expect(actual.question).toEqual(question)
-        //         expect(actual.answer).toEqual(answer)
-        //         expect(actual.due).toEqual(null)
-        //     })
-        // })
+        it('can fetch decks', (done) => {
+            expect.assertions(2)
+
+            service.fetchCollection(TEST_USER_EMAIL)
+                .then((actual: CollectionResponse) => service.fetchDeck(actual.decks[0].id))
+                .then(deck => {
+                    expect(deck.name).toEqual(TEST_DECK_NAME)
+                    expect(deck.cards.length).toEqual(80)
+                    done()
+                })
+        })
+
+        it('can add new card', (done) => {
+            expect.assertions(4)
+
+            const question = 'The question'
+            const answer = 'The answer'
+
+            service.fetchCollection(TEST_USER_EMAIL)
+                .then(collection => collection.decks)
+                .then(decks => decks[0].id)
+                .then(deckId => {
+                    service.addCard(deckId, question, answer).then((actual: CardDetail) => {
+                        expect(actual.id).toBeDefined()
+                        expect(actual.question).toEqual(question)
+                        expect(actual.answer).toEqual(answer)
+                        expect(actual.due).toBeUndefined()
+                        done()
+                    })
+                })
+        })
 
         it('can fetch deck by id', (done) => {
             expect.assertions(3)
@@ -111,6 +130,27 @@ function testWithDaoImplementation(createDao: any) {
                         done()
                     })
                 })
+        })
+
+        it('can answer card', (done) => {
+            expect.assertions(1)
+
+            service.fetchCollection(TEST_USER_EMAIL)
+                .then(collection => collection.decks)
+                .then(decks => decks[0].id)
+                .then(deckId => service.fetchDeck(deckId))
+                .then(deck => service.fetchCards(deck.cards.map(card => card.id)))
+                .then(response => {
+                    const firstCard = response.cards[0]
+                    const originalDue = firstCard.due
+                    service.answerCard(firstCard.id, 'OK').then(answeredCard => {
+                        const newDue = answeredCard.due
+                        // $FlowFixMe
+                        expect(newDue).toBeGreaterThan(originalDue)
+                        done()
+                    })
+                })
+
         })
 
     })

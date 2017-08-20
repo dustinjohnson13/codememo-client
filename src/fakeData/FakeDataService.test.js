@@ -14,7 +14,7 @@ describe('FakeDataService', () => {
     })
 
     it('can add new deck', () => {
-        serviceWithNoDecks().addDeck("My New Deck").then((actual: CollectionResponse) => {
+        serviceWithNoDecks().addDeck("Some Email", "My New Deck").then((actual: CollectionResponse) => {
             expect(actual).toEqual(new CollectionResponse([new Deck('deck-1', "My New Deck", 0, 0, 0)]))
         })
     })

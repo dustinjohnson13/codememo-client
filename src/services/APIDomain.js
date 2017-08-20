@@ -94,9 +94,10 @@ export class CollectionResponse {
 }
 
 export interface DataService {
-    addDeck(name: string): Promise<CollectionResponse>;
+    // TODO: This should be collectionId instead of email
+    addDeck(email: string, name: string): Promise<CollectionResponse>;
 
-    fetchCollection(): Promise<CollectionResponse>;
+    fetchCollection(email: string): Promise<CollectionResponse>;
 
     fetchDeck(id: string): Promise<DeckResponse>;
 

@@ -1,5 +1,5 @@
 //@flow
-import type {Clock} from "../services/APIDomain"
+import type {Clock, DataService} from "../services/APIDomain"
 import * as api from '../services/APIDomain'
 import {
     Card as APICard,
@@ -20,7 +20,7 @@ class FrozenClock implements Clock {
 }
 
 // Creates a deck with 27 due cards, 23 new cards, and 80 total cards
-export class FakeDataService {
+export class FakeDataService implements DataService {
     clock: Clock
     collectionStore: Deck[]
     idCounter: number
@@ -84,7 +84,7 @@ export class FakeDataService {
         return this.createDecks()
     }
 
-    addDeck(name: string): Promise<CollectionResponse> {
+    addDeck(email: string, name: string): Promise<CollectionResponse> {
         this.createDeck(name, null)
         return this.fetchCollection()
     }

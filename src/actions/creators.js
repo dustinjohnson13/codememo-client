@@ -170,7 +170,8 @@ export function* loadCollectionPage(): Generator<LoadCollectionPageAction, any, 
 }
 
 export function* addDeck(action: AddDeckRequestAction): Generator<AddDeckRequestAction, any, void> {
-    const deck = yield call(API.addDeck, action.name)
+    // TODO: Should be using a collection id or real email
+    const deck = yield call(API.addDeck, "testuser@blah.com", action.name)
     // $FlowFixMe
     yield put(addDeckSuccess(deck))
 }

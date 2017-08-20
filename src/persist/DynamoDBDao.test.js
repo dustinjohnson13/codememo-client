@@ -83,6 +83,7 @@ describe('DynamoDBDao', () => {
 
         const persist = Promise.all(entities.map((card) => service.saveCard(card)))
 
+        let doneChecking = 0
         return persist.then((persisted: Array<Card>) => {
 
             const originalById = new Map(entities.map((i) => [i.id, i]))
@@ -111,7 +112,8 @@ describe('DynamoDBDao', () => {
                             expect(data.Item.d).toEqual(original.due)
                             expect(data.Item.dId).toEqual(original.deckId)
                         }
-                        if (idx === 1) {
+
+                        if (++doneChecking === 2) {
                             done()
                         }
                     }

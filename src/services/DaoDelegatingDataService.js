@@ -1,12 +1,12 @@
-import {CollectionEntity, SQLite3Dao} from "../../persist/sqlite3/SQLite3Dao"
-import Deck from "../../entity/Deck"
-import * as api from "../APIDomain"
-import {DeckResponse} from "../APIDomain"
+import Deck from "../entity/Deck"
+import * as api from "./APIDomain"
+import {CollectionResponse, DeckResponse} from "./APIDomain"
+import type {Dao} from "../persist/Dao"
 
 export default class {
-    dao: SQLite3Dao
+    dao: Dao
 
-    constructor(dao: SQLite3Dao) {
+    constructor(dao: Dao) {
         this.dao = dao
     }
 
@@ -14,12 +14,13 @@ export default class {
         return this.dao.init(clearDatabase)
     }
 
-    fetchCollection(): Promise<api.CollectionResponse> {
-        return CollectionEntity.findOne()
+    fetchCollection(email: string): Promise<api.CollectionResponse> {
+        return this.dao.findCollectionByUserEmail(email)
             .then(collection => this.dao.findDecksByCollectionId(collection.id))
             .then(decks => new api.CollectionResponse(decks.map(it =>
-                new api.Deck(it.id.toString(), it.name, 0, 0, 0)
-            )))
+                    new api.Deck(it.id.toString(), it.name, 0, 0, 0)
+                ))
+            )
     }
 
     fetchDeck(id: string): Promise<api.DeckResponse> {
@@ -33,9 +34,9 @@ export default class {
             )
     }
 
-    addDeck(name: string): Promise<CollectionResponse> {
-        return CollectionEntity.findOne()
+    addDeck(email: string, name: string): Promise<CollectionResponse> {
+        return this.dao.findCollectionByUserEmail(email)
             .then(collection => this.dao.saveDeck(new Deck(undefined, collection.id, name)))
-            .then(deck => this.fetchCollection())
+            .then(deck => this.fetchCollection(email))
     }
 }

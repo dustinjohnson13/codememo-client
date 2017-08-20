@@ -1,7 +1,7 @@
 //@flow
-import React, {Component} from 'react';
-import {Col, Row} from 'reactstrap';
-import {Deck as APIDeck} from "../services/APIDomain";
+import React, {Component} from 'react'
+import {Col, Row} from 'reactstrap'
+import {Deck as APIDeck} from "../services/APIDomain"
 
 type Props = {
     reviewDeck: any;
@@ -12,7 +12,7 @@ class Deck extends Component {
     constructor(props: Props) {
         super(props);
 
-        (this: any).review = this.review.bind(this);
+        (this: any).review = this.review.bind(this)
     }
 
     review() {
@@ -20,8 +20,8 @@ class Deck extends Component {
     }
 
     render() {
-        const dueCount = this.props.deck.dueCount;
-        const newCount = this.props.deck.newCount;
+        const dueCount = this.props.deck.dueCount
+        const newCount = this.props.deck.newCount
 
         return (
             <Col sm={{size: 6, offset: 3}}>
@@ -39,8 +39,8 @@ class Deck extends Component {
                     </Col>
                 </Row>
             </Col>
-        );
+        )
     }
 }
 
-export default Deck;
+export default Deck

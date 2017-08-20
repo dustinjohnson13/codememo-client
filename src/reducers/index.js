@@ -8,6 +8,6 @@ const flashcardApp = combineReducers({
     app,
     collection: collectionPage,
     review: reviewPage
-});
+})
 
 export default flashcardApp

@@ -1,13 +1,13 @@
 //@flow
-import React, {Component} from 'react';
+import React, {Component} from 'react'
 import Deck from './Deck'
-import {Col, Row} from 'reactstrap';
+import {Col, Row} from 'reactstrap'
 
 class Collection extends Component {
 
     render() {
         const decks = this.props.decks.map(deck =>
-            <Deck deck={deck} key={deck.name} reviewDeck={this.props.reviewDeck}/>);
+            <Deck deck={deck} key={deck.name} reviewDeck={this.props.reviewDeck}/>)
 
         return (
             <Row>
@@ -15,8 +15,8 @@ class Collection extends Component {
                     {decks}
                 </Col>
             </Row>
-        );
+        )
     }
 }
 
-export default Collection;
+export default Collection

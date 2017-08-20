@@ -1,9 +1,9 @@
 //@flow
-import React, {Component} from 'react';
-import {Button} from 'reactstrap';
-import '../styles/ReviewPage.css';
-import ReviewCardContainer from "../containers/ReviewCardContainer";
-import AddCardModal from "./AddCardModal";
+import React, {Component} from 'react'
+import {Button} from 'reactstrap'
+import '../styles/ReviewPage.css'
+import ReviewCardContainer from "../containers/ReviewCardContainer"
+import AddCardModal from "./AddCardModal"
 
 class ReviewPage extends Component {
     props: {
@@ -15,12 +15,12 @@ class ReviewPage extends Component {
         back: any,
         addCard: any,
         showAnswer: any
-    };
+    }
 
     render() {
         const reviewSection = (this.props.dueCount === 0 && this.props.newCount === 0) ?
             <div>Congratulations, you're caught up!</div> :
-            <ReviewCardContainer/>;
+            <ReviewCardContainer/>
         return (
             <div>
                 <div className="menu">
@@ -36,8 +36,8 @@ class ReviewPage extends Component {
 
                 {reviewSection}
             </div>
-        );
+        )
     }
 }
 
-export default ReviewPage;
+export default ReviewPage

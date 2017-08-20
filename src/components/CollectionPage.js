@@ -1,10 +1,10 @@
 //@flow
-import React, {Component} from 'react';
-import {Container} from 'reactstrap';
-import '../styles/CollectionPage.css';
-import AddDeckModal from "./AddDeckModal";
+import React, {Component} from 'react'
+import {Container} from 'reactstrap'
+import '../styles/CollectionPage.css'
+import AddDeckModal from "./AddDeckModal"
 import Collection from './Collection'
-import {Deck} from "../services/APIDomain";
+import {Deck} from "../services/APIDomain"
 
 type Props = {
     decks: Array<Deck>,
@@ -23,8 +23,8 @@ class CollectionPage extends Component<void, Props, void> {
 
                 <AddDeckModal addDeck={this.props.addDeck}/>
             </div>
-        );
+        )
     }
 }
 
-export default CollectionPage;
+export default CollectionPage

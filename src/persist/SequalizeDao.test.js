@@ -1,17 +1,17 @@
 //@flow
-import User from "../../entity/User"
-import {CardEntity, CollectionEntity, DeckEntity, SQLite3Dao, UserEntity} from "./SQLite3Dao"
+import User from "../entity/User"
+import {CardEntity, CollectionEntity, DeckEntity, SequelizeDao, UserEntity} from "./SequelizeDao"
 import {Sequelize} from 'sequelize'
-import Collection from "../../entity/Collection"
-import Deck from "../../entity/Deck"
-import Card from "../../entity/Card"
+import Collection from "../entity/Collection"
+import Deck from "../entity/Deck"
+import Card from "../entity/Card"
 
-describe('SQLite3Dao', () => {
+describe('SequelizeDao', () => {
 
     let service
 
     beforeEach(async () => {
-        service = createService()
+        service = createDao()
 
         await service.init(true).catch((err) => {
             console.log("Error!")
@@ -356,7 +356,7 @@ describe('SQLite3Dao', () => {
     })
 })
 
-export const createService = () => {
+export const createDao = () => {
     const sequelize = new Sequelize('database', 'username', 'password', {
         host: 'localhost',
         dialect: 'sqlite',
@@ -371,7 +371,7 @@ export const createService = () => {
         storage: ':memory:'
     })
 
-    return new SQLite3Dao(sequelize)
+    return new SequelizeDao(sequelize)
 }
 
 export const loadCollectionData = () => {

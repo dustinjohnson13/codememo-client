@@ -1,28 +1,28 @@
-import React from 'react';
-import {Button, Modal, ModalBody, ModalFooter, ModalHeader} from 'reactstrap';
+import React from 'react'
+import {Button, Modal, ModalBody, ModalFooter, ModalHeader} from 'reactstrap'
 
 class ModalWrapper extends React.Component {
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
             modal: false
-        };
+        }
 
-        this.confirmed = this.confirmed.bind(this);
-        this.toggle = this.toggle.bind(this);
+        this.confirmed = this.confirmed.bind(this)
+        this.toggle = this.toggle.bind(this)
     }
 
     confirmed() {
-        this.props.confirmAction();
+        this.props.confirmAction()
         if (this.props.closeOnConfirmation) {
-            this.toggle();
+            this.toggle()
         }
     }
 
     toggle() {
         this.setState({
             modal: !this.state.modal
-        });
+        })
     }
 
     render() {
@@ -40,8 +40,8 @@ class ModalWrapper extends React.Component {
                     </ModalFooter>
                 </Modal>
             </div>
-        );
+        )
     }
 }
 
-export default ModalWrapper;
+export default ModalWrapper

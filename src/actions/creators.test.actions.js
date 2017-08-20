@@ -6,7 +6,7 @@ import {
     fetchCollectionSuccess,
     fetchDeckSuccess,
     reviewDeckRequest
-} from "./creators";
+} from "./creators"
 import {
     Card,
     CardDetail,
@@ -18,12 +18,12 @@ import {
     HALF_DAY_IN_SECONDS,
     ONE_DAY_IN_SECONDS,
     TWO_DAYS_IN_SECONDS
-} from "../services/APIDomain";
+} from "../services/APIDomain"
 
-export const deckId = 'deck-1';
-export const deckName = 'Deck1';
+export const deckId = 'deck-1'
+export const deckName = 'Deck1'
 
-export const getCollection = fetchCollectionRequest();
+export const getCollection = fetchCollectionRequest()
 export const gotCollection = fetchCollectionSuccess(new CollectionResponse(
     [
         new Deck("deck-1", "Deck1", 80, 27, 23),
@@ -32,9 +32,9 @@ export const gotCollection = fetchCollectionSuccess(new CollectionResponse(
         new Deck("deck-4", "Deck4", 80, 27, 23),
         new Deck("deck-5", "Deck5", 80, 27, 23),
         new Deck("deck-6", "Deck6", 80, 27, 23)
-    ]));
+    ]))
 
-export const getDeck1 = reviewDeckRequest(deckName);
+export const getDeck1 = reviewDeckRequest(deckName)
 export const gotDeck1 = fetchDeckSuccess(new DeckResponse("deck-1", "Deck1",
     [
         new Card("deck-1-card-0", "OK"),
@@ -116,7 +116,7 @@ export const gotDeck1 = fetchDeckSuccess(new DeckResponse("deck-1", "Deck1",
         new Card("deck-1-card-76", "NEW"),
         new Card("deck-1-card-77", "NEW"),
         new Card("deck-1-card-78", "NEW"),
-        new Card("deck-1-card-79", "NEW")]));
+        new Card("deck-1-card-79", "NEW")]))
 
 export const getDeck1DueCards = fetchCardsRequest(
     [
@@ -133,7 +133,7 @@ export const getDeck1DueCards = fetchCardsRequest(
         "deck-1-card-69", "deck-1-card-70", "deck-1-card-71", "deck-1-card-72",
         "deck-1-card-73", "deck-1-card-74", "deck-1-card-75", "deck-1-card-76",
         "deck-1-card-77", "deck-1-card-78", "deck-1-card-79"
-    ]);
+    ])
 
 export const gotDeck1DueCards = fetchCardsSuccess(new CardDetailResponse([
     new CardDetail('deck-1-card-30',
@@ -205,4 +205,4 @@ export const gotDeck1DueCards = fetchCardsSuccess(new CardDetailResponse([
         HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS,
         FOUR_DAYS_IN_SECONDS,
         -389999
-    )]));
+    )]))

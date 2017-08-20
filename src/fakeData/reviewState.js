@@ -5,7 +5,7 @@ import {
     HALF_DAY_IN_SECONDS,
     ONE_DAY_IN_SECONDS,
     TWO_DAYS_IN_SECONDS
-} from "../services/APIDomain";
+} from "../services/APIDomain"
 
 export const reviewState = {
     deckName: 'Deck1', deckId: 'deck-1', cardId: 'deck-1-card-30', totalCount: 6,
@@ -21,4 +21,4 @@ export const reviewState = {
         new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', HALF_DAY_IN_SECONDS,
             ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, null)
     ]
-};
+}

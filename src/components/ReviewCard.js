@@ -1,8 +1,8 @@
 //@flow
-import React, {Component} from 'react';
-import '../styles/ReviewPage.css';
-import AnswerCardContainer from '../containers/AnswerCardContainer';
-import {Button} from 'reactstrap';
+import React, {Component} from 'react'
+import '../styles/ReviewPage.css'
+import AnswerCardContainer from '../containers/AnswerCardContainer'
+import {Button} from 'reactstrap'
 
 type Props = {
     cardId: string,
@@ -21,7 +21,7 @@ class ReviewCard extends Component<void, Props, void> {
                 <div className="review-answer">{this.props.answer}</div>
                 <AnswerCardContainer id={this.props.cardId} deckId={this.props.deckId}/>
             </div>
-            : <Button className="show-answer" onClick={this.props.showAnswer}>Show Answer</Button>;
+            : <Button className="show-answer" onClick={this.props.showAnswer}>Show Answer</Button>
 
         return (
             <div className="review-card">
@@ -31,8 +31,8 @@ class ReviewCard extends Component<void, Props, void> {
 
                 {answerSection}
             </div>
-        );
+        )
     }
 }
 
-export default ReviewCard;
+export default ReviewCard

@@ -1,24 +1,24 @@
-import React from 'react';
-import {Input, InputGroup} from 'reactstrap';
-import ModalWrapper from "./ModalWrapper";
+import React from 'react'
+import {Input, InputGroup} from 'reactstrap'
+import ModalWrapper from "./ModalWrapper"
 
 class AddDeckModal extends React.Component {
     constructor(props) {
-        super(props);
-        this.state = {name: ''};
+        super(props)
+        this.state = {name: ''}
 
-        this.handleChange = this.handleChange.bind(this);
-        this.deckConfirmed = this.deckConfirmed.bind(this);
+        this.handleChange = this.handleChange.bind(this)
+        this.deckConfirmed = this.deckConfirmed.bind(this)
     }
 
     handleChange(event) {
-        this.setState({name: event.target.value});
+        this.setState({name: event.target.value})
     }
 
     deckConfirmed() {
-        const name = this.state.name;
+        const name = this.state.name
 
-        this.props.addDeck(name);
+        this.props.addDeck(name)
     }
 
     render() {
@@ -31,8 +31,8 @@ class AddDeckModal extends React.Component {
                     </InputGroup>
                 </ModalWrapper>
             </div>
-        );
+        )
     }
 }
 
-export default AddDeckModal;
+export default AddDeckModal

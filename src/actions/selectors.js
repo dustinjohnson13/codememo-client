@@ -1,4 +1,4 @@
 //@flow
-import type {CombinedState} from "./actionTypes";
+import type {CombinedState} from "./actionTypes"
 
-export const collection = (state: CombinedState) => state.collection;
+export const collection = (state: CombinedState) => state.collection

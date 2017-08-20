@@ -1,29 +1,29 @@
-import React from 'react';
-import {Input, InputGroup} from 'reactstrap';
-import '../styles/AddCardModal.css';
-import ModalWrapper from "./ModalWrapper";
+import React from 'react'
+import {Input, InputGroup} from 'reactstrap'
+import '../styles/AddCardModal.css'
+import ModalWrapper from "./ModalWrapper"
 
 class AddCardModal extends React.Component {
     constructor(props) {
-        super(props);
-        this.state = {answer: '', question: ''};
+        super(props)
+        this.state = {answer: '', question: ''}
 
-        this.handleQuestionChange = this.handleQuestionChange.bind(this);
-        this.handleAnswerChange = this.handleAnswerChange.bind(this);
-        this.addCard = this.addCard.bind(this);
+        this.handleQuestionChange = this.handleQuestionChange.bind(this)
+        this.handleAnswerChange = this.handleAnswerChange.bind(this)
+        this.addCard = this.addCard.bind(this)
     }
 
     handleQuestionChange(event) {
-        this.setState({question: event.target.value});
+        this.setState({question: event.target.value})
     }
 
     handleAnswerChange(event) {
-        this.setState({answer: event.target.value});
+        this.setState({answer: event.target.value})
     }
 
     addCard() {
-        this.props.addCard(this.props.deckId, this.state.question, this.state.answer);
-        this.setState({answer: '', question: ''});
+        this.props.addCard(this.props.deckId, this.state.question, this.state.answer)
+        this.setState({answer: '', question: ''})
     }
 
     render() {
@@ -41,8 +41,8 @@ class AddCardModal extends React.Component {
                     </InputGroup>
                 </ModalWrapper>
             </span>
-        );
+        )
     }
 }
 
-export default AddCardModal;
+export default AddCardModal

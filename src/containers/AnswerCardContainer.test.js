@@ -1,9 +1,9 @@
-import React from 'react';
+import React from 'react'
 
-import {mapDispatchToProps, mapStateToProps} from "./AnswerCardContainer";
-import {reviewState} from "../fakeData/reviewState";
+import {mapDispatchToProps, mapStateToProps} from "./AnswerCardContainer"
+import {reviewState} from "../fakeData/reviewState"
 import {GOOD, HARD} from '../services/APIDomain'
-import {answerCardRequest, hideAnswer} from "../actions/creators";
+import {answerCardRequest, hideAnswer} from "../actions/creators"
 
 describe('<AnswerCardContainer />', () => {
 
@@ -13,33 +13,33 @@ describe('<AnswerCardContainer />', () => {
             hardInterval: '1d',
             goodInterval: '3d',
             easyInterval: '5d'
-        };
-        const state = {review: reviewState};
+        }
+        const state = {review: reviewState}
 
-        const props = mapStateToProps(state);
+        const props = mapStateToProps(state)
 
-        expect(props).toEqual(expectedState);
-    });
+        expect(props).toEqual(expectedState)
+    })
 
     it('answerCard will hide answer section and send an answer request', () => {
-        const deckId = 'some-deck-id';
-        const cardId = 'some-id';
+        const deckId = 'some-deck-id'
+        const cardId = 'some-id'
         const expectedActions = [
             hideAnswer(),
             answerCardRequest(cardId, deckId, HARD),
             hideAnswer(),
-            answerCardRequest(cardId, deckId, GOOD)];
+            answerCardRequest(cardId, deckId, GOOD)]
 
-        let answered = [];
+        let answered = []
         const dispatcher = (action) => {
-            answered.push(action);
-        };
+            answered.push(action)
+        }
 
-        const props = mapDispatchToProps(dispatcher, {id: cardId, deckId: deckId});
+        const props = mapDispatchToProps(dispatcher, {id: cardId, deckId: deckId})
 
-        props.answerCard(HARD);
-        props.answerCard(GOOD);
+        props.answerCard(HARD)
+        props.answerCard(GOOD)
 
-        expect(answered).toEqual(expectedActions);
-    });
-});
+        expect(answered).toEqual(expectedActions)
+    })
+})

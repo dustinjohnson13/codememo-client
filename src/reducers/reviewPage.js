@@ -1,5 +1,5 @@
 //@flow
-import type {Action, ReviewState} from "../actions/actionTypes";
+import type {Action, ReviewState} from "../actions/actionTypes"
 import {
     ADD_CARD_SUCCESS,
     ANSWER_CARD_SUCCESS,
@@ -8,7 +8,7 @@ import {
     HIDE_ANSWER,
     SHOW_ANSWER
 } from '../actions/actionTypes'
-import {ONE_DAY_IN_SECONDS} from "../services/APIDomain";
+import {ONE_DAY_IN_SECONDS} from "../services/APIDomain"
 
 export const initialState = {
     dueCards: [],
@@ -25,9 +25,9 @@ export const initialState = {
     goodInterval: '',
     easyInterval: '',
     showingAnswer: false
-};
+}
 
-export const getViewState = (state: ReviewState): ReviewState => state;
+export const getViewState = (state: ReviewState): ReviewState => state
 
 const reviewPage = (state: ReviewState = initialState, action: Action) => {
     switch (action.type) {
@@ -35,15 +35,15 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
             return getViewState({
                 ...state,
                 showingAnswer: false
-            });
+            })
         case SHOW_ANSWER:
             return getViewState({
                 ...state,
                 showingAnswer: true
-            });
+            })
         case FETCH_DECK_SUCCESS:
-            const deck = action.deck;
-            const totalCount = deck ? deck.cards.length : 0;
+            const deck = action.deck
+            const totalCount = deck ? deck.cards.length : 0
 
             return getViewState({
                 ...state,
@@ -51,26 +51,26 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
                 deckId: deck.id,
                 totalCount: totalCount
 
-            });
+            })
         case FETCH_CARDS_SUCCESS:
-            const cards = action.cards;
-            const cardsForReview = cards;
-            let question = '';
-            let answer = '';
-            let cardId = '';
-            let failInterval = '';
-            let hardInterval = '';
-            let goodInterval = '';
-            let easyInterval = '';
+            const cards = action.cards
+            const cardsForReview = cards
+            let question = ''
+            let answer = ''
+            let cardId = ''
+            let failInterval = ''
+            let hardInterval = ''
+            let goodInterval = ''
+            let easyInterval = ''
             if (cardsForReview.length !== 0) {
-                const forReview = cardsForReview[0];
-                question = forReview.question;
-                answer = forReview.answer;
-                cardId = forReview.id;
-                failInterval = userFriendlyInterval(forReview.failInterval);
-                hardInterval = userFriendlyInterval(forReview.hardInterval);
-                goodInterval = userFriendlyInterval(forReview.goodInterval);
-                easyInterval = userFriendlyInterval(forReview.easyInterval);
+                const forReview = cardsForReview[0]
+                question = forReview.question
+                answer = forReview.answer
+                cardId = forReview.id
+                failInterval = userFriendlyInterval(forReview.failInterval)
+                hardInterval = userFriendlyInterval(forReview.hardInterval)
+                goodInterval = userFriendlyInterval(forReview.goodInterval)
+                easyInterval = userFriendlyInterval(forReview.easyInterval)
             }
 
             return getViewState({
@@ -84,17 +84,17 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
                 hardInterval: hardInterval,
                 goodInterval: goodInterval,
                 easyInterval: easyInterval
-            });
+            })
         case ADD_CARD_SUCCESS:
-            const addedCard = action.card;
-            const reviewNewCard = state.question === '';
-            const questionAfterAddCard = reviewNewCard ? addedCard.question : state.question;
-            const answerAfterAddCard = reviewNewCard ? addedCard.answer : state.answer;
-            const cardIdAfterAddCard = reviewNewCard ? addedCard.id : state.cardId;
-            const failIntervalAfterAddCard = reviewNewCard ? userFriendlyInterval(addedCard.failInterval) : state.failInterval;
-            const hardIntervalAfterAddCard = reviewNewCard ? userFriendlyInterval(addedCard.hardInterval) : state.hardInterval;
-            const goodIntervalAfterAddCard = reviewNewCard ? userFriendlyInterval(addedCard.goodInterval) : state.goodInterval;
-            const easyIntervalAfterAddCard = reviewNewCard ? userFriendlyInterval(addedCard.easyInterval) : state.easyInterval;
+            const addedCard = action.card
+            const reviewNewCard = state.question === ''
+            const questionAfterAddCard = reviewNewCard ? addedCard.question : state.question
+            const answerAfterAddCard = reviewNewCard ? addedCard.answer : state.answer
+            const cardIdAfterAddCard = reviewNewCard ? addedCard.id : state.cardId
+            const failIntervalAfterAddCard = reviewNewCard ? userFriendlyInterval(addedCard.failInterval) : state.failInterval
+            const hardIntervalAfterAddCard = reviewNewCard ? userFriendlyInterval(addedCard.hardInterval) : state.hardInterval
+            const goodIntervalAfterAddCard = reviewNewCard ? userFriendlyInterval(addedCard.goodInterval) : state.goodInterval
+            const easyIntervalAfterAddCard = reviewNewCard ? userFriendlyInterval(addedCard.easyInterval) : state.easyInterval
 
             return getViewState({
                 ...state,
@@ -108,14 +108,14 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
                 goodInterval: goodIntervalAfterAddCard,
                 easyInterval: easyIntervalAfterAddCard,
                 showingAnswer: false
-            });
+            })
         case ANSWER_CARD_SUCCESS:
-            const reviewedCard = action.card;
-            const dueCardsMinusReviewed = state.dueCards.filter(card => card.id !== reviewedCard.id);
-            const newCardsMinusReviewed = state.newCards.filter(card => card.id !== reviewedCard.id);
-            const numDueCards = dueCardsMinusReviewed.length;
-            const numNewCards = newCardsMinusReviewed.length;
-            const doneReviewing = numDueCards === 0 && numNewCards === 0;
+            const reviewedCard = action.card
+            const dueCardsMinusReviewed = state.dueCards.filter(card => card.id !== reviewedCard.id)
+            const newCardsMinusReviewed = state.newCards.filter(card => card.id !== reviewedCard.id)
+            const numDueCards = dueCardsMinusReviewed.length
+            const numNewCards = newCardsMinusReviewed.length
+            const doneReviewing = numDueCards === 0 && numNewCards === 0
             return getViewState({
                 ...state,
                 dueCards: dueCardsMinusReviewed,
@@ -128,21 +128,21 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
                 goodInterval: doneReviewing ? '' : userFriendlyInterval(dueCardsMinusReviewed[0].goodInterval),
                 easyInterval: doneReviewing ? '' : userFriendlyInterval(dueCardsMinusReviewed[0].easyInterval),
                 showingAnswer: false
-            });
+            })
         default:
-            return state;
+            return state
     }
-};
+}
 
 const userFriendlyInterval = (intervalSeconds: number): string => {
-    let daysOrHours = intervalSeconds / ONE_DAY_IN_SECONDS;
-    let unit = 'd';
+    let daysOrHours = intervalSeconds / ONE_DAY_IN_SECONDS
+    let unit = 'd'
     if (daysOrHours < 1) {
-        const secondsPerHour = 3600;
-        daysOrHours = intervalSeconds / secondsPerHour;
-        unit = 'h';
+        const secondsPerHour = 3600
+        daysOrHours = intervalSeconds / secondsPerHour
+        unit = 'h'
     }
-    return Math.round(daysOrHours) + unit;
-};
+    return Math.round(daysOrHours) + unit
+}
 
 export default reviewPage

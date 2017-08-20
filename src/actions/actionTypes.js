@@ -1,24 +1,24 @@
 //@flow
-import {CardDetail, CollectionResponse, Deck, DeckResponse} from "../services/APIDomain";
-import type {PageType} from "./pages";
+import {CardDetail, CollectionResponse, Deck, DeckResponse} from "../services/APIDomain"
+import type {PageType} from "./pages"
 
-export const REVIEW_DECK_REQUEST = 'REVIEW_DECK_REQUEST';
-export const LOAD_COLLECTION_PAGE = 'LOAD_COLLECTION_PAGE';
-export const LOAD_PAGE = 'LOAD_PAGE';
-export const FETCH_COLLECTION_REQUEST = 'FETCH_COLLECTION_REQUEST';
-export const FETCH_COLLECTION_SUCCESS = 'FETCH_COLLECTION_SUCCESS';
-export const FETCH_DECK_REQUEST = 'FETCH_DECK_REQUEST';
-export const FETCH_DECK_SUCCESS = 'FETCH_DECK_SUCCESS';
-export const ANSWER_CARD_REQUEST = 'ANSWER_CARD_REQUEST';
-export const ANSWER_CARD_SUCCESS = 'ANSWER_CARD_SUCCESS';
-export const ADD_DECK_REQUEST = 'ADD_DECK_REQUEST';
-export const ADD_DECK_SUCCESS = 'ADD_DECK_SUCCESS';
-export const ADD_CARD_REQUEST = 'ADD_CARD_REQUEST';
-export const ADD_CARD_SUCCESS = 'ADD_CARD_SUCCESS';
-export const FETCH_CARDS_REQUEST = 'FETCH_CARDS_REQUEST';
-export const FETCH_CARDS_SUCCESS = 'FETCH_CARDS_SUCCESS';
-export const HIDE_ANSWER = 'HIDE_ANSWER';
-export const SHOW_ANSWER = 'SHOW_ANSWER';
+export const REVIEW_DECK_REQUEST = 'REVIEW_DECK_REQUEST'
+export const LOAD_COLLECTION_PAGE = 'LOAD_COLLECTION_PAGE'
+export const LOAD_PAGE = 'LOAD_PAGE'
+export const FETCH_COLLECTION_REQUEST = 'FETCH_COLLECTION_REQUEST'
+export const FETCH_COLLECTION_SUCCESS = 'FETCH_COLLECTION_SUCCESS'
+export const FETCH_DECK_REQUEST = 'FETCH_DECK_REQUEST'
+export const FETCH_DECK_SUCCESS = 'FETCH_DECK_SUCCESS'
+export const ANSWER_CARD_REQUEST = 'ANSWER_CARD_REQUEST'
+export const ANSWER_CARD_SUCCESS = 'ANSWER_CARD_SUCCESS'
+export const ADD_DECK_REQUEST = 'ADD_DECK_REQUEST'
+export const ADD_DECK_SUCCESS = 'ADD_DECK_SUCCESS'
+export const ADD_CARD_REQUEST = 'ADD_CARD_REQUEST'
+export const ADD_CARD_SUCCESS = 'ADD_CARD_SUCCESS'
+export const FETCH_CARDS_REQUEST = 'FETCH_CARDS_REQUEST'
+export const FETCH_CARDS_SUCCESS = 'FETCH_CARDS_SUCCESS'
+export const HIDE_ANSWER = 'HIDE_ANSWER'
+export const SHOW_ANSWER = 'SHOW_ANSWER'
 
 export type ReviewDeckRequestAction = { type: 'REVIEW_DECK_REQUEST', id: string }
 export type LoadCollectionPageAction = { type: 'LOAD_COLLECTION_PAGE' };

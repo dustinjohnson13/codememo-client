@@ -1,33 +1,29 @@
 //@flow
-import User from "../../entity/User"
+import User from "../entity/User"
 
 import {Sequelize} from 'sequelize'
-import Card from "../../entity/Card"
-import Deck from "../../entity/Deck"
-import Collection from "../../entity/Collection"
-
-export const USER_TABLE = "User"
-export const CARD_TABLE = "Card"
-export const DECK_TABLE = "Deck"
-export const COLLECTION_TABLE = "Collection"
+import Card from "../entity/Card"
+import Deck from "../entity/Deck"
+import Collection from "../entity/Collection"
+import {CARD_TABLE, COLLECTION_TABLE, DECK_TABLE, USER_TABLE} from "./Dao"
 
 const modelDefiner = new Sequelize({
     dialect: 'sqlite'
 })
 
-export const UserEntity = modelDefiner.define('user', {
+export const UserEntity = modelDefiner.define(USER_TABLE, {
     email: {
         type: Sequelize.STRING
     }
 })
 
-export const CollectionEntity = modelDefiner.define('collection', {
+export const CollectionEntity = modelDefiner.define(COLLECTION_TABLE, {
     userId: {
         type: Sequelize.INTEGER
     }
 })
 
-export const DeckEntity = modelDefiner.define('deck', {
+export const DeckEntity = modelDefiner.define(DECK_TABLE, {
     collectionId: {
         type: Sequelize.INTEGER
     },
@@ -36,7 +32,7 @@ export const DeckEntity = modelDefiner.define('deck', {
     },
 })
 
-export const CardEntity = modelDefiner.define('card', {
+export const CardEntity = modelDefiner.define(CARD_TABLE, {
     deckId: {
         type: Sequelize.INTEGER
     },
@@ -59,7 +55,7 @@ const hydrateCard = (entity: CardEntity) => {
     return new Card(entity.id, entity.deckId, entity.question, entity.answer, entity.due)
 }
 
-export class SQLite3Dao {
+export class SequelizeDao {
 
     sequelize: Sequelize
 
@@ -221,4 +217,10 @@ export class SQLite3Dao {
         })
         return q.then(entities => entities.map(hydrateCard))
     }
+
+    // TODO: This needs to actually respect the email
+    findCollectionByUserEmail(email: string): Promise<Collection> {
+        return CollectionEntity.findOne()
+    }
+
 }

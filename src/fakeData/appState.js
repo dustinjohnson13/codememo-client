@@ -1,2 +1,2 @@
 //@flow
-export const appState = {page: null};
+export const appState = {page: null}

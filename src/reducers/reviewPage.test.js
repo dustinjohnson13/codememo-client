@@ -1,5 +1,5 @@
 //@flow
-import reviewPage, {initialState} from './reviewPage';
+import reviewPage, {initialState} from './reviewPage'
 import {
     addCardSuccess,
     answerCardSuccess,
@@ -17,23 +17,23 @@ import {
     HALF_DAY_IN_SECONDS,
     ONE_DAY_IN_SECONDS,
     TWO_DAYS_IN_SECONDS
-} from "../services/APIDomain";
+} from "../services/APIDomain"
 
 describe('reviewPage', () => {
 
-    const expectedDeckName = 'My Deck';
-    const expectedDeckID = 'deck1';
+    const expectedDeckName = 'My Deck'
+    const expectedDeckID = 'deck1'
 
     const cards = [new Card('deck-1-card-32', 'NEW'),
         new Card('deck-1-card-30', 'DUE'), new Card('deck-1-card-31', 'DUE'),
-        new Card('5', 'OK'), new Card('6', 'OK')];
-    const deck = new DeckResponse(expectedDeckID, expectedDeckName, cards);
+        new Card('5', 'OK'), new Card('6', 'OK')]
+    const deck = new DeckResponse(expectedDeckID, expectedDeckName, cards)
 
-    const addCardResponse = new CardDetail('deck-1-card-99', 'Some Question', 'Some Answer', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, null);
+    const addCardResponse = new CardDetail('deck-1-card-99', 'Some Question', 'Some Answer', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, null)
 
     it('adds new card on add card success', () => {
 
-        const response = addCardResponse;
+        const response = addCardResponse
 
         const previousState = {
             ...initialState,
@@ -45,22 +45,22 @@ describe('reviewPage', () => {
             newCards: [
                 new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, null)
             ]
-        };
+        }
 
-        const expectedDueCards = previousState.dueCards;
-        const expectedNewCards = [...previousState.newCards, response];
+        const expectedDueCards = previousState.dueCards
+        const expectedNewCards = [...previousState.newCards, response]
 
-        const action = addCardSuccess(response, 'deck-1');
-        const actualState = reviewPage(previousState, action);
+        const action = addCardSuccess(response, 'deck-1')
+        const actualState = reviewPage(previousState, action)
 
-        expect(actualState.totalCount).toEqual(6);
-        expect(actualState.dueCards).toEqual(expectedDueCards);
-        expect(actualState.newCards).toEqual(expectedNewCards);
-    });
+        expect(actualState.totalCount).toEqual(6)
+        expect(actualState.dueCards).toEqual(expectedDueCards)
+        expect(actualState.newCards).toEqual(expectedNewCards)
+    })
 
     it('adds question/answer/id for added card if there are no cards for review', () => {
 
-        const response = addCardResponse;
+        const response = addCardResponse
 
         const previousState = {
             ...initialState,
@@ -68,88 +68,88 @@ describe('reviewPage', () => {
             answer: '',
             dueCards: [],
             newCards: []
-        };
+        }
 
-        const action = addCardSuccess(response, 'deck-1');
-        const actualState = reviewPage(previousState, action);
+        const action = addCardSuccess(response, 'deck-1')
+        const actualState = reviewPage(previousState, action)
 
-        expect(actualState.question).toEqual(response.question);
-        expect(actualState.answer).toEqual(response.answer);
-        expect(actualState.cardId).toEqual(response.id);
-        expect(actualState.failInterval).toEqual("12h");
-        expect(actualState.hardInterval).toEqual("1d");
-        expect(actualState.goodInterval).toEqual("2d");
-        expect(actualState.easyInterval).toEqual("4d");
-    });
+        expect(actualState.question).toEqual(response.question)
+        expect(actualState.answer).toEqual(response.answer)
+        expect(actualState.cardId).toEqual(response.id)
+        expect(actualState.failInterval).toEqual("12h")
+        expect(actualState.hardInterval).toEqual("1d")
+        expect(actualState.goodInterval).toEqual("2d")
+        expect(actualState.easyInterval).toEqual("4d")
+    })
 
     it('hides answer after adding card', () => {
 
-        const response = addCardResponse;
+        const response = addCardResponse
 
         const previousState = {
             ...initialState,
             dueCards: [],
             newCards: [],
             showingAnswer: true
-        };
+        }
 
-        const action = addCardSuccess(response, 'deck-1');
-        const actualState = reviewPage(previousState, action);
+        const action = addCardSuccess(response, 'deck-1')
+        const actualState = reviewPage(previousState, action)
 
-        expect(actualState.showingAnswer).toEqual(false);
-    });
+        expect(actualState.showingAnswer).toEqual(false)
+    })
 
     it('hides answer when requested', () => {
 
         const previousState = {
             ...initialState,
             showingAnswer: true
-        };
+        }
 
-        const action = hideAnswer();
-        const actualState = reviewPage(previousState, action);
+        const action = hideAnswer()
+        const actualState = reviewPage(previousState, action)
 
-        expect(actualState.showingAnswer).toEqual(false);
-    });
+        expect(actualState.showingAnswer).toEqual(false)
+    })
 
     it('shows answer when requested', () => {
 
         const previousState = {
             ...initialState,
             showingAnswer: false
-        };
+        }
 
-        const action = showAnswer();
-        const actualState = reviewPage(previousState, action);
+        const action = showAnswer()
+        const actualState = reviewPage(previousState, action)
 
-        expect(actualState.showingAnswer).toEqual(true);
-    });
+        expect(actualState.showingAnswer).toEqual(true)
+    })
 
     it('adds deck information on fetch deck success', () => {
 
-        const previousState = {...initialState};
+        const previousState = {...initialState}
         // TODO: Breakup the deck instance
         const expectedState =
             {
                 ...previousState,
                 deckName: expectedDeckName, deckId: expectedDeckID,
                 totalCount: 5
-            };
+            }
 
-        const action = fetchDeckSuccess(deck);
-        const actualState = reviewPage(previousState, action);
+        const action = fetchDeckSuccess(deck)
+        const actualState = reviewPage(previousState, action)
 
-        expect(actualState).toEqual(expectedState);
-    });
+        expect(actualState).toEqual(expectedState)
+    })
 
     it('adds question, answer, answer intervals, and cards for review on fetch cards success', () => {
 
         const cardDetails = [new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, -299999),
             new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, -309999),
-            new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, null)];
-        const cardsResponse = new CardDetailResponse(cardDetails);
+            new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, null)]
+        const cardsResponse = new CardDetailResponse(cardDetails)
 
-        const previousState = {...initialState};
+        const previousState = {...initialState}
         const expectedState = {
             ...previousState,
             dueCards: [
@@ -166,13 +166,13 @@ describe('reviewPage', () => {
             hardInterval: "1d",
             goodInterval: "2d",
             easyInterval: "4d"
-        };
+        }
 
-        const action = fetchCardsSuccess(cardsResponse);
-        const actualState = reviewPage(previousState, action);
+        const action = fetchCardsSuccess(cardsResponse)
+        const actualState = reviewPage(previousState, action)
 
-        expect(actualState).toEqual(expectedState);
-    });
+        expect(actualState).toEqual(expectedState)
+    })
 
     it('resets answer card state on answer card', () => {
 
@@ -205,9 +205,9 @@ describe('reviewPage', () => {
                     null)
             ],
             showingAnswer: true
-        };
+        }
 
-        const expectedDueCards = previousState.dueCards.slice(1);
+        const expectedDueCards = previousState.dueCards.slice(1)
 
         const expectedState = {
             ...previousState,
@@ -221,12 +221,12 @@ describe('reviewPage', () => {
             totalCount: 5,
             dueCards: expectedDueCards,
             showingAnswer: false
-        };
+        }
 
-        const action = answerCardSuccess(new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, 86400), 'deck-1');
-        const actualState = reviewPage(previousState, action);
+        const action = answerCardSuccess(new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, 86400), 'deck-1')
+        const actualState = reviewPage(previousState, action)
 
-        expect(actualState).toEqual(expectedState);
-    });
+        expect(actualState).toEqual(expectedState)
+    })
 
-});
+})

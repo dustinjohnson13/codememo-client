@@ -1,7 +1,7 @@
 //@flow
-import React, {Component} from 'react';
-import {Button} from 'reactstrap';
-import '../styles/ReviewPage.css';
+import React, {Component} from 'react'
+import {Button} from 'reactstrap'
+import '../styles/ReviewPage.css'
 import {EASY, FAIL, GOOD, HARD} from '../services/APIDomain'
 
 type Foo = {
@@ -20,7 +20,7 @@ class AnswerCard extends Component {
         (this: any).fail = this.fail.bind(this);
         (this: any).hard = this.hard.bind(this);
         (this: any).good = this.good.bind(this);
-        (this: any).easy = this.easy.bind(this);
+        (this: any).easy = this.easy.bind(this)
     };
 
     fail() {
@@ -47,8 +47,8 @@ class AnswerCard extends Component {
                 <Button color="info" onClick={this.good}>{this.props.goodInterval}</Button>
                 <Button color="success" onClick={this.easy}>{this.props.easyInterval}</Button>
             </div>
-        );
+        )
     }
 }
 
-export default AnswerCard;
+export default AnswerCard

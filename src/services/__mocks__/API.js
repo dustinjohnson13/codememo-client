@@ -1,5 +1,5 @@
-import {FakeDataService} from "../../fakeData/FakeDataService";
+import {FakeDataService} from "../../fakeData/FakeDataService"
 
-const service = new FakeDataService();
+const service = new FakeDataService()
 
 export default service

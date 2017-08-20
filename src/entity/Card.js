@@ -1,12 +1,12 @@
 //@flow
 export default class Card {
-    id: ?number
-    deckId: number
+    id: ?string
+    deckId: string
     question: string
     answer: string
     due: ?number
 
-    constructor(id: ?number, deckId: number, question: string, answer: string, due: ?number) {
+    constructor(id: ?string, deckId: string, question: string, answer: string, due: ?number) {
         this.id = id
         this.deckId = deckId
         this.question = question

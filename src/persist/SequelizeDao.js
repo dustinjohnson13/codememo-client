@@ -150,7 +150,7 @@ export class SequelizeDao {
         ).then(() => Promise.resolve(collection))
     }
 
-    deleteUser(id: number): Promise<number> {
+    deleteUser(id: string): Promise<number> {
         return UserEntity.destroy({
             where: {
                 id: id
@@ -174,7 +174,7 @@ export class SequelizeDao {
         })
     }
 
-    deleteCollection(id: number): Promise<number> {
+    deleteCollection(id: string): Promise<number> {
         return CollectionEntity.destroy({
             where: {
                 id: id
@@ -182,23 +182,23 @@ export class SequelizeDao {
         })
     }
 
-    findUser(id: number): Promise<User> {
+    findUser(id: string): Promise<User> {
         return UserEntity.findById(id).then((entity) => new User(entity.id, entity.email))
     }
 
-    findCard(id: number): Promise<Card> {
+    findCard(id: string): Promise<Card> {
         return CardEntity.findById(id).then(entity => hydrateCard(entity))
     }
 
-    findDeck(id: number): Promise<Deck> {
+    findDeck(id: string): Promise<Deck> {
         return DeckEntity.findById(id).then((entity) => hydrateDeck(entity))
     }
 
-    findCollection(id: number): Promise<Collection> {
+    findCollection(id: string): Promise<Collection> {
         return CollectionEntity.findById(id).then((entity) => new Collection(entity.id, entity.userId))
     }
 
-    findDecksByCollectionId(collectionId: number): Promise<Array<Deck>> {
+    findDecksByCollectionId(collectionId: string): Promise<Array<Deck>> {
         const q = DeckEntity.findAll({
             where: {
                 collectionId: collectionId
@@ -209,7 +209,7 @@ export class SequelizeDao {
         })
     }
 
-    findCardsByDeckId(deckId: number): Promise<Array<Card>> {
+    findCardsByDeckId(deckId: string): Promise<Array<Card>> {
         const q = CardEntity.findAll({
             where: {
                 deckId: deckId

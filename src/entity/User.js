@@ -1,9 +1,9 @@
 //@flow
 export default class User {
-    id: ?number
+    id: ?string
     email: string
 
-    constructor(id?: number, email: string) {
+    constructor(id?: string, email: string) {
         this.id = id
         this.email = email
     }

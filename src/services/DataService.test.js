@@ -71,7 +71,7 @@ function testWithDaoImplementation(createDao: any) {
         it('can fetch decks', (done) => {
             expect.assertions(5)
 
-            service.fetchCollection().then((actual: CollectionResponse) => {
+            service.fetchCollection(TEST_USER_EMAIL).then((actual: CollectionResponse) => {
                 expect(actual.decks.length).toEqual(1)
 
                 const returnedDeck = actual.decks[0]

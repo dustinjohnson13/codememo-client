@@ -30,25 +30,25 @@ export interface Dao {
 
     updateCollection(collection: Collection): Promise<Collection>;
 
-    deleteUser(id: number): Promise<number>;
+    deleteUser(id: string): Promise<number>;
 
     deleteCard(id: string): Promise<string>;
 
     deleteDeck(id: string): Promise<string>;
 
-    deleteCollection(id: number): Promise<number>;
+    deleteCollection(id: string): Promise<number>;
 
-    findUser(id: number): Promise<User>;
+    findUser(id: string): Promise<User>;
 
-    findCard(id: number): Promise<Card>;
+    findCard(id: string): Promise<Card>;
 
-    findDeck(id: number): Promise<Deck>;
+    findDeck(id: string): Promise<Deck>;
 
-    findCollection(id: number): Promise<Collection>;
+    findCollection(id: string): Promise<Collection>;
 
-    findDecksByCollectionId(collectionId: number): Promise<Array<Deck>>;
+    findDecksByCollectionId(collectionId: ?string): Promise<Array<Deck>>;
 
-    findCardsByDeckId(deckId: number): Promise<Array<Card>>;
+    findCardsByDeckId(deckId: ?string): Promise<Array<Card>>;
 
     findCollectionByUserEmail(email: string): Promise<Collection>;
 }

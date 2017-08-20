@@ -1,3 +1,4 @@
+//@flow
 import Deck from "../entity/Deck"
 import * as api from "./APIDomain"
 import {CollectionResponse, DeckResponse} from "./APIDomain"
@@ -18,7 +19,8 @@ export default class {
         return this.dao.findCollectionByUserEmail(email)
             .then(collection => this.dao.findDecksByCollectionId(collection.id))
             .then(decks => new api.CollectionResponse(decks.map(it =>
-                    new api.Deck(it.id.toString(), it.name, 0, 0, 0)
+                    //$FlowFixMe
+                    new api.Deck(it.id, it.name, 0, 0, 0)
                 ))
             )
     }
@@ -26,16 +28,18 @@ export default class {
     fetchDeck(id: string): Promise<api.DeckResponse> {
         const now = new Date().getTime()
 
-        return this.dao.findDeck(parseInt(id))
+        return this.dao.findDeck(id)
             .then(deck => this.dao.findCardsByDeckId(deck.id)
                 .then(cards => cards.map(card =>
-                    new api.Card(card.id.toString(), card.due === null ? 'NEW' : card.due > now ? 'OK' : 'DUE')))
+                    //$FlowFixMe
+                    new api.Card(card.id, (!card.due) ? 'NEW' : card.due > now ? 'OK' : 'DUE')))
                 .then(apiCards => new DeckResponse(id, deck.name, apiCards))
             )
     }
 
     addDeck(email: string, name: string): Promise<CollectionResponse> {
         return this.dao.findCollectionByUserEmail(email)
+            // $FlowFixMe
             .then(collection => this.dao.saveDeck(new Deck(undefined, collection.id, name)))
             .then(deck => this.fetchCollection(email))
     }

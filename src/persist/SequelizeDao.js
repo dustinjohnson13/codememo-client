@@ -150,7 +150,7 @@ export class SequelizeDao {
         ).then(() => Promise.resolve(collection))
     }
 
-    deleteUser(id: string): Promise<number> {
+    deleteUser(id: string): Promise<string> {
         return UserEntity.destroy({
             where: {
                 id: id

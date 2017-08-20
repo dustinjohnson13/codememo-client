@@ -10,6 +10,9 @@ export const CARD_TABLE = "card"
 export const DECK_TABLE = "deck"
 export const COLLECTION_TABLE = "collection"
 
+export const TEST_USER_EMAIL = 'someone@blah.com'
+export const TEST_DECK_NAME = 'Test Deck'
+
 export interface Dao {
 
     init(clearDatabase: boolean): Promise<void>;
@@ -30,13 +33,13 @@ export interface Dao {
 
     updateCollection(collection: Collection): Promise<Collection>;
 
-    deleteUser(id: string): Promise<number>;
+    deleteUser(id: string): Promise<string>;
 
     deleteCard(id: string): Promise<string>;
 
     deleteDeck(id: string): Promise<string>;
 
-    deleteCollection(id: string): Promise<number>;
+    deleteCollection(id: string): Promise<string>;
 
     findUser(id: string): Promise<User>;
 
@@ -46,9 +49,9 @@ export interface Dao {
 
     findCollection(id: string): Promise<Collection>;
 
-    findDecksByCollectionId(collectionId: ?string): Promise<Array<Deck>>;
+    findDecksByCollectionId(collectionId: string): Promise<Array<Deck>>;
 
-    findCardsByDeckId(deckId: ?string): Promise<Array<Card>>;
+    findCardsByDeckId(deckId: string): Promise<Array<Card>>;
 
     findCollectionByUserEmail(email: string): Promise<Collection>;
 }

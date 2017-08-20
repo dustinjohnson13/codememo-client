@@ -1,9 +1,9 @@
 //@flow
 export default class Collection {
     id: ?string
-    userId: number
+    userId: string
 
-    constructor(id: ?string, userId: number) {
+    constructor(id: ?string, userId: string) {
         this.id = id
         this.userId = userId
     }

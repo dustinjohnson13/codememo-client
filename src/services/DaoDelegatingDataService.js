@@ -24,6 +24,7 @@ export default class DaoDelegatingDataService implements DataService {
 
     fetchCollection(email: string): Promise<api.CollectionResponse> {
         return this.dao.findCollectionByUserEmail(email)
+        // $FlowFixMe
             .then(collection => this.dao.findDecksByCollectionId(collection.id))
             .then(decks => new api.CollectionResponse(decks.map(it =>
                     //$FlowFixMe
@@ -36,6 +37,7 @@ export default class DaoDelegatingDataService implements DataService {
         const now = new Date().getTime()
 
         return this.dao.findDeck(id)
+        //$FlowFixMe
             .then(deck => this.dao.findCardsByDeckId(deck.id)
                 .then(cards => cards.map(card =>
                     //$FlowFixMe

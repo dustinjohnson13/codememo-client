@@ -6,9 +6,7 @@ import Collection from "../entity/Collection"
 import Deck from "../entity/Deck"
 import Card from "../entity/Card"
 import {createDao} from "../persist/SequalizeDao.test"
-
-const TEST_USER_EMAIL = 'testuser@blah.com'
-const TEST_DECK_NAME = 'Test Deck'
+import {TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
 
 describe('DaoDelegatingDataService - sequelize (sqlite3)', () => {
     testWithDaoImplementation(createDao)

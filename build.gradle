@@ -7,7 +7,7 @@ apply plugin: 'base'
 node {
     download = true
 
-    version = '7.7.1'
+    version = '8.3.0'
 }
 
 def nodeModules = file('node_modules')

@@ -41,7 +41,7 @@ task test(type: YarnTask, dependsOn: [flow, install]) {
     }
 }
 
-task productionBuild(type: YarnTask, dependsOn: [flow, test]) {
+task productionBuild(type: YarnTask, dependsOn: [install]) {
     args = ['run', 'build']
 
     execOverrides {
@@ -53,3 +53,12 @@ task productionBuild(type: YarnTask, dependsOn: [flow, test]) {
 clean.delete << nodeModules
 
 tasks.build.dependsOn flow, test, productionBuild
+
+task deploy(type: YarnTask, dependsOn: [productionBuild]) {
+    args = ['run', 'deploy']
+
+    execOverrides {
+        it.environment['CI'] = 'true'
+        it.environment['NODE_ENV'] = 'production'
+    }
+}

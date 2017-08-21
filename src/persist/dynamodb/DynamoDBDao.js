@@ -1,17 +1,52 @@
 //@flow
 import IndexDefinition from "./IndexDefinition"
-import type {Dao} from "./Dao"
-import {CARD_TABLE, COLLECTION_TABLE, DECK_TABLE, USER_TABLE} from "./Dao"
-import User from "../entity/User"
+import type {Dao} from "../Dao"
+import {CARD_TABLE, COLLECTION_TABLE, DECK_TABLE, USER_TABLE} from "../Dao"
+import User from "../../entity/User"
 import uuid from 'uuid'
-import Card from "../entity/Card"
-import Deck from "../entity/Deck"
-import Collection from "../entity/Collection"
+import Card from "../../entity/Card"
+import Deck from "../../entity/Deck"
+import Collection from "../../entity/Collection"
+import AWS from "aws-sdk"
 
-const AWS = require("aws-sdk")
+const DYNAMODB_STRING = "S"
+const DYNAMODB_NUMBER = "N"
+const DYNAMODB_HASH = "HASH"
+const DYNAMODB_PROJECT_KEYS_ONLY = "KEYS_ONLY"
+const DYNAMODB_PROJECT_ALL = "ALL"
 
 const DEFAULT_READ_CAPACITY_UNITS = 5
 const DEFAULT_WRITE_CAPACITY_UNITS = 5
+
+const ID_COLUMN = "id"
+const NAME_COLUMN = "n"
+const QUESTION_COLUMN = "q"
+const ANSWER_COLUMN = "a"
+const COLLECTION_ID_COLUMN = "cId"
+const DECK_ID_COLUMN = "dId"
+const USER_ID_COLUMN = "uId"
+const DUE_COLUMN = "d"
+
+const EMAIL_INDEX = "email"
+const DECK_ID_INDEX = "dId"
+const COLLECTION_ID_INDEX = "cId"
+const USER_ID_INDEX = "uId"
+
+const hydrateUser = (item) => {
+    return new User(item[ID_COLUMN], item[EMAIL_INDEX])
+}
+
+const hydrateCollection = (item) => {
+    return new Collection(item[ID_COLUMN], item[USER_ID_COLUMN])
+}
+
+const hydrateDeck = (item) => {
+    return new Deck(item[ID_COLUMN], item[COLLECTION_ID_COLUMN], item[NAME_COLUMN])
+}
+
+const hydrateCard = (item) => {
+    return new Card(item[ID_COLUMN], item[DECK_ID_COLUMN], item[QUESTION_COLUMN], item[ANSWER_COLUMN], item[DUE_COLUMN])
+}
 
 export default class DynamoDBDao implements Dao {
 
@@ -28,104 +63,101 @@ export default class DynamoDBDao implements Dao {
         })
     }
 
-    init(): Promise<void> {
+    init(clearDatabase: boolean): Promise<any> {
         // Note: DynamoDB secondary indexes don't guarantee uniqueness
-        return this.createTable(USER_TABLE, [new IndexDefinition("email", "string")])
-            .then(() => this.createTable(CARD_TABLE, [new IndexDefinition("dId", "string")]))
-            .then(() => this.createTable(DECK_TABLE, [new IndexDefinition("cId", "string")]))
-            .then(() => this.createTable(COLLECTION_TABLE, [new IndexDefinition("uId", "string")]))
+        console.log("Initializing dynamo DB")
+        return Promise.all([this.createTable(USER_TABLE, [new IndexDefinition(EMAIL_INDEX, DYNAMODB_STRING)]),
+            this.createTable(CARD_TABLE, [new IndexDefinition(DECK_ID_INDEX, DYNAMODB_STRING)]),
+            this.createTable(DECK_TABLE, [new IndexDefinition(COLLECTION_ID_INDEX, DYNAMODB_STRING)]),
+            this.createTable(COLLECTION_TABLE, [new IndexDefinition(USER_ID_INDEX, DYNAMODB_STRING)])])
     }
 
     saveUser(user: User): Promise<User> {
         const id = uuid.v1()
-        const fields = {"email": user.email}
+        const fields = {[EMAIL_INDEX]: user.email}
 
         user.id = id
 
-        return this.insert(USER_TABLE, {"id": id}, fields).then(() => Promise.resolve(user))
+        return this.insert(USER_TABLE, {[ID_COLUMN]: id}, fields).then(() => user)
     }
 
     saveCard(card: Card): Promise<Card> {
         const id = uuid.v1()
-        const fields: Object = {"q": card.question, "a": card.answer, "dId": card.deckId}
+        const fields: Object = {
+            [QUESTION_COLUMN]: card.question,
+            [ANSWER_COLUMN]: card.answer,
+            [DECK_ID_INDEX]: card.deckId
+        }
         if (card.due) {
-            fields.d = card.due
+            fields[DUE_COLUMN] = card.due
         }
 
         card.id = id
 
-        return this.insert(CARD_TABLE, {"id": id}, fields).then(() => Promise.resolve(card))
+        return this.insert(CARD_TABLE, {[ID_COLUMN]: id}, fields).then(() => card)
     }
 
     saveDeck(deck: Deck): Promise<Deck> {
         const id = uuid.v1()
-        const fields: Object = {"n": deck.name, "cId": deck.collectionId}
+        const fields: Object = {[NAME_COLUMN]: deck.name, [COLLECTION_ID_INDEX]: deck.collectionId}
 
         deck.id = id
 
-        return this.insert(DECK_TABLE, {"id": id}, fields).then(() => Promise.resolve(deck))
+        return this.insert(DECK_TABLE, {[ID_COLUMN]: id}, fields).then(() => deck)
     }
 
     saveCollection(collection: Collection): Promise<Collection> {
         const id = uuid.v1()
-        const fields: Object = {"uId": collection.userId}
+        const fields: Object = {[USER_ID_INDEX]: collection.userId}
 
         collection.id = id
 
-        return this.insert(COLLECTION_TABLE, {"id": collection.id}, fields).then(() => Promise.resolve(collection))
+        return this.insert(COLLECTION_TABLE, {[ID_COLUMN]: collection.id}, fields).then(() => collection)
     }
 
     deleteUser(id: string): Promise<string> {
-        return this.delete(USER_TABLE, {"id": id}).then(() => Promise.resolve(id))
+        return this.deleteEntity(USER_TABLE, {[ID_COLUMN]: id}).then(() => id)
     }
 
     deleteCard(id: string): Promise<string> {
-        return this.delete(CARD_TABLE, {"id": id}).then(() => Promise.resolve(id))
+        return this.deleteEntity(CARD_TABLE, {[ID_COLUMN]: id}).then(() => id)
     }
 
     deleteDeck(id: string): Promise<string> {
-        return this.delete(DECK_TABLE, {"id": id}).then(() => Promise.resolve(id))
+        return this.deleteEntity(DECK_TABLE, {[ID_COLUMN]: id}).then(() => id)
     }
 
     deleteCollection(id: string): Promise<string> {
-        return this.delete(COLLECTION_TABLE, {"id": id}).then(() => Promise.resolve(id))
+        return this.deleteEntity(COLLECTION_TABLE, {[ID_COLUMN]: id}).then(() => id)
     }
 
     findUser(id: string): Promise<User> {
-        return this.findOne(USER_TABLE, {"id": id}).then((data) =>
-            Promise.resolve(new User(data.Item.id, data.Item.email))
-        )
+        return this.findOne(USER_TABLE, {[ID_COLUMN]: id}).then(data => hydrateUser(data.Item))
     }
 
     findCard(id: string): Promise<Card> {
-        return this.findOne(CARD_TABLE, {"id": id}).then((data) =>
-            Promise.resolve(new Card(data.Item.id, data.Item.dId, data.Item.q, data.Item.a, data.Item.d))
-        )
+        return this.findOne(CARD_TABLE, {[ID_COLUMN]: id}).then(data => hydrateCard(data.Item))
     }
 
     findDeck(id: string): Promise<Deck> {
-        return this.findOne(DECK_TABLE, {"id": id}).then((data) =>
-            Promise.resolve(new Deck(data.Item.id, data.Item.cId, data.Item.n))
-        )
+        return this.findOne(DECK_TABLE, {[ID_COLUMN]: id}).then(data => hydrateDeck(data.Item))
     }
 
     findCollection(id: string): Promise<Collection> {
-        return this.findOne(COLLECTION_TABLE, {"id": id}).then((data) =>
-            Promise.resolve(new Collection(data.Item.id, data.Item.uId))
-        )
+        return this.findOne(COLLECTION_TABLE, {[ID_COLUMN]: id}).then(data => hydrateCollection(data.Item))
     }
 
     updateUser(user: User): Promise<User> {
         const id = user.id
 
         const updates = new Map()
-        updates.set("email", user.email)
+        updates.set(EMAIL_INDEX, user.email)
 
         if (!id) {
             throw new Error("User must have id specified.")
         }
 
-        return this.update(USER_TABLE, {"id": id}, [updates]).then(() => Promise.resolve(user))
+        return this.update(USER_TABLE, {[ID_COLUMN]: id}, [updates]).then(() => user)
     }
 
     updateCard(card: Card): Promise<Card> {
@@ -136,12 +168,12 @@ export default class DynamoDBDao implements Dao {
         }
 
         const updates = new Map()
-        updates.set("dId", card.deckId)
-        updates.set("q", card.question)
-        updates.set("a", card.answer)
-        updates.set("d", card.due)
+        updates.set(DECK_ID_INDEX, card.deckId)
+        updates.set(QUESTION_COLUMN, card.question)
+        updates.set(ANSWER_COLUMN, card.answer)
+        updates.set(DUE_COLUMN, card.due)
 
-        return this.update(CARD_TABLE, {"id": id}, [updates]).then(() => Promise.resolve(card))
+        return this.update(CARD_TABLE, {[ID_COLUMN]: id}, [updates]).then(() => card)
     }
 
     updateDeck(deck: Deck): Promise<Deck> {
@@ -152,20 +184,20 @@ export default class DynamoDBDao implements Dao {
         }
 
         const updates = new Map()
-        updates.set("cId", deck.collectionId)
-        updates.set("n", deck.name)
+        updates.set(COLLECTION_ID_INDEX, deck.collectionId)
+        updates.set(NAME_COLUMN, deck.name)
 
-        return this.update(DECK_TABLE, {"id": id}, [updates]).then(() => Promise.resolve(deck))
+        return this.update(DECK_TABLE, {[ID_COLUMN]: id}, [updates]).then(() => deck)
     }
 
     updateCollection(collection: Collection): Promise<Collection> {
         const id = collection.id
 
         const updates = new Map()
-        updates.set("uId", collection.userId)
+        updates.set(USER_ID_INDEX, collection.userId)
 
         // $FlowFixMe
-        return this.update(COLLECTION_TABLE, {"id": id}, [updates]).then(() => Promise.resolve(collection))
+        return this.update(COLLECTION_TABLE, {[ID_COLUMN]: id}, [updates]).then(() => collection)
     }
 
     createTable(name: string, indices: Array<IndexDefinition>): Promise<void> {
@@ -173,17 +205,17 @@ export default class DynamoDBDao implements Dao {
         const dynamodb = new AWS.DynamoDB()
 
         const keySchema = [
-            {AttributeName: "id", KeyType: "HASH"}
+            {AttributeName: ID_COLUMN, KeyType: DYNAMODB_HASH}
         ]
 
         const additionalIndexDefinitions = indices.map((index: IndexDefinition) => {
             return {
                 AttributeName: index.name,
-                AttributeType: "string" === index.type ? "S" : 'N'
+                AttributeType: index.type
             }
         })
         const columnDefinitions = [
-            {AttributeName: "id", AttributeType: "S"},
+            {AttributeName: ID_COLUMN, AttributeType: DYNAMODB_STRING},
             ...additionalIndexDefinitions
         ]
 
@@ -205,11 +237,11 @@ export default class DynamoDBDao implements Dao {
                     KeySchema: [
                         {
                             AttributeName: column.name,
-                            KeyType: "HASH"
+                            KeyType: DYNAMODB_HASH
                         }
                     ],
                     Projection: {
-                        ProjectionType: "KEYS_ONLY"
+                        ProjectionType: DYNAMODB_PROJECT_ALL
                     },
                     ProvisionedThroughput: {
                         "ReadCapacityUnits": DEFAULT_READ_CAPACITY_UNITS,
@@ -304,7 +336,7 @@ export default class DynamoDBDao implements Dao {
         })
     }
 
-    delete(table: string, key: { [string]: string | number }): Promise<any> {
+    deleteEntity(table: string, key: { [string]: string | number }): Promise<any> {
         const docClient = new AWS.DynamoDB.DocumentClient()
 
         const params = {
@@ -343,100 +375,44 @@ export default class DynamoDBDao implements Dao {
         })
     }
 
-    findDecksByCollectionId(collectionId: string): Promise<Array<Deck>> {
+    findByIndexQuery(table: string, indexColumn: string, value: string) {
         const params = {
-            TableName: DECK_TABLE,
-            IndexName: "cId",
-            KeyConditionExpression: "cId = :cId",
+            TableName: table,
+            IndexName: indexColumn,
+            KeyConditionExpression: `${indexColumn} = :${indexColumn}`,
             ExpressionAttributeValues: {
-                ":cId": collectionId
+                [`:${indexColumn}`]: value
             }
         }
 
-        const docClient = new AWS.DynamoDB.DocumentClient()
-
         return new Promise((resolve, reject) => {
+            const docClient = new AWS.DynamoDB.DocumentClient()
+
             docClient.query(params, function (err, data) {
                 if (err) {
                     console.log("Unable to query. Error:", JSON.stringify(err, null, 2))
                     reject(err)
                 } else {
-                    resolve(data.Items.map(i => i.id))
+                    resolve(data.Items)
                 }
             })
-        }).then(ids => {
-            return Promise.all(ids.map(i => this.findDeck(i)))
         })
+    }
+
+    findDecksByCollectionId(collectionId: string): Promise<Array<Deck>> {
+        return this.findByIndexQuery(DECK_TABLE, COLLECTION_ID_INDEX, collectionId)
+            .then(items => items.map(hydrateDeck))
     }
 
     findCardsByDeckId(deckId: string): Promise<Array<Card>> {
-        const params = {
-            TableName: CARD_TABLE,
-            IndexName: "dId",
-            KeyConditionExpression: "dId = :dId",
-            ExpressionAttributeValues: {
-                ":dId": deckId
-            }
-        }
-
-        const docClient = new AWS.DynamoDB.DocumentClient()
-
-        return new Promise((resolve, reject) => {
-            docClient.query(params, function (err, data) {
-                if (err) {
-                    console.log("Unable to query. Error:", JSON.stringify(err, null, 2))
-                    reject(err)
-                } else {
-                    resolve(data.Items.map(i => i.id))
-                }
-            })
-        }).then(ids => {
-            return Promise.all(ids.map(i => this.findCard(i)))
-        })
+        return this.findByIndexQuery(CARD_TABLE, DECK_ID_INDEX, deckId)
+            .then(items => items.map(hydrateCard))
     }
 
-    // TODO: This needs to actually respect the email
     findCollectionByUserEmail(email: string): Promise<Collection> {
-        const params = {
-            TableName: USER_TABLE,
-            IndexName: "email",
-            KeyConditionExpression: "email = :email",
-            ExpressionAttributeValues: {
-                ":email": email
-            }
-        }
-
-        const docClient = new AWS.DynamoDB.DocumentClient()
-
-        return new Promise((resolve, reject) => {
-            docClient.query(params, function (err, data) {
-                if (err) {
-                    console.log("Unable to query. Error:", JSON.stringify(err, null, 2))
-                    reject(err)
-                } else {
-                    resolve(data.Items.map(i => i.id)[0])
-                }
-            })
-        }).then(userId => {
-            const params = {
-                TableName: COLLECTION_TABLE,
-                IndexName: "uId",
-                KeyConditionExpression: "uId = :uId",
-                ExpressionAttributeValues: {
-                    ":uId": userId
-                }
-            }
-
-            return new Promise((resolve, reject) => {
-                docClient.query(params, function (err, data) {
-                    if (err) {
-                        console.log("Unable to query. Error:", JSON.stringify(err, null, 2))
-                        reject(err)
-                    } else {
-                        resolve(data.Items[0].id)
-                    }
-                })
-            }).then(id => this.findCollection(id))
-        })
+        return this.findByIndexQuery(USER_TABLE, EMAIL_INDEX, email)
+            .then(items => items.map(i => i.id)[0])
+            .then(userId => this.findByIndexQuery(COLLECTION_TABLE, USER_ID_INDEX, userId))
+            .then(items => hydrateCollection(items[0]))
     }
 }

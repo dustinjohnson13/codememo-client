@@ -5,11 +5,34 @@ import User from "../entity/User"
 import Collection from "../entity/Collection"
 import Deck from "../entity/Deck"
 import Card from "../entity/Card"
-import {createDao} from "../persist/SequalizeDao.test"
+import {createDao} from "../persist/sequelize/SequalizeDao.test"
 import {TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
+import {REGION, startAndLoadData, stop} from "../persist/dynamodb/DynamoDBHelper"
+import DynamoDBDao from "../persist/dynamodb/DynamoDBDao"
 
 describe('DaoDelegatingDataService - sequelize (sqlite3)', () => {
     testWithDaoImplementation(createDao)
+})
+
+describe('DaoDelegatingDataService - DynamoDB', () => {
+    let port
+    let dao
+
+    beforeEach(async () => {
+        await startAndLoadData(false).then((assignedPort: number) => {
+            port = assignedPort
+            dao = new DynamoDBDao(REGION, `http://localhost:${port}`)
+        }).catch((err) => {
+            console.log("Error!")
+            throw err
+        })
+    })
+
+    afterEach(() => {
+        stop(port)
+    })
+
+    testWithDaoImplementation(() => dao)
 })
 
 function testWithDaoImplementation(createDao: any) {
@@ -50,18 +73,21 @@ function testWithDaoImplementation(createDao: any) {
         })
 
         it('can add new deck', (done) => {
-            expect.assertions(5)
+            expect.assertions(6)
 
             const deckName = "My New Deck"
 
             service.addDeck(TEST_USER_EMAIL, deckName).then((actual: CollectionResponse) => {
                 expect(actual.decks.length).toEqual(2)
 
-                const returnedDeck = actual.decks[1]
-                expect(returnedDeck.name).toEqual(deckName)
-                expect(returnedDeck.totalCount).toEqual(0)
-                expect(returnedDeck.dueCount).toEqual(0)
-                expect(returnedDeck.newCount).toEqual(0)
+                const returnedDeck = actual.decks.find(it => it.name === deckName)
+                expect(returnedDeck).toBeDefined()
+                if (returnedDeck) {
+                    expect(returnedDeck.name).toEqual(deckName)
+                    expect(returnedDeck.totalCount).toEqual(0)
+                    expect(returnedDeck.dueCount).toEqual(0)
+                    expect(returnedDeck.newCount).toEqual(0)
+                }
                 done()
             })
         })

@@ -1,11 +1,11 @@
 //@flow
-import User from "../entity/User"
-import Collection from "../entity/Collection"
-import Deck from "../entity/Deck"
-import Card from "../entity/Card"
+import User from "../../entity/User"
+import Collection from "../../entity/Collection"
+import Deck from "../../entity/Deck"
+import Card from "../../entity/Card"
 import {loadCollectionData, REGION, startAndLoadData, stop} from "./DynamoDBHelper"
 import DynamoDBDao from "./DynamoDBDao"
-import {CARD_TABLE, COLLECTION_TABLE, DECK_TABLE, TEST_USER_EMAIL, USER_TABLE} from "./Dao"
+import {CARD_TABLE, COLLECTION_TABLE, DECK_TABLE, TEST_USER_EMAIL, USER_TABLE} from "../Dao"
 
 const AWS = require("aws-sdk")
 
@@ -18,12 +18,11 @@ describe('DynamoDBDao', () => {
         await startAndLoadData(false).then((assignedPort: number) => {
             port = assignedPort
             service = new DynamoDBDao(REGION, `http://localhost:${port}`)
-        }).then(() => {
-            return service.init()
-        }).catch((err) => {
-            console.log("Error!")
-            throw err
-        })
+        }).then(() => service.init(false))
+            .catch((err) => {
+                console.log("Error!")
+                throw err
+            })
     })
 
     afterEach(() => {

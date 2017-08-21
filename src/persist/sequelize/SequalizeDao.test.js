@@ -1,10 +1,10 @@
 //@flow
-import User from "../entity/User"
+import User from "../../entity/User"
 import {CardEntity, CollectionEntity, DeckEntity, SequelizeDao, UserEntity} from "./SequelizeDao"
 import {Sequelize} from 'sequelize'
-import Collection from "../entity/Collection"
-import Deck from "../entity/Deck"
-import Card from "../entity/Card"
+import Collection from "../../entity/Collection"
+import Deck from "../../entity/Deck"
+import Card from "../../entity/Card"
 
 describe('SequelizeDao', () => {
 

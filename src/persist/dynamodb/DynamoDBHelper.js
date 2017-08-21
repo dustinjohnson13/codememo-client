@@ -1,6 +1,6 @@
 //@flow
 import freeport from 'freeport'
-import {CARD_TABLE, COLLECTION_TABLE, DECK_TABLE, USER_TABLE} from "./Dao"
+import {CARD_TABLE, COLLECTION_TABLE, DECK_TABLE, USER_TABLE} from "../Dao"
 
 const DynamoDbLocal = require('dynamodb-local')
 const AWS = require("aws-sdk")

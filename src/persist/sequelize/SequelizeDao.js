@@ -1,11 +1,11 @@
 //@flow
-import User from "../entity/User"
+import User from "../../entity/User"
 
 import {Sequelize} from 'sequelize'
-import Card from "../entity/Card"
-import Deck from "../entity/Deck"
-import Collection from "../entity/Collection"
-import {CARD_TABLE, COLLECTION_TABLE, DECK_TABLE, USER_TABLE} from "./Dao"
+import Card from "../../entity/Card"
+import Deck from "../../entity/Deck"
+import Collection from "../../entity/Collection"
+import {CARD_TABLE, COLLECTION_TABLE, DECK_TABLE, USER_TABLE} from "../Dao"
 
 const modelDefiner = new Sequelize({
     dialect: 'sqlite'

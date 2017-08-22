@@ -1,11 +1,19 @@
 import type {DataService} from "./APIDomain"
-import {FakeDataService} from "../fakeData/FakeDataService"
+import DynamoDBDao from "../persist/dynamodb/DynamoDBDao"
+import DaoDelegatingDataService from "./DaoDelegatingDataService"
 
 export class SystemClock {
     epochSeconds(): number {
         return new Date().getTime()
     }
 }
+
+const REGION = 'us-east-1'
+const ENDPOINT = process.env.NODE_ENV === 'production' ?
+    `https://dynamodb.${REGION}.amazonaws.com` :
+    'http://localhost:8000'
+
+console.log(`Using region: ${REGION} and endpoint: ${ENDPOINT}`)
 
 class DelegatingDataService implements DataService {
 
@@ -14,7 +22,7 @@ class DelegatingDataService implements DataService {
 
     constructor(clock: Clock) {
         this.timeoutDelay = 250
-        this.delegate = new FakeDataService(clock);
+        this.delegate = new DaoDelegatingDataService(new DynamoDBDao(REGION, ENDPOINT));
 
         (this: any).answerCard = this.answerCard.bind(this);
         (this: any).addDeck = this.addDeck.bind(this);
@@ -25,15 +33,19 @@ class DelegatingDataService implements DataService {
         (this: any).addCard = this.addCard.bind(this)
     }
 
+    init(clearDatabase: boolean): Promise<void> {
+        return this.delegate.init(clearDatabase);
+    }
+
     addDeck(email: string, name: string): Promise<CollectionResponse> {
         return new Promise((resolve, reject) => {
             setTimeout(() => this.delegate.addDeck(email, name).then(resolve), this.timeoutDelay)
         })
     }
 
-    fetchCollection(): Promise<CollectionResponse> {
+    fetchCollection(email: string): Promise<CollectionResponse> {
         return new Promise((resolve, reject) => {
-            setTimeout(() => this.delegate.fetchCollection().then(resolve), this.timeoutDelay)
+            setTimeout(() => this.delegate.fetchCollection(email).then(resolve), this.timeoutDelay)
         })
     }
 

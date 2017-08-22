@@ -5,6 +5,7 @@ import {Sequelize} from 'sequelize'
 import Card from "../../entity/Card"
 import Deck from "../../entity/Deck"
 import Collection from "../../entity/Collection"
+import type {Dao} from "../Dao"
 import {CARD_TABLE, COLLECTION_TABLE, DECK_TABLE, USER_TABLE} from "../Dao"
 
 const modelDefiner = new Sequelize({
@@ -13,7 +14,8 @@ const modelDefiner = new Sequelize({
 
 export const UserEntity = modelDefiner.define(USER_TABLE, {
     email: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        unique: true
     }
 })
 
@@ -55,7 +57,11 @@ const hydrateCard = (entity: CardEntity) => {
     return new Card(entity.id, entity.deckId, entity.question, entity.answer, entity.due)
 }
 
-export class SequelizeDao {
+const hydrateUser = (entity: UserEntity) => {
+    return new User(entity.id, entity.email)
+}
+
+export class SequelizeDao implements Dao {
 
     sequelize: Sequelize
 
@@ -64,7 +70,7 @@ export class SequelizeDao {
     }
 
     init(clearDatabase: boolean): Promise<void> {
-        return UserEntity.sync()
+        return UserEntity.sync({force: clearDatabase})
             .then(() => CollectionEntity.sync({force: clearDatabase}))
             .then(() => DeckEntity.sync({force: clearDatabase}))
             .then(() => CardEntity.sync({force: clearDatabase}))
@@ -174,7 +180,7 @@ export class SequelizeDao {
         })
     }
 
-    deleteCollection(id: string): Promise<number> {
+    deleteCollection(id: string): Promise<string> {
         return CollectionEntity.destroy({
             where: {
                 id: id
@@ -183,7 +189,7 @@ export class SequelizeDao {
     }
 
     findUser(id: string): Promise<User> {
-        return UserEntity.findById(id).then((entity) => new User(entity.id, entity.email))
+        return UserEntity.findById(id).then((entity) => hydrateUser(entity))
     }
 
     findCard(id: string): Promise<Card> {
@@ -218,9 +224,23 @@ export class SequelizeDao {
         return q.then(entities => entities.map(hydrateCard))
     }
 
-    // TODO: This needs to actually respect the email
-    findCollectionByUserEmail(email: string): Promise<Collection> {
-        return CollectionEntity.findOne()
+    findUserByEmail(email: string): Promise<User | void> {
+        const q = UserEntity.findOne({
+            where: {
+                email: email
+            }
+        })
+        return q.then(entity => hydrateUser(entity)).catch(() => undefined)
     }
 
+    findCollectionByUserEmail(email: string): Promise<Collection | void> {
+        return this.findUserByEmail(email).then(user =>
+            CollectionEntity.findOne({
+                where: {
+                    // $FlowFixMe
+                    userId: user.id
+                }
+            })
+        )
+    }
 }

@@ -10,7 +10,7 @@ import AppContainer from './containers/AppContainer'
 import flashcardApp from './reducers/index'
 import './styles/index.css'
 import registerServiceWorker from './registerServiceWorker'
-import {collectionPage, saga} from "./actions/creators"
+import {loginPage, saga} from "./actions/creators"
 
 const sagaMiddleware = createSagaMiddleware()
 const loggerMiddleware = createLogger()
@@ -21,7 +21,8 @@ let store = createStore(flashcardApp, applyMiddleware(
 ))
 
 sagaMiddleware.run(saga)
-store.dispatch(collectionPage())
+
+store.dispatch(loginPage())
 
 ReactDOM.render(
     <Provider store={store}>

@@ -97,6 +97,8 @@ export interface DataService {
     // TODO: This should be collectionId instead of email
     addDeck(email: string, name: string): Promise<CollectionResponse>;
 
+    init(clearDatabase: boolean): Promise<void>;
+
     fetchCollection(email: string): Promise<CollectionResponse>;
 
     fetchDeck(id: string): Promise<DeckResponse>;

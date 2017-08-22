@@ -32,9 +32,16 @@ export class FakeDataService implements DataService {
 
         if (decks) {
             this.collectionStore = decks
-        } else {
-            this.createCollectionStore()
         }
+    }
+
+    init(clearDatabase: boolean): Promise<void> {
+        return new Promise((resolve, reject) => {
+            if (this.collectionStore.length === 0 || clearDatabase) {
+                this.createCollectionStore()
+            }
+            resolve()
+        })
     }
 
     createDecks() {

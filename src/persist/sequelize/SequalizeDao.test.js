@@ -5,6 +5,7 @@ import {Sequelize} from 'sequelize'
 import Collection from "../../entity/Collection"
 import Deck from "../../entity/Deck"
 import Card from "../../entity/Card"
+import {TEST_USER_EMAIL} from "../Dao"
 
 describe('SequelizeDao', () => {
 
@@ -210,7 +211,7 @@ describe('SequelizeDao', () => {
             UserEntity.findOne().then((entity) => {
                 service.findUser(entity.id).then((user) => {
                     expect(user.id).toEqual(entity.id)
-                    expect(user.email).toEqual('someEmail@blah.com')
+                    expect(user.email).toEqual(TEST_USER_EMAIL)
                     done()
                 })
             })
@@ -354,6 +355,32 @@ describe('SequelizeDao', () => {
                 })
             }))
     })
+
+    it('should be able to find user by email', (done) => {
+        expect.assertions(1)
+
+        loadCollectionData().then(() => {
+
+            service.findUserByEmail(TEST_USER_EMAIL).then(user => {
+                if (user) {
+                    expect(user.email).toEqual(TEST_USER_EMAIL)
+                }
+                done()
+            })
+        })
+    })
+
+    it('should be able to find collections by user email', (done) => {
+        expect.assertions(1)
+
+        loadCollectionData().then(() => {
+
+            service.findCollectionByUserEmail(TEST_USER_EMAIL).then(collection => {
+                expect(collection).toBeDefined()
+                done()
+            })
+        })
+    })
 })
 
 export const createDao = () => {
@@ -376,7 +403,7 @@ export const createDao = () => {
 
 export const loadCollectionData = () => {
     return UserEntity.create({
-        email: 'someEmail@blah.com'
+        email: TEST_USER_EMAIL
     }).then((user) => {
         return CollectionEntity.create({
             userId: user.id

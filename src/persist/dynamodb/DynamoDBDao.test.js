@@ -3,7 +3,7 @@ import User from "../../entity/User"
 import Collection from "../../entity/Collection"
 import Deck from "../../entity/Deck"
 import Card from "../../entity/Card"
-import {loadCollectionData, REGION, startAndLoadData, stop} from "./DynamoDBHelper"
+import {ACCESS_KEY_ID, loadCollectionData, REGION, SECRET_ACCESS_KEY, startAndLoadData, stop} from "./DynamoDBHelper"
 import DynamoDBDao from "./DynamoDBDao"
 import {CARD_TABLE, COLLECTION_TABLE, DECK_TABLE, TEST_USER_EMAIL, USER_TABLE} from "../Dao"
 
@@ -17,7 +17,7 @@ describe('DynamoDBDao', () => {
     beforeEach(async () => {
         await startAndLoadData(false).then((assignedPort: number) => {
             port = assignedPort
-            service = new DynamoDBDao(REGION, `http://localhost:${port}`)
+            service = new DynamoDBDao(REGION, `http://localhost:${port}`, ACCESS_KEY_ID, SECRET_ACCESS_KEY)
         }).then(() => service.init(false))
             .catch((err) => {
                 console.log("Error!")
@@ -27,6 +27,15 @@ describe('DynamoDBDao', () => {
 
     afterEach(() => {
         stop(port)
+    })
+
+    it('should be able to list tables', (done) => {
+        expect.assertions(1)
+
+        service.listTables().then((tables) => {
+            expect(tables).toEqual(["card", "collection", "deck", "user"])
+            done()
+        })
     })
 
     it('should be able to create a user', (done) => {
@@ -539,6 +548,20 @@ describe('DynamoDBDao', () => {
                 expect(cards.map(it => it.question)).toEqual([
                     "Question 1?", "Question 2?", "Question 3?", "Question 4?",
                 ])
+                done()
+            })
+        })
+    })
+
+    it('should be able to find user by email', (done) => {
+        expect.assertions(1)
+
+        loadCollectionData(port).then(() => {
+
+            service.findUserByEmail(TEST_USER_EMAIL).then(user => {
+                if (user) {
+                    expect(user.email).toEqual(TEST_USER_EMAIL)
+                }
                 done()
             })
         })

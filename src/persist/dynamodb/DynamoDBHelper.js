@@ -9,7 +9,9 @@ const fs = require('fs')
 const TEST_DATA_DIR = './src/persist/testData'
 const SAMPLE_DATA_JSON = `${TEST_DATA_DIR}/moviedata.json`
 
-export const REGION = "us-west-2"
+export const REGION = "us-east-1"
+export const ACCESS_KEY_ID = 'noAccessKeyId'
+export const SECRET_ACCESS_KEY = 'noSecretAccessKey'
 export const SAMPLE_DATA_TABLE_NAME = "Movies"
 
 export const startAndLoadData = (useSamples: boolean): Promise<number> => {
@@ -40,6 +42,10 @@ const allocatePort = () => {
 
 const startDynamoDB = (port: number) => {
     console.log(`Starting DynamoDB on port ${port}`)
+
+    // DynamoDbLocal.configureInstaller({
+    //     downloadUrl: './dynamodb-local-1.11.86.tar.gz'
+    // });
 
     return DynamoDbLocal.launch(port, null, []).then(() => port)
 }

@@ -16,6 +16,8 @@ import type {
     HideAnswerAction,
     LoadCollectionPageAction,
     LoadPageAction,
+    LoginRequestAction,
+    LoginSuccessAction,
     ReviewDeckRequestAction,
     ShowAnswerAction
 } from "./actionTypes"
@@ -35,6 +37,8 @@ import {
     HIDE_ANSWER,
     LOAD_COLLECTION_PAGE,
     LOAD_PAGE,
+    LOGIN_REQUEST,
+    LOGIN_SUCCESS,
     REVIEW_DECK_REQUEST,
     SHOW_ANSWER
 } from "./actionTypes"
@@ -44,6 +48,8 @@ import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "
 import API from '../services/API'
 import {call, put, select, takeEvery} from 'redux-saga/effects'
 import * as selectors from './selectors'
+import {TEST_USER_EMAIL} from "../persist/Dao"
+import AWS from "aws-sdk"
 
 export const hideAnswer = (): HideAnswerAction => {
     return {type: HIDE_ANSWER}
@@ -60,8 +66,23 @@ export const loadPage = (page: PageType): LoadPageAction => {
     }
 }
 
+export const loginPage = (): LoadPageAction => {
+    return {
+        type: LOAD_PAGE,
+        page: Page.LOGIN
+    }
+}
+
 export const collectionPage = (): LoadCollectionPageAction => {
     return {type: LOAD_COLLECTION_PAGE}
+}
+
+export const loginRequest = (email: string, password: string): LoginRequestAction => {
+    return {type: LOGIN_REQUEST, email: email, password: password}
+}
+
+export const loginSuccess = (email: string, password: string): LoginSuccessAction => {
+    return {type: LOGIN_SUCCESS, email: email, password: password}
 }
 
 export const fetchCollectionRequest = (): FetchCollectionRequestAction => {
@@ -169,9 +190,22 @@ export function* loadCollectionPage(): Generator<LoadCollectionPageAction, any, 
     yield put(loadPage(Page.COLLECTION))
 }
 
+export function* login(action: LoginRequestAction): Generator<LoginRequestAction, any, void> {
+    // TODO: Eventually do a real form of login
+    AWS.config.update({
+        ...AWS.config,
+        credentials: new AWS.Credentials(action.email, action.password)
+    })
+
+    API.init(false)
+
+    yield put(loginSuccess(action.email, action.password))
+    yield call(loadCollectionPage)
+}
+
 export function* addDeck(action: AddDeckRequestAction): Generator<AddDeckRequestAction, any, void> {
     // TODO: Should be using a collection id or real email
-    const deck = yield call(API.addDeck, "testuser@blah.com", action.name)
+    const deck = yield call(API.addDeck, TEST_USER_EMAIL, action.name)
     // $FlowFixMe
     yield put(addDeckSuccess(deck))
 }
@@ -205,7 +239,8 @@ export function* reviewDeck(action: ReviewDeckRequestAction): Generator<ReviewDe
 }
 
 export function* fetchCollection(action: FetchCollectionRequestAction): Generator<FetchCollectionRequestAction, any, void> {
-    const response = yield call(API.fetchCollection)
+    // TODO: Should be using real email
+    const response = yield call(API.fetchCollection, TEST_USER_EMAIL)
     // $FlowFixMe
     yield put(fetchCollectionSuccess(response))
 }
@@ -224,5 +259,6 @@ export function* saga(): Generator<Action, any, void> {
     yield takeEvery(FETCH_CARDS_REQUEST, fetchCards)
     yield takeEvery(FETCH_COLLECTION_REQUEST, fetchCollection)
     yield takeEvery(ADD_DECK_REQUEST, addDeck)
+    yield takeEvery(LOGIN_REQUEST, login)
     yield takeEvery(LOAD_COLLECTION_PAGE, loadCollectionPage)
 }

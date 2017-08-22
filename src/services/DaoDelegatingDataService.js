@@ -4,7 +4,10 @@ import type {DataService} from "./APIDomain"
 import * as api from "./APIDomain"
 import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "./APIDomain"
 import type {Dao} from "../persist/Dao"
+import {TEST_USER_EMAIL} from "../persist/Dao"
 import Card from "../entity/Card"
+import User from "../entity/User"
+import Collection from "../entity/Collection"
 
 const cardToCardDetail = (card: Card) => {
     //$FlowFixMe
@@ -19,7 +22,35 @@ export default class DaoDelegatingDataService implements DataService {
     }
 
     init(clearDatabase: boolean): Promise<void> {
-        return this.dao.init(clearDatabase)
+        return this.dao.init(clearDatabase).then(() => {
+            let user
+            return this.dao.findUserByEmail(TEST_USER_EMAIL)
+                .then(u => {
+                    if (u) {
+                        user = u
+                        return user;
+                    } else {
+                        return this.dao.saveUser(new User(undefined, TEST_USER_EMAIL)).then(u => {
+                            user = u
+                            return user
+                        })
+                    }
+                })
+                .then(user => this.dao.findCollectionByUserEmail(user.email))
+                .then(collection => {
+
+                    if (collection) {
+                        console.log("Found collection ", collection)
+                    } else {
+                        console.log("Saving collection")
+                        // $FlowFixMe
+                        return this.dao.saveCollection(new Collection(undefined, user.id)).then(() => undefined)
+                    }
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        })
     }
 
     fetchCollection(email: string): Promise<api.CollectionResponse> {
@@ -68,8 +99,8 @@ export default class DaoDelegatingDataService implements DataService {
 
     answerCard(id: string, answer: string): Promise<CardDetail> {
         return this.dao.findCard(id).then(card =>
-            new Card(card.id, card.deckId, card.question, card.answer, card.due + new Date().getTime() + 86400))
-            .then(card => this.dao.saveCard(card))
+            new Card(card.id, card.deckId, card.question, card.answer, card.due + 86400))
+            .then(card => this.dao.updateCard(card))
             .then(card => cardToCardDetail(card))
     }
 }

@@ -37,7 +37,7 @@ describe('<App />', () => {
     it('displays the application name', () => {
         const app = prepareContainer(null)
 
-        const welcome = <h2>Flashcard App</h2>
+        const welcome = <h2>CodeMemo</h2>
 
         expect(app.contains(welcome)).toEqual(true)
     })

@@ -1,13 +1,11 @@
 //@flow
 import {CardDetail, CollectionResponse, DeckResponse} from "./APIDomain"
 import DaoDelegatingDataService from "./DaoDelegatingDataService"
-import User from "../entity/User"
-import Collection from "../entity/Collection"
 import Deck from "../entity/Deck"
 import Card from "../entity/Card"
 import {createDao} from "../persist/sequelize/SequalizeDao.test"
 import {TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
-import {REGION, startAndLoadData, stop} from "../persist/dynamodb/DynamoDBHelper"
+import {ACCESS_KEY_ID, REGION, SECRET_ACCESS_KEY, startAndLoadData, stop} from "../persist/dynamodb/DynamoDBHelper"
 import DynamoDBDao from "../persist/dynamodb/DynamoDBDao"
 
 describe('DaoDelegatingDataService - sequelize (sqlite3)', () => {
@@ -21,7 +19,7 @@ describe('DaoDelegatingDataService - DynamoDB', () => {
     beforeEach(async () => {
         await startAndLoadData(false).then((assignedPort: number) => {
             port = assignedPort
-            dao = new DynamoDBDao(REGION, `http://localhost:${port}`)
+            dao = new DynamoDBDao(REGION, `http://localhost:${port}`, ACCESS_KEY_ID, SECRET_ACCESS_KEY)
         }).catch((err) => {
             console.log("Error!")
             throw err
@@ -50,29 +48,29 @@ function testWithDaoImplementation(createDao: any) {
             service = new DaoDelegatingDataService(dao)
 
             await service.init(true).then(() =>
-                dao.saveUser(new User(undefined, TEST_USER_EMAIL)))
-                .then(user => dao.saveCollection(new Collection(undefined, user.id)))
-                .then(collection => dao.saveDeck(new Deck(undefined, collection.id, TEST_DECK_NAME)))
-                .then(deck => {
-                    const promises = []
-                    const currentTime = new Date().getTime()
-                    for (let i = 0; i < TOTAL_COUNT; i++) {
-                        const multiplier = i + 1
-                        let dueTime = null
-                        if (i < GOOD_COUNT) {
-                            dueTime = currentTime + (86400 * multiplier)
-                        } else if (i < (GOOD_COUNT + DUE_COUNT)) {
-                            dueTime = currentTime - (86400 * multiplier)
-                        }
+                dao.findCollectionByUserEmail(TEST_USER_EMAIL)
+                    .then(collection => dao.saveDeck(new Deck(undefined, collection.id, TEST_DECK_NAME)))
+                    .then(deck => {
+                        const promises = []
+                        const currentTime = new Date().getTime()
+                        for (let i = 0; i < TOTAL_COUNT; i++) {
+                            const multiplier = i + 1
+                            let dueTime = null
+                            if (i < GOOD_COUNT) {
+                                dueTime = currentTime + (86400 * multiplier)
+                            } else if (i < (GOOD_COUNT + DUE_COUNT)) {
+                                dueTime = currentTime - (86400 * multiplier)
+                            }
 
-                        const card = new Card(undefined, deck.id, `Question Number ${i}?`, `Answer Number ${i}`, dueTime)
-                        promises.push(dao.saveCard(card))
-                    }
-                    return Promise.all(promises)
-                })
+                            const card = new Card(undefined, deck.id, `Question Number ${i}?`, `Answer Number ${i}`, dueTime)
+                            promises.push(dao.saveCard(card))
+                        }
+                        return Promise.all(promises)
+                    }))
         })
 
         it('can add new deck', (done) => {
+
             expect.assertions(6)
 
             const deckName = "My New Deck"

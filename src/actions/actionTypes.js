@@ -3,6 +3,8 @@ import {CardDetail, CollectionResponse, Deck, DeckResponse} from "../services/AP
 import type {PageType} from "./pages"
 
 export const REVIEW_DECK_REQUEST = 'REVIEW_DECK_REQUEST'
+export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
+export const LOGIN_REQUEST = 'LOGIN_REQUEST'
 export const LOAD_COLLECTION_PAGE = 'LOAD_COLLECTION_PAGE'
 export const LOAD_PAGE = 'LOAD_PAGE'
 export const FETCH_COLLECTION_REQUEST = 'FETCH_COLLECTION_REQUEST'
@@ -21,6 +23,8 @@ export const HIDE_ANSWER = 'HIDE_ANSWER'
 export const SHOW_ANSWER = 'SHOW_ANSWER'
 
 export type ReviewDeckRequestAction = { type: 'REVIEW_DECK_REQUEST', id: string }
+export type LoginRequestAction = { type: 'LOGIN_REQUEST', email: string, password: string }
+export type LoginSuccessAction = { type: 'LOGIN_SUCCESS', email: string, password: string }
 export type LoadCollectionPageAction = { type: 'LOAD_COLLECTION_PAGE' };
 export type LoadPageAction = { type: 'LOAD_PAGE', page: PageType };
 export type FetchCollectionRequestAction = { type: 'FETCH_COLLECTION_REQUEST' }
@@ -41,6 +45,8 @@ export type AddDeckSuccessAction = { type: 'ADD_DECK_SUCCESS', collection: Colle
 export type Action =
     ShowAnswerAction
     | ReviewDeckRequestAction
+    | LoginSuccessAction
+    | LoginRequestAction
     | LoadCollectionPageAction
     | LoadPageAction
     | HideAnswerAction

@@ -10,13 +10,11 @@ import Collection from "../../entity/Collection"
 import AWS from "aws-sdk"
 
 const DYNAMODB_STRING = "S"
-const DYNAMODB_NUMBER = "N"
 const DYNAMODB_HASH = "HASH"
-const DYNAMODB_PROJECT_KEYS_ONLY = "KEYS_ONLY"
 const DYNAMODB_PROJECT_ALL = "ALL"
 
-const DEFAULT_READ_CAPACITY_UNITS = 5
-const DEFAULT_WRITE_CAPACITY_UNITS = 5
+const DEFAULT_READ_CAPACITY_UNITS = 1
+const DEFAULT_WRITE_CAPACITY_UNITS = 1
 
 const ID_COLUMN = "id"
 const NAME_COLUMN = "n"
@@ -37,7 +35,7 @@ const hydrateUser = (item) => {
 }
 
 const hydrateCollection = (item) => {
-    return new Collection(item[ID_COLUMN], item[USER_ID_COLUMN])
+    return item === undefined ? undefined : new Collection(item[ID_COLUMN], item[USER_ID_COLUMN])
 }
 
 const hydrateDeck = (item) => {
@@ -53,11 +51,12 @@ export default class DynamoDBDao implements Dao {
     region: string
     endpoint: string
 
-    constructor(region: string, endpoint: string) {
+    constructor(region: string, endpoint: string, accessKeyId: string, secretAccessKey: string) {
         this.region = region
         this.endpoint = endpoint
 
         AWS.config.update({
+            ...AWS.config,
             region: this.region,
             endpoint: this.endpoint
         })
@@ -65,11 +64,31 @@ export default class DynamoDBDao implements Dao {
 
     init(clearDatabase: boolean): Promise<any> {
         // Note: DynamoDB secondary indexes don't guarantee uniqueness
-        console.log("Initializing dynamo DB")
-        return Promise.all([this.createTable(USER_TABLE, [new IndexDefinition(EMAIL_INDEX, DYNAMODB_STRING)]),
-            this.createTable(CARD_TABLE, [new IndexDefinition(DECK_ID_INDEX, DYNAMODB_STRING)]),
-            this.createTable(DECK_TABLE, [new IndexDefinition(COLLECTION_ID_INDEX, DYNAMODB_STRING)]),
-            this.createTable(COLLECTION_TABLE, [new IndexDefinition(USER_ID_INDEX, DYNAMODB_STRING)])])
+        return this.listTables().then(tables => {
+            if (tables.length === 0) {
+                return this.createTable(USER_TABLE, [new IndexDefinition(EMAIL_INDEX, DYNAMODB_STRING)])
+                    .then(() => this.createTable(COLLECTION_TABLE, [new IndexDefinition(USER_ID_INDEX, DYNAMODB_STRING)]))
+                    .then(() => this.createTable(DECK_TABLE, [new IndexDefinition(COLLECTION_ID_INDEX, DYNAMODB_STRING)]))
+                    .then(() => this.createTable(CARD_TABLE, [new IndexDefinition(DECK_ID_INDEX, DYNAMODB_STRING)]))
+            }
+        })
+
+
+    }
+
+    listTables(): Promise<Array<string>> {
+        const dynamodb = new AWS.DynamoDB()
+
+        return new Promise((resolve, reject) => {
+            dynamodb.listTables({Limit: 10}, function (err, data) {
+                if (err) {
+                    console.log("Error", err.code)
+                    reject(err)
+                } else {
+                    resolve(data.TableNames)
+                }
+            });
+        })
     }
 
     saveUser(user: User): Promise<User> {
@@ -144,6 +163,7 @@ export default class DynamoDBDao implements Dao {
     }
 
     findCollection(id: string): Promise<Collection> {
+        // $FlowFixMe
         return this.findOne(COLLECTION_TABLE, {[ID_COLUMN]: id}).then(data => hydrateCollection(data.Item))
     }
 
@@ -201,6 +221,8 @@ export default class DynamoDBDao implements Dao {
     }
 
     createTable(name: string, indices: Array<IndexDefinition>): Promise<void> {
+
+        console.log("Creating ", name)
 
         const dynamodb = new AWS.DynamoDB()
 
@@ -409,10 +431,15 @@ export default class DynamoDBDao implements Dao {
             .then(items => items.map(hydrateCard))
     }
 
-    findCollectionByUserEmail(email: string): Promise<Collection> {
+    findUserByEmail(email: string): Promise<User | void> {
         return this.findByIndexQuery(USER_TABLE, EMAIL_INDEX, email)
-            .then(items => items.map(i => i.id)[0])
-            .then(userId => this.findByIndexQuery(COLLECTION_TABLE, USER_ID_INDEX, userId))
-            .then(items => hydrateCollection(items[0]))
+            .then(items => items.length === 0 ? undefined : items[0])
+    }
+
+    findCollectionByUserEmail(email: string): Promise<Collection | void> {
+        return this.findUserByEmail(email)
+        //$FlowFixMe
+            .then(user => user ? this.findByIndexQuery(COLLECTION_TABLE, USER_ID_INDEX, user.id) : [])
+            .then(items => items.length === 0 ? undefined : hydrateCollection(items[0]))
     }
 }

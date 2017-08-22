@@ -9,6 +9,9 @@ export const USER_TABLE = "user"
 export const CARD_TABLE = "card"
 export const DECK_TABLE = "deck"
 export const COLLECTION_TABLE = "collection"
+export const ALL_TABLES = [
+    USER_TABLE, CARD_TABLE, DECK_TABLE, COLLECTION_TABLE
+]
 
 export const TEST_USER_EMAIL = 'someone@blah.com'
 export const TEST_DECK_NAME = 'Test Deck'
@@ -53,5 +56,7 @@ export interface Dao {
 
     findCardsByDeckId(deckId: string): Promise<Array<Card>>;
 
-    findCollectionByUserEmail(email: string): Promise<Collection>;
+    findUserByEmail(email: string): Promise<User | void>;
+
+    findCollectionByUserEmail(email: string): Promise<Collection | void>;
 }

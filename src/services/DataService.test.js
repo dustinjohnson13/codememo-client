@@ -15,6 +15,7 @@ describe('DaoDelegatingDataService - sequelize (sqlite3)', () => {
 describe('DaoDelegatingDataService - DynamoDB', () => {
     let port
     let dao
+    let originalTimeout
 
     beforeEach(async () => {
         await startAndLoadData(false).then((assignedPort: number) => {
@@ -24,9 +25,12 @@ describe('DaoDelegatingDataService - DynamoDB', () => {
             console.log("Error!")
             throw err
         })
+        originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
     })
 
     afterEach(() => {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
         stop(port)
     })
 

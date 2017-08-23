@@ -13,6 +13,7 @@ describe('DynamoDBDao', () => {
 
     let port
     let service
+    let originalTimeout
 
     beforeEach(async () => {
         await startAndLoadData(false).then((assignedPort: number) => {
@@ -23,9 +24,12 @@ describe('DynamoDBDao', () => {
                 console.log("Error!")
                 throw err
             })
+        originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
     })
 
     afterEach(() => {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
         stop(port)
     })
 

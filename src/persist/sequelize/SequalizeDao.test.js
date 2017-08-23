@@ -384,9 +384,10 @@ describe('SequelizeDao', () => {
 })
 
 export const createDao = () => {
-    const sequelize = new Sequelize('database', 'username', 'password', {
+    const sequelize = new Sequelize({
         host: 'localhost',
         dialect: 'sqlite',
+        logging: (message) => {},
 
         pool: {
             max: 5,

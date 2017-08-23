@@ -9,8 +9,9 @@ import type {Dao} from "../Dao"
 import {CARD_TABLE, COLLECTION_TABLE, DECK_TABLE, USER_TABLE} from "../Dao"
 
 const modelDefiner = new Sequelize({
-    dialect: 'sqlite'
-})
+    dialect: 'sqlite',
+    logging: (message) => {}}
+)
 
 export const UserEntity = modelDefiner.define(USER_TABLE, {
     email: {

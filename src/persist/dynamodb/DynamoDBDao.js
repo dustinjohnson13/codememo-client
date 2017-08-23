@@ -58,7 +58,8 @@ export default class DynamoDBDao implements Dao {
         AWS.config.update({
             ...AWS.config,
             region: this.region,
-            endpoint: this.endpoint
+            endpoint: this.endpoint,
+            credentials: new AWS.Credentials(accessKeyId, secretAccessKey)
         })
     }
 
@@ -383,7 +384,8 @@ export default class DynamoDBDao implements Dao {
 
         const params = {
             TableName: table,
-            Key: key
+            Key: key,
+            ConsistentRead: true
         }
         return new Promise((resolve, reject) => {
             docClient.get(params, function (err, data) {

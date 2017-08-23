@@ -1,7 +1,7 @@
 //@flow
 import IndexDefinition from "./IndexDefinition"
 import type {Dao} from "../Dao"
-import {CARD_TABLE, COLLECTION_TABLE, DECK_TABLE, USER_TABLE} from "../Dao"
+import {ALL_TABLES, CARD_TABLE, COLLECTION_TABLE, DECK_TABLE, USER_TABLE} from "../Dao"
 import User from "../../entity/User"
 import uuid from 'uuid'
 import Card from "../../entity/Card"
@@ -67,14 +67,19 @@ export default class DynamoDBDao implements Dao {
         // Note: DynamoDB secondary indexes don't guarantee uniqueness
         return this.listTables().then(tables => {
             if (tables.length === 0) {
-                return this.createTable(USER_TABLE, [new IndexDefinition(EMAIL_INDEX, DYNAMODB_STRING)])
-                    .then(() => this.createTable(COLLECTION_TABLE, [new IndexDefinition(USER_ID_INDEX, DYNAMODB_STRING)]))
-                    .then(() => this.createTable(DECK_TABLE, [new IndexDefinition(COLLECTION_ID_INDEX, DYNAMODB_STRING)]))
-                    .then(() => this.createTable(CARD_TABLE, [new IndexDefinition(DECK_ID_INDEX, DYNAMODB_STRING)]))
+                return this.createTables()
+            } else {
+                return (clearDatabase ? Promise.all(ALL_TABLES.map(table => this.dropTable(table))) :
+                    Promise.resolve([])).then(() => this.createTables())
             }
         })
+    }
 
-
+    createTables(): Promise<void> {
+        return this.createTable(USER_TABLE, [new IndexDefinition(EMAIL_INDEX, DYNAMODB_STRING)])
+            .then(() => this.createTable(COLLECTION_TABLE, [new IndexDefinition(USER_ID_INDEX, DYNAMODB_STRING)]))
+            .then(() => this.createTable(DECK_TABLE, [new IndexDefinition(COLLECTION_ID_INDEX, DYNAMODB_STRING)]))
+            .then(() => this.createTable(CARD_TABLE, [new IndexDefinition(DECK_ID_INDEX, DYNAMODB_STRING)]))
     }
 
     listTables(): Promise<Array<string>> {

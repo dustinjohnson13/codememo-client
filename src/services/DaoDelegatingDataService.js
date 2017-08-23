@@ -24,16 +24,17 @@ export default class DaoDelegatingDataService implements DataService {
     init(clearDatabase: boolean): Promise<void> {
         return this.dao.init(clearDatabase).then(() => {
             let user
+
             return this.dao.findUserByEmail(TEST_USER_EMAIL)
                 .then(u => {
-                    if (u) {
-                        user = u
-                        return user;
-                    } else {
+                    if (u === undefined) {
                         return this.dao.saveUser(new User(undefined, TEST_USER_EMAIL)).then(u => {
                             user = u
                             return user
                         })
+                    } else {
+                        user = u
+                        return user;
                     }
                 })
                 .then(user => this.dao.findCollectionByUserEmail(user.email))

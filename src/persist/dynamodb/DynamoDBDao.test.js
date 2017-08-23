@@ -3,7 +3,10 @@ import User from "../../entity/User"
 import Collection from "../../entity/Collection"
 import Deck from "../../entity/Deck"
 import Card from "../../entity/Card"
-import {ACCESS_KEY_ID, loadCollectionData, REGION, SECRET_ACCESS_KEY, startAndLoadData, stop} from "./DynamoDBHelper"
+import {
+    ACCESS_KEY_ID, DYNAMODB_TEST_TIMEOUT, loadCollectionData, REGION, SECRET_ACCESS_KEY, startAndLoadData,
+    stop
+} from "./DynamoDBHelper"
 import DynamoDBDao from "./DynamoDBDao"
 import {CARD_TABLE, COLLECTION_TABLE, DECK_TABLE, TEST_USER_EMAIL, USER_TABLE} from "../Dao"
 
@@ -12,31 +15,31 @@ const AWS = require("aws-sdk")
 describe('DynamoDBDao', () => {
 
     let port
-    let service
+    let dao
     let originalTimeout
 
-    beforeEach(async () => {
+    beforeAll(async () => {
         await startAndLoadData(false).then((assignedPort: number) => {
             port = assignedPort
-            service = new DynamoDBDao(REGION, `http://localhost:${port}`, ACCESS_KEY_ID, SECRET_ACCESS_KEY)
-        }).then(() => service.init(false))
-            .catch((err) => {
-                console.log("Error!")
-                throw err
-            })
-        originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+            dao = new DynamoDBDao(REGION, `http://localhost:${port}`, ACCESS_KEY_ID, SECRET_ACCESS_KEY)
+        })
+        originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = DYNAMODB_TEST_TIMEOUT
     })
 
-    afterEach(() => {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+    afterAll(() => {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout
         stop(port)
+    })
+
+    beforeEach(async () => {
+        await dao.init(true)
     })
 
     it('should be able to list tables', (done) => {
         expect.assertions(1)
 
-        service.listTables().then((tables) => {
+        dao.listTables().then((tables) => {
             expect(tables).toEqual(["card", "collection", "deck", "user"])
             done()
         })
@@ -47,7 +50,7 @@ describe('DynamoDBDao', () => {
 
         const user = new User(undefined, "blah@somewhere.com")
 
-        service.saveUser(user).then((user) => {
+        dao.saveUser(user).then((user) => {
             expect(user.id).toBeDefined()
 
             const docClient = new AWS.DynamoDB.DocumentClient()
@@ -77,9 +80,9 @@ describe('DynamoDBDao', () => {
     //     const email = "blah@somewhere.com"
     //     const user = new User(undefined, email)
     //
-    //     return service.saveUser(user)
+    //     return dao.saveUser(user)
     //         .then((user) => expect(user.id).toBeDefined())
-    //         .then(() => service.saveUser(new User(undefined, email)))
+    //         .then(() => dao.saveUser(new User(undefined, email)))
     //         .catch((err) => {
     //             expect(err).toEqual(`User blah@somewhere.com already exists.`)
     //             done()
@@ -93,7 +96,7 @@ describe('DynamoDBDao', () => {
         const entity2 = new Card(undefined, "ff279d7e-8413-11e7-bb31-be2e44b06b34", "Question 2?", "Answer 2?", 20999)
         const entities = [entity, entity2]
 
-        const persist = Promise.all(entities.map((card) => service.saveCard(card)))
+        const persist = Promise.all(entities.map((card) => dao.saveCard(card)))
 
         let doneChecking = 0
         return persist.then((persisted: Array<Card>) => {
@@ -140,7 +143,7 @@ describe('DynamoDBDao', () => {
 
         const entity = new Deck(undefined, "d1eda90c-8413-11e7-bb31-be2e44b06b34", 'Some Name')
 
-        service.saveDeck(entity).then((entity) => {
+        dao.saveDeck(entity).then((entity) => {
 
             expect(entity.id).toBeDefined()
 
@@ -170,7 +173,7 @@ describe('DynamoDBDao', () => {
 
         const entity = new Collection('some-id', "d1eda90c-8413-11e7-bb31-be2e44b06b34")
 
-        service.saveCollection(entity).then((entity) => {
+        dao.saveCollection(entity).then((entity) => {
 
             const docClient = new AWS.DynamoDB.DocumentClient()
 
@@ -199,7 +202,7 @@ describe('DynamoDBDao', () => {
 
             const id = "d1eda90c-8413-11e7-bb31-be2e44b06b34"
 
-            service.deleteUser(id).then((user) => {
+            dao.deleteUser(id).then((user) => {
 
                 const docClient = new AWS.DynamoDB.DocumentClient()
 
@@ -229,7 +232,7 @@ describe('DynamoDBDao', () => {
 
             const id = "7c7a2ddc-8414-11e7-bb31-be2e44b06b34"
 
-            service.deleteCard(id).then((id) => {
+            dao.deleteCard(id).then((id) => {
 
                 const docClient = new AWS.DynamoDB.DocumentClient()
 
@@ -259,7 +262,7 @@ describe('DynamoDBDao', () => {
 
             const id = "ff279d7e-8413-11e7-bb31-be2e44b06b34"
 
-            service.deleteDeck(id).then((id) => {
+            dao.deleteDeck(id).then((id) => {
 
                 const docClient = new AWS.DynamoDB.DocumentClient()
 
@@ -289,7 +292,7 @@ describe('DynamoDBDao', () => {
 
             const id = "d1eda90c-8413-11e7-bb31-be2e44b06b34"
 
-            service.deleteCollection(id).then((id) => {
+            dao.deleteCollection(id).then((id) => {
 
                 const docClient = new AWS.DynamoDB.DocumentClient()
 
@@ -319,7 +322,7 @@ describe('DynamoDBDao', () => {
 
             const id = "d1eda90c-8413-11e7-bb31-be2e44b06b34"
 
-            service.findUser(id).then((user) => {
+            dao.findUser(id).then((user) => {
 
                 expect(user.id).toEqual(id)
                 expect(user.email).toEqual("someone@blah.com")
@@ -335,7 +338,7 @@ describe('DynamoDBDao', () => {
 
             const id = "7c7a2ddc-8414-11e7-bb31-be2e44b06b34"
 
-            service.findCard(id).then((card) => {
+            dao.findCard(id).then((card) => {
                 expect(card.id).toEqual(id)
                 expect(card.deckId).toEqual("ff2799fa-8413-11e7-bb31-be2e44b06b34")
                 expect(card.question).toEqual("Question 3?")
@@ -353,7 +356,7 @@ describe('DynamoDBDao', () => {
 
             const id = "ff279d7e-8413-11e7-bb31-be2e44b06b34"
 
-            service.findDeck(id).then((deck) => {
+            dao.findDeck(id).then((deck) => {
 
                 expect(deck.id).toEqual(id)
                 expect(deck.collectionId).toEqual("d1eda90c-8413-11e7-bb31-be2e44b06b34")
@@ -370,7 +373,7 @@ describe('DynamoDBDao', () => {
 
             const id = "d1eda90c-8413-11e7-bb31-be2e44b06b34"
 
-            service.findCollection(id).then((collection) => {
+            dao.findCollection(id).then((collection) => {
 
                 expect(collection.id).toEqual(id)
                 expect(collection.userId).toEqual("d1eda90c-8413-11e7-bb31-be2e44b06b34")
@@ -387,7 +390,7 @@ describe('DynamoDBDao', () => {
             const id = "d1eda90c-8413-11e7-bb31-be2e44b06b34"
             const newEmail = "yoyoyo@somewhereelse.com"
 
-            service.updateUser(new User(id, newEmail)).then((user) => {
+            dao.updateUser(new User(id, newEmail)).then((user) => {
 
                 const docClient = new AWS.DynamoDB.DocumentClient()
 
@@ -422,7 +425,7 @@ describe('DynamoDBDao', () => {
             const newAnswer = "newAnswer?"
             const newDue = 12
 
-            service.updateCard(new Card(id, newDeckId, newQuestion, newAnswer, newDue)).then((updated) => {
+            dao.updateCard(new Card(id, newDeckId, newQuestion, newAnswer, newDue)).then((updated) => {
 
                 const docClient = new AWS.DynamoDB.DocumentClient()
 
@@ -457,7 +460,7 @@ describe('DynamoDBDao', () => {
             const newCollectionId = "another-collection"
             const newName = "SomeNewName"
 
-            service.updateDeck(new Deck(id, newCollectionId, newName)).then((updated) => {
+            dao.updateDeck(new Deck(id, newCollectionId, newName)).then((updated) => {
 
                 const docClient = new AWS.DynamoDB.DocumentClient()
 
@@ -488,7 +491,7 @@ describe('DynamoDBDao', () => {
 
             const id = "d1eda90c-8413-11e7-bb31-be2e44b06b34"
             const newUserId = "new-user-id"
-            service.updateCollection(new Collection(id, newUserId)).then((updated) => {
+            dao.updateCollection(new Collection(id, newUserId)).then((updated) => {
 
                 const docClient = new AWS.DynamoDB.DocumentClient()
 
@@ -518,7 +521,7 @@ describe('DynamoDBDao', () => {
 
             const id = "d1eda90c-8413-11e7-bb31-be2e44b06b34"
 
-            service.findDecksByCollectionId(id).then(decks => {
+            dao.findDecksByCollectionId(id).then(decks => {
                 expect(decks.length).toEqual(4)
                 expect(decks.map(it => it.id)).toEqual([
                     "ff2799fa-8413-11e7-bb31-be2e44b06b34",
@@ -541,7 +544,7 @@ describe('DynamoDBDao', () => {
 
             const id = "ff2799fa-8413-11e7-bb31-be2e44b06b34"
 
-            service.findCardsByDeckId(id).then(cards => {
+            dao.findCardsByDeckId(id).then(cards => {
                 expect(cards.length).toEqual(4)
                 expect(cards.map(it => it.id)).toEqual([
                     "7c7a263e-8414-11e7-bb31-be2e44b06b34",
@@ -562,7 +565,7 @@ describe('DynamoDBDao', () => {
 
         loadCollectionData(port).then(() => {
 
-            service.findUserByEmail(TEST_USER_EMAIL).then(user => {
+            dao.findUserByEmail(TEST_USER_EMAIL).then(user => {
                 if (user) {
                     expect(user.email).toEqual(TEST_USER_EMAIL)
                 }
@@ -576,7 +579,7 @@ describe('DynamoDBDao', () => {
 
         loadCollectionData(port).then(() => {
 
-            service.findCollectionByUserEmail(TEST_USER_EMAIL).then(collection => {
+            dao.findCollectionByUserEmail(TEST_USER_EMAIL).then(collection => {
                 expect(collection).toBeDefined()
                 done()
             })

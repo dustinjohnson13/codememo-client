@@ -9,6 +9,7 @@ const fs = require('fs')
 const TEST_DATA_DIR = './src/persist/testData'
 const SAMPLE_DATA_JSON = `${TEST_DATA_DIR}/moviedata.json`
 
+export const DYNAMODB_TEST_TIMEOUT = 20000
 export const REGION = "us-east-1"
 export const ACCESS_KEY_ID = 'noAccessKeyId'
 export const SECRET_ACCESS_KEY = 'noSecretAccessKey'

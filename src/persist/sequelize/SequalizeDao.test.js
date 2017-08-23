@@ -387,7 +387,7 @@ export const createDao = () => {
     const sequelize = new Sequelize({
         host: 'localhost',
         dialect: 'sqlite',
-        logging: (message) => {},
+        logging: false,
 
         pool: {
             max: 5,

@@ -5,7 +5,10 @@ import Deck from "../entity/Deck"
 import Card from "../entity/Card"
 import {createDao} from "../persist/sequelize/SequalizeDao.test"
 import {TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
-import {ACCESS_KEY_ID, REGION, SECRET_ACCESS_KEY, startAndLoadData, stop} from "../persist/dynamodb/DynamoDBHelper"
+import {
+    ACCESS_KEY_ID, DYNAMODB_TEST_TIMEOUT, REGION, SECRET_ACCESS_KEY, startAndLoadData,
+    stop
+} from "../persist/dynamodb/DynamoDBHelper"
 import DynamoDBDao from "../persist/dynamodb/DynamoDBDao"
 
 describe('DaoDelegatingDataService - sequelize (sqlite3)', () => {
@@ -17,20 +20,17 @@ describe('DaoDelegatingDataService - DynamoDB', () => {
     let dao
     let originalTimeout
 
-    beforeEach(async () => {
+    beforeAll(async () => {
         await startAndLoadData(false).then((assignedPort: number) => {
             port = assignedPort
             dao = new DynamoDBDao(REGION, `http://localhost:${port}`, ACCESS_KEY_ID, SECRET_ACCESS_KEY)
-        }).catch((err) => {
-            console.log("Error!")
-            throw err
         })
-        originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+        originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = DYNAMODB_TEST_TIMEOUT
     })
 
-    afterEach(() => {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+    afterAll(() => {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout
         stop(port)
     })
 
@@ -159,7 +159,7 @@ function testWithDaoImplementation(createDao: any) {
         })
 
         it('can answer card', (done) => {
-            expect.assertions(1)
+            expect.assertions(2)
 
             service.fetchCollection(TEST_USER_EMAIL)
                 .then(collection => collection.decks)
@@ -167,14 +167,17 @@ function testWithDaoImplementation(createDao: any) {
                 .then(deckId => service.fetchDeck(deckId))
                 .then(deck => service.fetchCards(deck.cards.map(card => card.id)))
                 .then(response => {
-                    const firstCard = response.cards[0]
-                    const originalDue = firstCard.due
-                    service.answerCard(firstCard.id, 'OK').then(answeredCard => {
-                        const newDue = answeredCard.due
-                        // $FlowFixMe
-                        expect(newDue).toBeGreaterThan(originalDue)
-                        done()
-                    })
+                    const cardWithDueTime = response.cards.find(card => card.due)
+                    if (cardWithDueTime) {
+                        expect(cardWithDueTime.due).toBeGreaterThan(0)
+                        const originalDue = cardWithDueTime.due
+                        service.answerCard(cardWithDueTime.id, 'OK').then(answeredCard => {
+                            const newDue = answeredCard.due
+                            // $FlowFixMe
+                            expect(newDue).toBeGreaterThan(originalDue)
+                            done()
+                        })
+                    }
                 })
 
         })

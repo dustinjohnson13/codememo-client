@@ -2,8 +2,8 @@ import React from 'react'
 
 import {mapDispatchToProps, mapStateToProps} from "./AnswerCardContainer"
 import {reviewState} from "../fakeData/reviewState"
-import {GOOD, HARD} from '../services/APIDomain'
 import {answerCardRequest, hideAnswer} from "../actions/creators"
+import {Answer} from "../services/APIDomain"
 
 describe('<AnswerCardContainer />', () => {
 
@@ -26,9 +26,9 @@ describe('<AnswerCardContainer />', () => {
         const cardId = 'some-id'
         const expectedActions = [
             hideAnswer(),
-            answerCardRequest(cardId, deckId, HARD),
+            answerCardRequest(cardId, deckId, Answer.HARD),
             hideAnswer(),
-            answerCardRequest(cardId, deckId, GOOD)]
+            answerCardRequest(cardId, deckId, Answer.GOOD)]
 
         let answered = []
         const dispatcher = (action) => {
@@ -37,8 +37,8 @@ describe('<AnswerCardContainer />', () => {
 
         const props = mapDispatchToProps(dispatcher, {id: cardId, deckId: deckId})
 
-        props.answerCard(HARD)
-        props.answerCard(GOOD)
+        props.answerCard(Answer.HARD)
+        props.answerCard(Answer.GOOD)
 
         expect(answered).toEqual(expectedActions)
     })

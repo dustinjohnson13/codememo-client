@@ -1,19 +1,8 @@
 //@flow
 import Deck from "../entity/Deck"
-import type {Clock, DataService} from "./APIDomain"
+import type {AnswerType, Clock, DataService} from "./APIDomain"
 import * as api from "./APIDomain"
-import {
-    CardDetail,
-    CardDetailResponse,
-    CollectionResponse,
-    DeckResponse,
-    EASY,
-    FAIL,
-    GOOD,
-    HALF_DAY_IN_SECONDS,
-    HARD,
-    ONE_DAY_IN_SECONDS
-} from "./APIDomain"
+import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse, ONE_DAY_IN_SECONDS} from "./APIDomain"
 import type {Dao} from "../persist/Dao"
 import {TEST_USER_EMAIL} from "../persist/Dao"
 import Card from "../entity/Card"
@@ -89,7 +78,7 @@ export default class DaoDelegatingDataService implements DataService {
         ))
     }
 
-    answerCard(id: string, answer: string): Promise<CardDetail> {
+    answerCard(id: string, answer: AnswerType): Promise<CardDetail> {
         return this.dao.findCard(id).then(card => this.businessRules.cardAnswered(this.clock.epochSeconds(), card, answer))
             .then(card => this.dao.updateCard(card))
             .then(card => this.cardToCardDetail(card))

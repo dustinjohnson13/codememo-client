@@ -23,7 +23,7 @@ global.window = doc.defaultView
 describe('<App />', () => {
 
     const prepareContainer = (page: ?PageType, state = defaultState) => {
-        const store = storeFake(state)
+        const store = storeFake({...state})
 
         const wrapper = mount(
             <Provider store={store}>
@@ -35,7 +35,7 @@ describe('<App />', () => {
     }
 
     it('displays the application name', () => {
-        const app = prepareContainer(null)
+        const app = prepareContainer()
 
         const welcome = <h2>CodeMemo</h2>
 
@@ -43,7 +43,7 @@ describe('<App />', () => {
     })
 
     it('displays the loading page when null page is specified', () => {
-        const app = prepareContainer(null)
+        const app = prepareContainer()
 
         const loadingPage = <LoadingPage nospin={true}/>
 

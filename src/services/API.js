@@ -1,4 +1,4 @@
-import type {Clock, DataService} from "./APIDomain"
+import type {AnswerType, Clock, DataService} from "./APIDomain"
 import DynamoDBDao from "../persist/dynamodb/DynamoDBDao"
 import DaoDelegatingDataService from "./DaoDelegatingDataService"
 import {InMemoryDao} from "../fakeData/InMemoryDao"
@@ -64,7 +64,7 @@ class DelegatingDataService implements DataService {
         })
     }
 
-    answerCard(id: string, answer: string): Promise<CardDetail> {
+    answerCard(id: string, answer: AnswerType): Promise<CardDetail> {
         return new Promise((resolve, reject) => {
             setTimeout(() => this.delegate.answerCard(id, answer).then(resolve), this.timeoutDelay)
         })

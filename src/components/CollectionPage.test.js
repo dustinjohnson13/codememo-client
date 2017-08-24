@@ -25,7 +25,7 @@ describe('<CollectionPage />', () => {
     beforeEach(() => {
         requestedDecks = []
 
-        const store = storeFake({})
+        const store = storeFake()
         const wrapper = mount(
             <Provider store={store}>
                 <CollectionPage decks={testDecks} fetchDeck={invokedFunction} addDeck={addDeck}/>

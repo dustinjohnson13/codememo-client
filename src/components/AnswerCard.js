@@ -2,7 +2,7 @@
 import React, {Component} from 'react'
 import {Button} from 'reactstrap'
 import '../styles/ReviewPage.css'
-import {EASY, FAIL, GOOD, HARD} from '../services/APIDomain'
+import {Answer} from "../services/APIDomain"
 
 type Foo = {
     answerCard: any,
@@ -24,19 +24,19 @@ class AnswerCard extends Component {
     };
 
     fail() {
-        this.props.answerCard(FAIL)
+        this.props.answerCard(Answer.FAIL)
     }
 
     hard() {
-        this.props.answerCard(HARD)
+        this.props.answerCard(Answer.HARD)
     }
 
     good() {
-        this.props.answerCard(GOOD)
+        this.props.answerCard(Answer.GOOD)
     }
 
     easy() {
-        this.props.answerCard(EASY)
+        this.props.answerCard(Answer.EASY)
     }
 
     render() {

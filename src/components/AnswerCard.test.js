@@ -3,9 +3,9 @@ import React from 'react'
 import {Provider} from 'react-redux'
 import {storeFake} from "../fakeData/storeFake"
 import AnswerCard from "./AnswerCard"
-import {EASY, FAIL, GOOD, HARD} from '../services/APIDomain'
 import jsdom from 'jsdom'
 import {mount} from 'enzyme'
+import {Answer} from "../services/APIDomain"
 
 const doc = jsdom.jsdom('<!doctype html><html><body></body></html>')
 global.document = doc
@@ -40,7 +40,7 @@ describe('<AnswerCard />', () => {
         expect(failButton.text().trim()).toEqual('30s')
 
         failButton.simulate('click')
-        expect(answers).toEqual([FAIL])
+        expect(answers).toEqual([Answer.FAIL])
     })
 
     it('can choose hard', () => {
@@ -49,7 +49,7 @@ describe('<AnswerCard />', () => {
         expect(hardButton.text().trim()).toEqual('45s')
 
         hardButton.simulate('click')
-        expect(answers).toEqual([HARD])
+        expect(answers).toEqual([Answer.HARD])
     })
 
     it('can choose good', () => {
@@ -58,7 +58,7 @@ describe('<AnswerCard />', () => {
         expect(goodButton.text().trim()).toEqual('70s')
 
         goodButton.simulate('click')
-        expect(answers).toEqual([GOOD])
+        expect(answers).toEqual([Answer.GOOD])
     })
 
     it('can choose easy', () => {
@@ -67,6 +67,6 @@ describe('<AnswerCard />', () => {
         expect(easyButton.text().trim()).toEqual('120s')
 
         easyButton.simulate('click')
-        expect(answers).toEqual([EASY])
+        expect(answers).toEqual([Answer.EASY])
     })
 })

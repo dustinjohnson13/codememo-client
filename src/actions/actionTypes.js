@@ -1,4 +1,5 @@
 //@flow
+import type {AnswerType} from "../services/APIDomain"
 import {CardDetail, CollectionResponse, Deck, DeckResponse} from "../services/APIDomain"
 import type {PageType} from "./pages"
 
@@ -35,7 +36,7 @@ export type FetchDeckRequestAction = { type: 'FETCH_DECK_REQUEST', id: string }
 export type FetchDeckSuccessAction = { type: 'FETCH_DECK_SUCCESS', deck: DeckResponse }
 export type HideAnswerAction = { type: 'HIDE_ANSWER' }
 export type ShowAnswerAction = { type: 'SHOW_ANSWER' }
-export type AnswerCardRequestAction = { type: 'ANSWER_CARD_REQUEST', id: string, deckId: string, answer: string }
+export type AnswerCardRequestAction = { type: 'ANSWER_CARD_REQUEST', id: string, deckId: string, answer: AnswerType }
 export type AnswerCardSuccessAction = { type: 'ANSWER_CARD_SUCCESS', card: CardDetail, deckId: string }
 export type AddCardRequestAction = { type: 'ADD_CARD_REQUEST', id: string, question: string, answer: string }
 export type AddCardSuccessAction = { type: 'ADD_CARD_SUCCESS', card: CardDetail, deckId: string }
@@ -91,9 +92,9 @@ export type ReviewState = {
 }
 
 export type CombinedState = {
-    review: ReviewState,
     app: AppState,
-    collection: CollectionState
+    collection: CollectionState,
+    review: ReviewState
 }
 
 type PromiseAction = Promise<Action>;

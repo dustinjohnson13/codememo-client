@@ -44,6 +44,7 @@ import {
 } from "./actionTypes"
 import type {PageType} from "./pages"
 import {Page} from './pages'
+import type {AnswerType} from "../services/APIDomain"
 import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "../services/APIDomain"
 import API from '../services/API'
 import {call, put, select, takeEvery} from 'redux-saga/effects'
@@ -147,7 +148,7 @@ export const fetchCardsSuccess = (response: CardDetailResponse): FetchCardsSucce
     }
 }
 
-export const answerCardRequest = (id: string, deckId: string, answer: string): AnswerCardRequestAction => {
+export const answerCardRequest = (id: string, deckId: string, answer: AnswerType): AnswerCardRequestAction => {
     return {
         type: ANSWER_CARD_REQUEST,
         id: id,

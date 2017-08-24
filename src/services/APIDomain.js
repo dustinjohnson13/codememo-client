@@ -8,12 +8,14 @@ export const ONE_DAY_IN_SECONDS = HALF_DAY_IN_SECONDS * 2
 export const TWO_DAYS_IN_SECONDS = ONE_DAY_IN_SECONDS * 2
 export const FOUR_DAYS_IN_SECONDS = TWO_DAYS_IN_SECONDS * 2
 
-export const FAIL = 'FAIL'
-export const HARD = 'HARD'
-export const GOOD = 'GOOD'
-export const EASY = 'EASY'
+export const Answer = {
+    FAIL: 'FAIL',
+    HARD: 'HARD',
+    GOOD: 'GOOD',
+    EASY: 'EASY'
+}
 
-export const ANSWERS = [FAIL, HARD, GOOD, EASY]
+export type AnswerType = $Keys<typeof Answer>;
 
 export class Card {
     id: string
@@ -107,7 +109,7 @@ export interface DataService {
 
     fetchCards(ids: Array<string>): Promise<CardDetailResponse>;
 
-    answerCard(id: string, answer: string): Promise<CardDetail>;
+    answerCard(id: string, answer: AnswerType): Promise<CardDetail>;
 
     addCard(deckId: string, question: string, answer: string): Promise<CardDetail>;
 }

@@ -1,14 +1,5 @@
 //@flow
-import {
-    ANSWERS,
-    EASY,
-    FAIL,
-    GOOD,
-    HALF_DAY_IN_SECONDS,
-    HARD,
-    ONE_DAY_IN_SECONDS,
-    TWO_DAYS_IN_SECONDS
-} from "./APIDomain"
+import {Answer, HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "./APIDomain"
 import Card from "../entity/Card"
 import BusinessRules from "./BusinessRules"
 
@@ -20,15 +11,15 @@ describe('BusinessRules', () => {
         const currentGoodInterval = TWO_DAYS_IN_SECONDS
 
         const expectedNewDue = { // The cards have a current goodInterval of two days
-            [FAIL]: currentTime + HALF_DAY_IN_SECONDS,
-            [HARD]: currentTime + ONE_DAY_IN_SECONDS,
-            [GOOD]: currentTime + TWO_DAYS_IN_SECONDS,
-            [EASY]: currentTime + (TWO_DAYS_IN_SECONDS * 2)
+            [Answer.FAIL]: currentTime + HALF_DAY_IN_SECONDS,
+            [Answer.HARD]: currentTime + ONE_DAY_IN_SECONDS,
+            [Answer.GOOD]: currentTime + TWO_DAYS_IN_SECONDS,
+            [Answer.EASY]: currentTime + (TWO_DAYS_IN_SECONDS * 2)
         }
 
         const original = new Card(undefined, 'deckId', 'Some question', 'Some answer', currentGoodInterval, undefined)
 
-        const actuals = ANSWERS.map(it => {
+        const actuals = [Answer.FAIL, Answer.HARD, Answer.GOOD, Answer.EASY].map(it => {
             return {answer: it, newCard: new BusinessRules().cardAnswered(currentTime, original, it)}
         })
 
@@ -46,15 +37,15 @@ describe('BusinessRules', () => {
         const currentGoodInterval = TWO_DAYS_IN_SECONDS
 
         const expectedNewGoodInterval = {
-            [FAIL]: ONE_DAY_IN_SECONDS,
-            [HARD]: TWO_DAYS_IN_SECONDS,
-            [GOOD]: (TWO_DAYS_IN_SECONDS * 2),
-            [EASY]: (TWO_DAYS_IN_SECONDS * 4)
+            [Answer.FAIL]: ONE_DAY_IN_SECONDS,
+            [Answer.HARD]: TWO_DAYS_IN_SECONDS,
+            [Answer.GOOD]: (TWO_DAYS_IN_SECONDS * 2),
+            [Answer.EASY]: (TWO_DAYS_IN_SECONDS * 4)
         }
 
         const original = new Card(undefined, 'deckId', 'Some question', 'Some answer', currentGoodInterval, undefined)
 
-        const actuals = ANSWERS.map(it => {
+        const actuals = [Answer.FAIL, Answer.HARD, Answer.GOOD, Answer.EASY].map(it => {
             return {answer: it, newCard: new BusinessRules().cardAnswered(currentTime, original, it)}
         })
 

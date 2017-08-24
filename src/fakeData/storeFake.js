@@ -5,11 +5,10 @@ import {reviewState} from "./reviewState"
 
 export const defaultState = {
     app: {page: null},
-    review: reviewState,
-    collection: collectionState
+    collection: collectionState,
+    review: reviewState
 }
 
-//$FlowFixMe
 export const storeFake = (state: CombinedState = defaultState) => {
     return {
         default: () => {

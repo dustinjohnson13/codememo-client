@@ -1,9 +1,9 @@
 //@flow
 import {
+    Answer,
     CardDetail,
     CollectionResponse,
     DeckResponse,
-    GOOD,
     HALF_DAY_IN_SECONDS,
     ONE_DAY_IN_SECONDS,
     TWO_DAYS_IN_SECONDS
@@ -195,7 +195,7 @@ function testWithDaoImplementation(createDao: any) {
                         const originalDue = card.due
                         const originalGoodInterval = card.goodInterval
 
-                        service.answerCard(card.id, GOOD).then(answeredCard => {
+                        service.answerCard(card.id, Answer.GOOD).then(answeredCard => {
                             const newDue = answeredCard.due
                             const newGoodInterval = answeredCard.goodInterval
 

@@ -55,12 +55,22 @@ export default class DynamoDBDao implements Dao {
         this.region = region
         this.endpoint = endpoint
 
-        AWS.config.update({
+        console.log(`Using region: ${region} and endpoint: ${endpoint}`)
+
+        let newAWSConfig = {
             ...AWS.config,
             region: this.region,
-            endpoint: this.endpoint,
-            credentials: new AWS.Credentials(accessKeyId, secretAccessKey)
-        })
+            endpoint: this.endpoint
+        }
+
+        if (accessKeyId && secretAccessKey) {
+            newAWSConfig = {
+                ...newAWSConfig,
+                credentials: new AWS.Credentials(accessKeyId, secretAccessKey)
+            }
+        }
+
+        AWS.config.update(newAWSConfig)
     }
 
     init(clearDatabase: boolean): Promise<any> {
@@ -227,8 +237,6 @@ export default class DynamoDBDao implements Dao {
     }
 
     createTable(name: string, indices: Array<IndexDefinition>): Promise<void> {
-
-        console.log("Creating ", name)
 
         const dynamodb = new AWS.DynamoDB()
 

@@ -1,6 +1,7 @@
 import type {DataService} from "./APIDomain"
 import DynamoDBDao from "../persist/dynamodb/DynamoDBDao"
 import DaoDelegatingDataService from "./DaoDelegatingDataService"
+import {InMemoryDao} from "../fakeData/InMemoryDao"
 
 export class SystemClock {
     epochSeconds(): number {
@@ -8,12 +9,14 @@ export class SystemClock {
     }
 }
 
-const REGION = 'us-east-1'
-const ENDPOINT = process.env.NODE_ENV === 'production' ?
-    `https://dynamodb.${REGION}.amazonaws.com` :
-    'http://localhost:8000'
+let dao = new InMemoryDao()
 
-console.log(`Using region: ${REGION} and endpoint: ${ENDPOINT}`)
+if (process.env.NODE_ENV === 'production') {
+    const REGION = 'us-east-1'
+    const ENDPOINT = `https://dynamodb.${REGION}.amazonaws.com`
+
+    dao = new DynamoDBDao(REGION, ENDPOINT)
+}
 
 class DelegatingDataService implements DataService {
 
@@ -22,7 +25,7 @@ class DelegatingDataService implements DataService {
 
     constructor(clock: Clock) {
         this.timeoutDelay = 250
-        this.delegate = new DaoDelegatingDataService(new DynamoDBDao(REGION, ENDPOINT));
+        this.delegate = new DaoDelegatingDataService(dao);
 
         (this: any).answerCard = this.answerCard.bind(this);
         (this: any).addDeck = this.addDeck.bind(this);

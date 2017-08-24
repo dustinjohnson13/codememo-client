@@ -4,7 +4,12 @@ import Collection from "../../entity/Collection"
 import Deck from "../../entity/Deck"
 import Card from "../../entity/Card"
 import {
-    ACCESS_KEY_ID, DYNAMODB_TEST_TIMEOUT, loadCollectionData, REGION, SECRET_ACCESS_KEY, startAndLoadData,
+    ACCESS_KEY_ID,
+    DYNAMODB_TEST_TIMEOUT,
+    loadCollectionData,
+    REGION,
+    SECRET_ACCESS_KEY,
+    startAndLoadData,
     stop
 } from "./DynamoDBHelper"
 import DynamoDBDao from "./DynamoDBDao"

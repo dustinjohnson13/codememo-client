@@ -21,7 +21,7 @@ class ReviewCard extends Component<void, Props, void> {
                 <div className="review-answer">{this.props.answer}</div>
                 <AnswerCardContainer id={this.props.cardId} deckId={this.props.deckId}/>
             </div>
-            : <Button className="show-answer" onClick={this.props.showAnswer}>Show Answer</Button>
+            : <Button color="warning" className="show-answer" onClick={this.props.showAnswer}>Show Answer</Button>
 
         return (
             <div className="review-card">

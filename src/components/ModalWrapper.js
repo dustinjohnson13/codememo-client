@@ -35,7 +35,7 @@ class ModalWrapper extends React.Component {
                         {this.props.children}
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="primary" onClick={this.confirmed}>Do Something</Button>{' '}
+                        <Button color="primary" onClick={this.confirmed}>Create</Button>{' '}
                         <Button color="secondary" onClick={this.toggle}>Cancel</Button>
                     </ModalFooter>
                 </Modal>

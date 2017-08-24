@@ -6,10 +6,19 @@ import Card from "../entity/Card"
 import {createDao} from "../persist/sequelize/SequalizeDao.test"
 import {TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
 import {
-    ACCESS_KEY_ID, DYNAMODB_TEST_TIMEOUT, REGION, SECRET_ACCESS_KEY, startAndLoadData,
+    ACCESS_KEY_ID,
+    DYNAMODB_TEST_TIMEOUT,
+    REGION,
+    SECRET_ACCESS_KEY,
+    startAndLoadData,
     stop
 } from "../persist/dynamodb/DynamoDBHelper"
 import DynamoDBDao from "../persist/dynamodb/DynamoDBDao"
+import {InMemoryDao} from "../fakeData/InMemoryDao"
+
+describe('DaoDelegatingDataService - FakeDataDao', () => {
+    testWithDaoImplementation(() => new InMemoryDao())
+})
 
 describe('DaoDelegatingDataService - sequelize (sqlite3)', () => {
     testWithDaoImplementation(createDao)
@@ -158,7 +167,7 @@ function testWithDaoImplementation(createDao: any) {
                 })
         })
 
-        it('can answer card', (done) => {
+        it('can answer due card', (done) => {
             expect.assertions(2)
 
             service.fetchCollection(TEST_USER_EMAIL)

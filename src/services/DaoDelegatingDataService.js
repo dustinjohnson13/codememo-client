@@ -39,11 +39,7 @@ export default class DaoDelegatingDataService implements DataService {
                 })
                 .then(user => this.dao.findCollectionByUserEmail(user.email))
                 .then(collection => {
-
-                    if (collection) {
-                        console.log("Found collection ", collection)
-                    } else {
-                        console.log("Saving collection")
+                    if (!collection) {
                         // $FlowFixMe
                         return this.dao.saveCollection(new Collection(undefined, user.id)).then(() => undefined)
                     }

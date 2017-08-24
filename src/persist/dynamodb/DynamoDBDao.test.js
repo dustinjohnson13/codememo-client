@@ -14,6 +14,7 @@ import {
 } from "./DynamoDBHelper"
 import DynamoDBDao from "./DynamoDBDao"
 import {CARD_TABLE, COLLECTION_TABLE, DECK_TABLE, TEST_USER_EMAIL, USER_TABLE} from "../Dao"
+import {ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../../services/APIDomain"
 
 const AWS = require("aws-sdk")
 
@@ -95,10 +96,10 @@ describe('DynamoDBDao', () => {
     // })
 
     it('should be able to create a card', (done) => {
-        expect.assertions(10)
+        expect.assertions(12)
 
-        const entity = new Card(undefined, "ff279d7e-8413-11e7-bb31-be2e44b06b34", "Question 1?", "Answer 1?", undefined)
-        const entity2 = new Card(undefined, "ff279d7e-8413-11e7-bb31-be2e44b06b34", "Question 2?", "Answer 2?", 20999)
+        const entity = new Card(undefined, "ff279d7e-8413-11e7-bb31-be2e44b06b34", "Question 1?", "Answer 1?", ONE_DAY_IN_SECONDS, undefined)
+        const entity2 = new Card(undefined, "ff279d7e-8413-11e7-bb31-be2e44b06b34", "Question 2?", "Answer 2?", ONE_DAY_IN_SECONDS, 20999)
         const entities = [entity, entity2]
 
         const persist = Promise.all(entities.map((card) => dao.saveCard(card)))
@@ -129,6 +130,7 @@ describe('DynamoDBDao', () => {
                         if (original) {
                             expect(data.Item.q).toEqual(original.question)
                             expect(data.Item.a).toEqual(original.answer)
+                            expect(data.Item.g).toEqual(original.goodInterval)
                             expect(data.Item.d).toEqual(original.due)
                             expect(data.Item.dId).toEqual(original.deckId)
                         }
@@ -420,7 +422,7 @@ describe('DynamoDBDao', () => {
 
     it('should be able to update a card', (done) => {
 
-        expect.assertions(4)
+        expect.assertions(5)
 
         loadCollectionData(port).then(() => {
 
@@ -428,9 +430,10 @@ describe('DynamoDBDao', () => {
             const newDeckId = "newDeckId"
             const newQuestion = "newQuestion?"
             const newAnswer = "newAnswer?"
+            const newGoodInterval = TWO_DAYS_IN_SECONDS
             const newDue = 12
 
-            dao.updateCard(new Card(id, newDeckId, newQuestion, newAnswer, newDue)).then((updated) => {
+            dao.updateCard(new Card(id, newDeckId, newQuestion, newAnswer, TWO_DAYS_IN_SECONDS, newDue)).then((updated) => {
 
                 const docClient = new AWS.DynamoDB.DocumentClient()
 
@@ -448,6 +451,7 @@ describe('DynamoDBDao', () => {
                         expect(data.Item.dId).toEqual(newDeckId)
                         expect(data.Item.q).toEqual(newQuestion)
                         expect(data.Item.a).toEqual(newAnswer)
+                        expect(data.Item.g).toEqual(newGoodInterval)
                         expect(data.Item.d).toEqual(newDue)
                         done()
                     }

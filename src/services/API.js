@@ -1,4 +1,4 @@
-import type {DataService} from "./APIDomain"
+import type {Clock, DataService} from "./APIDomain"
 import DynamoDBDao from "../persist/dynamodb/DynamoDBDao"
 import DaoDelegatingDataService from "./DaoDelegatingDataService"
 import {InMemoryDao} from "../fakeData/InMemoryDao"
@@ -25,7 +25,7 @@ class DelegatingDataService implements DataService {
 
     constructor(clock: Clock) {
         this.timeoutDelay = 250
-        this.delegate = new DaoDelegatingDataService(dao);
+        this.delegate = new DaoDelegatingDataService(dao, clock);
 
         (this: any).answerCard = this.answerCard.bind(this);
         (this: any).addDeck = this.addDeck.bind(this);

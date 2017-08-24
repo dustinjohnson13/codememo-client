@@ -1,27 +1,18 @@
 //@flow
-import type {Clock} from "../services/APIDomain"
 import type {Dao} from "../persist/Dao"
 import User from "../entity/User"
 import Collection from "../entity/Collection"
 import Deck from "../entity/Deck"
 import Card from "../entity/Card"
 
-class FrozenClock implements Clock {
-    epochSeconds(): number {
-        return 1
-    }
-}
-
 export class InMemoryDao implements Dao {
-    clock: Clock
     users: Array<User> = []
     collections: Array<Collection> = []
     decks: Array<Deck> = []
     cards: Array<Card> = []
     idCounter: number
 
-    constructor(clock: Clock | void) {
-        this.clock = (clock) ? clock : new FrozenClock()
+    constructor() {
         this.idCounter = 1
     }
 

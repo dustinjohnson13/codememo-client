@@ -1,8 +1,19 @@
 //@flow
 import Deck from "../entity/Deck"
-import type {DataService} from "./APIDomain"
+import type {Clock, DataService} from "./APIDomain"
 import * as api from "./APIDomain"
-import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "./APIDomain"
+import {
+    CardDetail,
+    CardDetailResponse,
+    CollectionResponse,
+    DeckResponse,
+    EASY,
+    FAIL,
+    GOOD,
+    HALF_DAY_IN_SECONDS,
+    HARD,
+    ONE_DAY_IN_SECONDS
+} from "./APIDomain"
 import type {Dao} from "../persist/Dao"
 import {TEST_USER_EMAIL} from "../persist/Dao"
 import Card from "../entity/Card"
@@ -10,15 +21,22 @@ import User from "../entity/User"
 import Collection from "../entity/Collection"
 
 const cardToCardDetail = (card: Card) => {
+    const failInterval = HALF_DAY_IN_SECONDS
+    const hardInterval = card.goodInterval / 2
+    const goodInterval = card.goodInterval
+    const easyInterval = card.goodInterval * 2
     //$FlowFixMe
-    return new CardDetail(card.id, card.question, card.answer, 9999, 9999, 9999, 9999, card.due)
+    return new CardDetail(card.id, card.question, card.answer,
+        failInterval, hardInterval, goodInterval, easyInterval, card.due)
 }
 
 export default class DaoDelegatingDataService implements DataService {
     dao: Dao
+    clock: Clock
 
-    constructor(dao: Dao) {
+    constructor(dao: Dao, clock: Clock) {
         this.dao = dao
+        this.clock = clock
     }
 
     init(clearDatabase: boolean): Promise<void> {
@@ -84,7 +102,7 @@ export default class DaoDelegatingDataService implements DataService {
     addCard(deckId: string, question: string, answer: string): Promise<CardDetail> {
         return this.dao.findDeck(deckId)
         // $FlowFixMe
-            .then(deck => this.dao.saveCard(new Card(undefined, deck.id, question, answer, undefined)))
+            .then(deck => this.dao.saveCard(new Card(undefined, deck.id, question, answer, ONE_DAY_IN_SECONDS, undefined)))
             .then(card => cardToCardDetail(card))
     }
 
@@ -95,8 +113,31 @@ export default class DaoDelegatingDataService implements DataService {
     }
 
     answerCard(id: string, answer: string): Promise<CardDetail> {
-        return this.dao.findCard(id).then(card =>
-            new Card(card.id, card.deckId, card.question, card.answer, card.due + 86400))
+        return this.dao.findCard(id).then(card => {
+            let newDue = this.clock.epochSeconds()
+            let newGoodInterval = card.goodInterval
+
+            switch (answer) {
+                case FAIL:
+                    newDue += HALF_DAY_IN_SECONDS
+                    newGoodInterval = ONE_DAY_IN_SECONDS
+                    break
+                case HARD:
+                    newDue += card.goodInterval / 2
+                    newGoodInterval = card.goodInterval
+                    break
+                case GOOD:
+                    newDue += card.goodInterval
+                    newGoodInterval = card.goodInterval * 2
+                    break
+                case EASY:
+                    newDue += card.goodInterval * 2
+                    newGoodInterval = card.goodInterval * 4
+                    break
+                default:
+            }
+            return new Card(card.id, card.deckId, card.question, card.answer, newGoodInterval, newDue)
+        })
             .then(card => this.dao.updateCard(card))
             .then(card => cardToCardDetail(card))
     }

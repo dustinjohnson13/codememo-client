@@ -23,6 +23,7 @@ const ANSWER_COLUMN = "a"
 const COLLECTION_ID_COLUMN = "cId"
 const DECK_ID_COLUMN = "dId"
 const USER_ID_COLUMN = "uId"
+const GOOD_INTERVAL_COLUMN = "g"
 const DUE_COLUMN = "d"
 
 const EMAIL_INDEX = "email"
@@ -43,7 +44,8 @@ const hydrateDeck = (item) => {
 }
 
 const hydrateCard = (item) => {
-    return new Card(item[ID_COLUMN], item[DECK_ID_COLUMN], item[QUESTION_COLUMN], item[ANSWER_COLUMN], item[DUE_COLUMN])
+    return new Card(item[ID_COLUMN], item[DECK_ID_COLUMN], item[QUESTION_COLUMN], item[ANSWER_COLUMN],
+        item[GOOD_INTERVAL_COLUMN], item[DUE_COLUMN])
 }
 
 export default class DynamoDBDao implements Dao {
@@ -121,7 +123,8 @@ export default class DynamoDBDao implements Dao {
         const fields: Object = {
             [QUESTION_COLUMN]: card.question,
             [ANSWER_COLUMN]: card.answer,
-            [DECK_ID_INDEX]: card.deckId
+            [DECK_ID_INDEX]: card.deckId,
+            [GOOD_INTERVAL_COLUMN]: card.goodInterval
         }
         if (card.due) {
             fields[DUE_COLUMN] = card.due
@@ -207,6 +210,7 @@ export default class DynamoDBDao implements Dao {
         updates.set(DECK_ID_INDEX, card.deckId)
         updates.set(QUESTION_COLUMN, card.question)
         updates.set(ANSWER_COLUMN, card.answer)
+        updates.set(GOOD_INTERVAL_COLUMN, card.goodInterval)
         updates.set(DUE_COLUMN, card.due)
 
         return this.update(CARD_TABLE, {[ID_COLUMN]: id}, [updates]).then(() => card)

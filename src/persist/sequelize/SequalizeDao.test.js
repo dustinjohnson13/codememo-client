@@ -6,6 +6,7 @@ import Collection from "../../entity/Collection"
 import Deck from "../../entity/Deck"
 import Card from "../../entity/Card"
 import {TEST_USER_EMAIL} from "../Dao"
+import {ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../../services/APIDomain"
 
 describe('SequelizeDao', () => {
 
@@ -51,7 +52,7 @@ describe('SequelizeDao', () => {
     // })
 
     it('should be able to create a card', (done) => {
-        expect.assertions(11)
+        expect.assertions(13)
 
         UserEntity.create({
             email: 'someEmail@blah.com'
@@ -65,8 +66,8 @@ describe('SequelizeDao', () => {
                 collectionId: collection.id
             })
         }).then((deck) => {
-            const entity = new Card(undefined, deck.id, 'Question 1?', 'Answer 1.', undefined)
-            const entity2 = new Card(undefined, deck.id, 'Question 2?', 'Answer 2.', 20999)
+            const entity = new Card(undefined, deck.id, 'Question 1?', 'Answer 1.', ONE_DAY_IN_SECONDS, undefined)
+            const entity2 = new Card(undefined, deck.id, 'Question 2?', 'Answer 2.', ONE_DAY_IN_SECONDS, 20999)
             const entities = [entity, entity2]
             const persist = Promise.all(entities.map((card) => service.saveCard(card)))
 
@@ -81,6 +82,8 @@ describe('SequelizeDao', () => {
                     expect(all[1].question).toEqual(entity2.question)
                     expect(all[0].answer).toEqual(entity.answer)
                     expect(all[1].answer).toEqual(entity2.answer)
+                    expect(all[0].goodInterval).toEqual(entity.goodInterval)
+                    expect(all[1].goodInterval).toEqual(entity.goodInterval)
                     expect(all[0].due).toEqual(null)
                     expect(all[1].due).toEqual(entity2.due)
                     done()
@@ -290,16 +293,17 @@ describe('SequelizeDao', () => {
 
     it('should be able to update a card', (done) => {
 
-        expect.assertions(5)
+        expect.assertions(6)
 
         const newQuestion = 'New Question?'
         const newAnswer = 'New Answer'
+        const newGoodInterval = TWO_DAYS_IN_SECONDS
         const newDue = 39392323
 
         loadCollectionData()
             .then(() => CardEntity.findOne())
             .then((entity) => {
-                const changed = new Card(entity.id, entity.deckId, newQuestion, newAnswer, newDue)
+                const changed = new Card(entity.id, entity.deckId, newQuestion, newAnswer, newGoodInterval, newDue)
 
                 service.updateCard(changed).then(() => {
                     CardEntity.findById(entity.id).then(updated => {
@@ -307,6 +311,7 @@ describe('SequelizeDao', () => {
                         expect(updated.deckId).toEqual(entity.deckId)
                         expect(updated.question).toEqual(newQuestion)
                         expect(updated.answer).toEqual(newAnswer)
+                        expect(updated.goodInterval).toEqual(newGoodInterval)
                         expect(updated.due).toEqual(newDue)
                         done()
                     })

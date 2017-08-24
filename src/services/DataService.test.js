@@ -1,5 +1,16 @@
 //@flow
-import {CardDetail, CollectionResponse, DeckResponse} from "./APIDomain"
+import {
+    CardDetail,
+    CollectionResponse,
+    DeckResponse,
+    EASY,
+    FAIL,
+    GOOD,
+    HALF_DAY_IN_SECONDS,
+    HARD,
+    ONE_DAY_IN_SECONDS,
+    TWO_DAYS_IN_SECONDS
+} from "./APIDomain"
 import DaoDelegatingDataService from "./DaoDelegatingDataService"
 import Deck from "../entity/Deck"
 import Card from "../entity/Card"
@@ -15,6 +26,7 @@ import {
 } from "../persist/dynamodb/DynamoDBHelper"
 import DynamoDBDao from "../persist/dynamodb/DynamoDBDao"
 import {InMemoryDao} from "../fakeData/InMemoryDao"
+import {FrozenClock} from "./__mocks__/API"
 
 describe('DaoDelegatingDataService - FakeDataDao', () => {
     testWithDaoImplementation(() => new InMemoryDao())
@@ -53,12 +65,13 @@ function testWithDaoImplementation(createDao: any) {
         const GOOD_COUNT = 30
         const DUE_COUNT = 27
 
+        const clock = new FrozenClock()
         let service
 
         beforeEach(async () => {
             const dao = createDao()
 
-            service = new DaoDelegatingDataService(dao)
+            service = new DaoDelegatingDataService(dao, clock)
 
             await service.init(true).then(() =>
                 dao.findCollectionByUserEmail(TEST_USER_EMAIL)
@@ -69,13 +82,16 @@ function testWithDaoImplementation(createDao: any) {
                         for (let i = 0; i < TOTAL_COUNT; i++) {
                             const multiplier = i + 1
                             let dueTime = null
+                            let goodInterval = HALF_DAY_IN_SECONDS
                             if (i < GOOD_COUNT) {
-                                dueTime = currentTime + (86400 * multiplier)
+                                dueTime = currentTime + (ONE_DAY_IN_SECONDS * multiplier)
+                                goodInterval = TWO_DAYS_IN_SECONDS
                             } else if (i < (GOOD_COUNT + DUE_COUNT)) {
-                                dueTime = currentTime - (86400 * multiplier)
+                                dueTime = currentTime - (ONE_DAY_IN_SECONDS * multiplier)
+                                goodInterval = ONE_DAY_IN_SECONDS
                             }
 
-                            const card = new Card(undefined, deck.id, `Question Number ${i}?`, `Answer Number ${i}`, dueTime)
+                            const card = new Card(undefined, deck.id, `Question Number ${i}?`, `Answer Number ${i}`, goodInterval, dueTime)
                             promises.push(dao.saveCard(card))
                         }
                         return Promise.all(promises)
@@ -167,8 +183,8 @@ function testWithDaoImplementation(createDao: any) {
                 })
         })
 
-        it('can answer due card', (done) => {
-            expect.assertions(2)
+        it('can answer due card, should schedule interval based on answer', (done) => {
+            expect.assertions(13)
 
             service.fetchCollection(TEST_USER_EMAIL)
                 .then(collection => collection.decks)
@@ -176,19 +192,44 @@ function testWithDaoImplementation(createDao: any) {
                 .then(deckId => service.fetchDeck(deckId))
                 .then(deck => service.fetchCards(deck.cards.map(card => card.id)))
                 .then(response => {
-                    const cardWithDueTime = response.cards.find(card => card.due)
-                    if (cardWithDueTime) {
-                        expect(cardWithDueTime.due).toBeGreaterThan(0)
-                        const originalDue = cardWithDueTime.due
-                        service.answerCard(cardWithDueTime.id, 'OK').then(answeredCard => {
-                            const newDue = answeredCard.due
-                            // $FlowFixMe
-                            expect(newDue).toBeGreaterThan(originalDue)
-                            done()
-                        })
+                    const cardsWithDueTime = response.cards.filter(card => card.due && card.goodInterval === TWO_DAYS_IN_SECONDS)
+                    if (cardsWithDueTime) {
+                        expect(cardsWithDueTime.length).toBeGreaterThan(3)
+
+                        let answers = []
+
+                        const expectedNewDue = { // The cards have a current goodInterval of two days
+                            FAIL: clock.epochSeconds() + HALF_DAY_IN_SECONDS,
+                            HARD: clock.epochSeconds() + ONE_DAY_IN_SECONDS,
+                            GOOD: clock.epochSeconds() + TWO_DAYS_IN_SECONDS,
+                            EASY: clock.epochSeconds() + (TWO_DAYS_IN_SECONDS * 2)
+                        }
+                        const expectedNewGoodInterval = {
+                            FAIL: ONE_DAY_IN_SECONDS,
+                            HARD: TWO_DAYS_IN_SECONDS,
+                            GOOD: (TWO_DAYS_IN_SECONDS * 2),
+                            EASY: (TWO_DAYS_IN_SECONDS * 4)
+                        }
+                        const answersToTest = [FAIL, HARD, GOOD, EASY]
+
+                        for (let i = 0; i < 4; i++) {
+                            const userSelectedAnswer = answersToTest[i]
+
+                            answers.push(service.answerCard(cardsWithDueTime[i].id, userSelectedAnswer).then(answeredCard => {
+                                const card = cardsWithDueTime[i]
+                                const originalDue = card.due
+                                const newDue = answeredCard.due
+                                const newGoodInterval = answeredCard.goodInterval
+
+                                expect(originalDue).toBeGreaterThan(0)
+                                expect(newDue).toEqual(expectedNewDue[userSelectedAnswer])
+                                expect(newGoodInterval).toEqual(expectedNewGoodInterval[userSelectedAnswer])
+                            }))
+                        }
+
+                        return Promise.all(answers).then(() => done())
                     }
                 })
-
         })
 
     })

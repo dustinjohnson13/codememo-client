@@ -46,6 +46,9 @@ export const CardEntity = modelDefiner.define(CARD_TABLE, {
     answer: {
         type: Sequelize.STRING
     },
+    goodInterval: {
+        type: Sequelize.INTEGER
+    },
     due: {
         type: Sequelize.INTEGER
     }
@@ -56,7 +59,7 @@ const hydrateDeck = (entity: DeckEntity) => {
 }
 
 const hydrateCard = (entity: CardEntity) => {
-    return new Card(entity.id, entity.deckId, entity.question, entity.answer, entity.due)
+    return new Card(entity.id, entity.deckId, entity.question, entity.answer, entity.goodInterval, entity.due)
 }
 
 const hydrateUser = (entity: UserEntity) => {
@@ -101,6 +104,7 @@ export class SequelizeDao implements Dao {
             deckId: card.deckId,
             question: card.question,
             answer: card.answer,
+            goodInterval: card.goodInterval,
             due: card.due
         })
     }
@@ -115,6 +119,7 @@ export class SequelizeDao implements Dao {
                 deckId: card.deckId,
                 question: card.question,
                 answer: card.answer,
+                goodInterval: card.goodInterval,
                 due: card.due
             })
         ).then(() => Promise.resolve(card))

@@ -1,13 +1,11 @@
 //@flow
 import type {Dao} from "../persist/Dao"
 import User from "../entity/User"
-import Collection from "../entity/Collection"
 import Deck from "../entity/Deck"
 import Card from "../entity/Card"
 
 export class InMemoryDao implements Dao {
     users: Array<User> = []
-    collections: Array<Collection> = []
     decks: Array<Deck> = []
     cards: Array<Card> = []
     idCounter: number
@@ -43,15 +41,6 @@ export class InMemoryDao implements Dao {
         return Promise.resolve(deck)
     }
 
-    saveCollection(collection: Collection): Promise<Collection> {
-        return this.saveEntity(collection, this.collections)
-    }
-
-    updateCollection(collection: Collection): Promise<Collection> {
-        this.collections = this.updateEntity(collection, this.collections)
-        return Promise.resolve(collection)
-    }
-
     deleteUser(id: string): Promise<string> {
         this.users = this.users.filter(it => it.id !== id)
         return Promise.resolve(id)
@@ -67,11 +56,6 @@ export class InMemoryDao implements Dao {
         return Promise.resolve(id)
     }
 
-    deleteCollection(id: string): Promise<string> {
-        this.collections = this.collections.filter(it => it.id !== id)
-        return Promise.resolve(id)
-    }
-
     findUser(id: string): Promise<User> {
         return this.findEntity(id, this.users)
     }
@@ -84,15 +68,9 @@ export class InMemoryDao implements Dao {
         return this.findEntity(id, this.decks)
     }
 
-    findCollection(id: string): Promise<Collection> {
-        return this.findEntity(id, this.collections)
+    findDecksByUserId(userId: string): Promise<Array<Deck>> {
+        return Promise.resolve(this.decks.filter(it => it.userId === userId))
     }
-
-
-    findDecksByCollectionId(collectionId: string): Promise<Array<Deck>> {
-        return Promise.resolve(this.decks.filter(it => it.collectionId === collectionId))
-    }
-
 
     findCardsByDeckId(deckId: string): Promise<Array<Card>> {
         return Promise.resolve(this.cards.filter(it => it.deckId === deckId))
@@ -102,17 +80,11 @@ export class InMemoryDao implements Dao {
         return Promise.resolve(this.users.find(it => it.email === email))
     }
 
-    findCollectionByUserEmail(email: string): Promise<Collection | void> {
-        return this.findUserByEmail(email).then(user =>
-            // $FlowFixMe
-            Promise.resolve(this.collections.find(it => it.userId === user.id)))
-    }
-
     init(clearDatabase: boolean): Promise<void> {
         return Promise.resolve()
     }
 
-    saveEntity(entity: (User | Collection | Deck | Card), array: Array<any>): Promise<any> {
+    saveEntity(entity: (User | Deck | Card), array: Array<any>): Promise<any> {
         return new Promise((resolve, reject) => {
             entity.id = "" + this.idCounter++
 
@@ -122,7 +94,7 @@ export class InMemoryDao implements Dao {
         })
     }
 
-    updateEntity(entity: (User | Collection | Deck | Card), array: Array<any>): Array<any> {
+    updateEntity(entity: (User | Deck | Card), array: Array<any>): Array<any> {
         const newArray = array.filter(it => it.id !== entity.id)
         newArray.push(entity)
         return newArray

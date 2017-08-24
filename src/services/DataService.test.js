@@ -74,8 +74,8 @@ function testWithDaoImplementation(createDao: any) {
             service = new DaoDelegatingDataService(dao, clock)
 
             await service.init(true).then(() =>
-                dao.findCollectionByUserEmail(TEST_USER_EMAIL)
-                    .then(collection => dao.saveDeck(new Deck(undefined, collection.id, TEST_DECK_NAME)))
+                dao.findUserByEmail(TEST_USER_EMAIL)
+                    .then(user => dao.saveDeck(new Deck(undefined, user.id, TEST_DECK_NAME)))
                     .then(deck => {
                         const promises = []
                         const currentTime = new Date().getTime()

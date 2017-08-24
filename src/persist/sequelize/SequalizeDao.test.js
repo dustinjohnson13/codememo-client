@@ -1,8 +1,7 @@
 //@flow
 import User from "../../entity/User"
-import {CardEntity, CollectionEntity, DeckEntity, SequelizeDao, UserEntity} from "./SequelizeDao"
+import {CardEntity, DeckEntity, SequelizeDao, UserEntity} from "./SequelizeDao"
 import {Sequelize} from 'sequelize'
-import Collection from "../../entity/Collection"
 import Deck from "../../entity/Deck"
 import Card from "../../entity/Card"
 import {TEST_USER_EMAIL} from "../Dao"
@@ -57,13 +56,9 @@ describe('SequelizeDao', () => {
         UserEntity.create({
             email: 'someEmail@blah.com'
         }).then((user) => {
-            return CollectionEntity.create({
-                userId: user.id
-            })
-        }).then((collection) => {
             return DeckEntity.create({
                 name: 'Some Deck',
-                collectionId: collection.id
+                userId: user.id
             })
         }).then((deck) => {
             const entity = new Card(undefined, deck.id, 'Question 1?', 'Answer 1.', ONE_DAY_IN_SECONDS, undefined)
@@ -94,40 +89,18 @@ describe('SequelizeDao', () => {
 
     it('should be able to create a deck', (done) => {
 
-        expect.assertions(3)
+        expect.assertions(4)
 
         UserEntity.create({
             email: 'someEmail@blah.com'
         }).then((user) => {
-            return CollectionEntity.create({
-                userId: user.id
-            })
-        }).then((collection) => {
-            const entity = new Deck(undefined, collection.id, 'Some Deck')
+            const entity = new Deck(undefined, user.id, 'Some Deck')
 
             service.saveDeck(entity).then((entity) => {
                 DeckEntity.findAll().then(all => {
                     expect(all.length).toEqual(1)
                     expect(all[0].id).toBeDefined()
-                    expect(all[0].collectionId).toEqual(collection.id)
-                    done()
-                })
-            })
-        })
-    })
-
-    it('should be able to create a collection', (done) => {
-        expect.assertions(3)
-
-        UserEntity.create({
-            email: 'someEmail@blah.com'
-        }).then((user) => {
-            const entity = new Collection(undefined, user.id)
-
-            service.saveCollection(entity).then((entity) => {
-                CollectionEntity.findAll().then(all => {
-                    expect(all.length).toEqual(1)
-                    expect(all[0].id).toBeDefined()
+                    expect(all[0].name).toEqual('Some Deck')
                     expect(all[0].userId).toEqual(user.id)
                     done()
                 })
@@ -188,24 +161,6 @@ describe('SequelizeDao', () => {
         })
     })
 
-    it('should be able to delete a collection', (done) => {
-        expect.assertions(2)
-
-        loadCollectionData().then(() => {
-
-            UserEntity.findOne().then((entity) => {
-                expect(entity).toBeDefined()
-
-                service.deleteCollection(entity.id).then(() => {
-                    CollectionEntity.findById(entity.id).then((entity) => {
-                        expect(entity).toBeNull()
-                        done()
-                    })
-                })
-            })
-        })
-    })
-
     it('should be able to query for a user', (done) => {
         expect.assertions(2)
 
@@ -248,21 +203,6 @@ describe('SequelizeDao', () => {
                 service.findDeck(entity.id).then((returned: Deck) => {
                     expect(returned.id).toEqual(entity.id)
                     expect(returned.name).toEqual(entity.name)
-                    expect(returned.collectionId).toEqual(entity.collectionId)
-                    done()
-                })
-            })
-        })
-    })
-
-    it('should be able to query for a collection', (done) => {
-        expect.assertions(2)
-
-        loadCollectionData().then(() => {
-
-            CollectionEntity.findOne().then((entity) => {
-                service.findCollection(entity.id).then((returned) => {
-                    expect(returned.id).toEqual(entity.id)
                     expect(returned.userId).toEqual(entity.userId)
                     done()
                 })
@@ -328,37 +268,17 @@ describe('SequelizeDao', () => {
         loadCollectionData()
             .then(() => DeckEntity.findOne())
             .then((entity) => {
-                const changed = new Deck(entity.id, entity.collectionId, newDeckName)
+                const changed = new Deck(entity.id, entity.userId, newDeckName)
 
                 service.updateDeck(changed).then(() => {
                     DeckEntity.findById(entity.id).then(updated => {
                         expect(updated.id).toEqual(entity.id)
-                        expect(updated.collectionId).toEqual(entity.collectionId)
+                        expect(updated.userId).toEqual(entity.userId)
                         expect(updated.name).toEqual(newDeckName)
                         done()
                     })
                 })
             })
-    })
-
-    it('should be able to update a collection', (done) => {
-        expect.assertions(2)
-
-        const anotherUser = "yoyoyo@somewhereelse.com"
-
-        loadCollectionData()
-            .then(() => UserEntity.create({email: anotherUser}))
-            .then((newUser) => CollectionEntity.findOne().then((entity) => {
-                const changed = new Collection(entity.id, newUser.id)
-
-                service.updateCollection(changed).then(() => {
-                    CollectionEntity.findById(entity.id).then(updated => {
-                        expect(updated.id).toEqual(entity.id)
-                        expect(updated.userId).toEqual(newUser.id)
-                        done()
-                    })
-                })
-            }))
     })
 
     it('should be able to find user by email', (done) => {
@@ -370,18 +290,6 @@ describe('SequelizeDao', () => {
                 if (user) {
                     expect(user.email).toEqual(TEST_USER_EMAIL)
                 }
-                done()
-            })
-        })
-    })
-
-    it('should be able to find collections by user email', (done) => {
-        expect.assertions(1)
-
-        loadCollectionData().then(() => {
-
-            service.findCollectionByUserEmail(TEST_USER_EMAIL).then(collection => {
-                expect(collection).toBeDefined()
                 done()
             })
         })
@@ -411,13 +319,9 @@ export const loadCollectionData = () => {
     return UserEntity.create({
         email: TEST_USER_EMAIL
     }).then((user) => {
-        return CollectionEntity.create({
-            userId: user.id
-        })
-    }).then((collection) => {
         return DeckEntity.create({
             name: 'Some Deck',
-            collectionId: collection.id
+            userId: user.id
         })
     }).then((deck) => {
         return CardEntity.create({

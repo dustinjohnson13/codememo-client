@@ -1,6 +1,5 @@
 //@flow
 import User from "../../entity/User"
-import Collection from "../../entity/Collection"
 import Deck from "../../entity/Deck"
 import Card from "../../entity/Card"
 import {
@@ -13,7 +12,7 @@ import {
     stop
 } from "./DynamoDBHelper"
 import DynamoDBDao from "./DynamoDBDao"
-import {CARD_TABLE, COLLECTION_TABLE, DECK_TABLE, TEST_USER_EMAIL, USER_TABLE} from "../Dao"
+import {CARD_TABLE, DECK_TABLE, TEST_USER_EMAIL, USER_TABLE} from "../Dao"
 import {ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../../services/APIDomain"
 
 const AWS = require("aws-sdk")
@@ -46,7 +45,7 @@ describe('DynamoDBDao', () => {
         expect.assertions(1)
 
         dao.listTables().then((tables) => {
-            expect(tables).toEqual(["card", "collection", "deck", "user"])
+            expect(tables).toEqual(["card", "deck", "user"])
             done()
         })
     })
@@ -168,33 +167,6 @@ describe('DynamoDBDao', () => {
                     console.error("Unable to read item. Error JSON:", JSON.stringify(err, null, 2))
                 } else {
                     expect(data.Item.n).toEqual(entity.name)
-                    expect(data.Item.cId).toEqual(entity.collectionId)
-                    done()
-                }
-            })
-        })
-    })
-
-    it('should be able to create a collection', (done) => {
-        expect.assertions(1)
-
-        const entity = new Collection('some-id', "d1eda90c-8413-11e7-bb31-be2e44b06b34")
-
-        dao.saveCollection(entity).then((entity) => {
-
-            const docClient = new AWS.DynamoDB.DocumentClient()
-
-            const params = {
-                TableName: COLLECTION_TABLE,
-                Key: {
-                    "id": entity.id
-                }
-            }
-
-            docClient.get(params, function (err, data) {
-                if (err) {
-                    console.error("Unable to read item. Error JSON:", JSON.stringify(err, null, 2))
-                } else {
                     expect(data.Item.uId).toEqual(entity.userId)
                     done()
                 }
@@ -292,36 +264,6 @@ describe('DynamoDBDao', () => {
         })
     })
 
-    it('should be able to delete a collection', (done) => {
-        expect.assertions(1)
-
-        loadCollectionData(port).then(() => {
-
-            const id = "d1eda90c-8413-11e7-bb31-be2e44b06b34"
-
-            dao.deleteCollection(id).then((id) => {
-
-                const docClient = new AWS.DynamoDB.DocumentClient()
-
-                const params = {
-                    TableName: COLLECTION_TABLE,
-                    Key: {
-                        "id": id
-                    }
-                }
-
-                docClient.get(params, function (err, data) {
-                    if (err) {
-                        console.error("Unable to read item. Error JSON:", JSON.stringify(err, null, 2))
-                    } else {
-                        expect(data.Item).toBeUndefined()
-                        done()
-                    }
-                })
-            })
-        })
-    })
-
     it('should be able to query for a user', (done) => {
         expect.assertions(2)
 
@@ -366,24 +308,8 @@ describe('DynamoDBDao', () => {
             dao.findDeck(id).then((deck) => {
 
                 expect(deck.id).toEqual(id)
-                expect(deck.collectionId).toEqual("d1eda90c-8413-11e7-bb31-be2e44b06b34")
+                expect(deck.userId).toEqual("d1eda90c-8413-11e7-bb31-be2e44b06b34")
                 expect(deck.name).toEqual("Deck2")
-                done()
-            })
-        })
-    })
-
-    it('should be able to query for a collection', (done) => {
-        expect.assertions(2)
-
-        loadCollectionData(port).then(() => {
-
-            const id = "d1eda90c-8413-11e7-bb31-be2e44b06b34"
-
-            dao.findCollection(id).then((collection) => {
-
-                expect(collection.id).toEqual(id)
-                expect(collection.userId).toEqual("d1eda90c-8413-11e7-bb31-be2e44b06b34")
                 done()
             })
         })
@@ -466,10 +392,10 @@ describe('DynamoDBDao', () => {
         loadCollectionData(port).then(() => {
 
             const id = "ff279d7e-8413-11e7-bb31-be2e44b06b34"
-            const newCollectionId = "another-collection"
+            const newUserId = "another-user"
             const newName = "SomeNewName"
 
-            dao.updateDeck(new Deck(id, newCollectionId, newName)).then((updated) => {
+            dao.updateDeck(new Deck(id, newUserId, newName)).then((updated) => {
 
                 const docClient = new AWS.DynamoDB.DocumentClient()
 
@@ -484,7 +410,7 @@ describe('DynamoDBDao', () => {
                     if (err) {
                         console.error("Unable to read item. Error JSON:", JSON.stringify(err, null, 2))
                     } else {
-                        expect(data.Item.cId).toEqual(newCollectionId)
+                        expect(data.Item.uId).toEqual(newUserId)
                         expect(data.Item.n).toEqual(newName)
                         done()
                     }
@@ -493,44 +419,14 @@ describe('DynamoDBDao', () => {
         })
     })
 
-    it('should be able to update a collection', (done) => {
-        expect.assertions(1)
-
-        loadCollectionData(port).then(() => {
-
-            const id = "d1eda90c-8413-11e7-bb31-be2e44b06b34"
-            const newUserId = "new-user-id"
-            dao.updateCollection(new Collection(id, newUserId)).then((updated) => {
-
-                const docClient = new AWS.DynamoDB.DocumentClient()
-
-                const params = {
-                    TableName: COLLECTION_TABLE,
-                    Key: {
-                        "id": id
-                    }
-                }
-
-                docClient.get(params, function (err, data) {
-                    if (err) {
-                        console.error("Unable to read item. Error JSON:", JSON.stringify(err, null, 2))
-                    } else {
-                        expect(data.Item.uId).toEqual(newUserId)
-                        done()
-                    }
-                })
-            })
-        })
-    })
-
-    it('should be able to find decks by collection id', (done) => {
+    it('should be able to find decks by user id', (done) => {
         expect.assertions(3)
 
         loadCollectionData(port).then(() => {
 
             const id = "d1eda90c-8413-11e7-bb31-be2e44b06b34"
 
-            dao.findDecksByCollectionId(id).then(decks => {
+            dao.findDecksByUserId(id).then(decks => {
                 expect(decks.length).toEqual(4)
                 expect(decks.map(it => it.id)).toEqual([
                     "ff2799fa-8413-11e7-bb31-be2e44b06b34",
@@ -578,18 +474,6 @@ describe('DynamoDBDao', () => {
                 if (user) {
                     expect(user.email).toEqual(TEST_USER_EMAIL)
                 }
-                done()
-            })
-        })
-    })
-
-    it('should be able to find collections by user email', (done) => {
-        expect.assertions(1)
-
-        loadCollectionData(port).then(() => {
-
-            dao.findCollectionByUserEmail(TEST_USER_EMAIL).then(collection => {
-                expect(collection).toBeDefined()
                 done()
             })
         })

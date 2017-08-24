@@ -1,12 +1,11 @@
 //@flow
 import IndexDefinition from "./IndexDefinition"
 import type {Dao} from "../Dao"
-import {ALL_TABLES, CARD_TABLE, COLLECTION_TABLE, DECK_TABLE, USER_TABLE} from "../Dao"
+import {ALL_TABLES, CARD_TABLE, DECK_TABLE, USER_TABLE} from "../Dao"
 import User from "../../entity/User"
 import uuid from 'uuid'
 import Card from "../../entity/Card"
 import Deck from "../../entity/Deck"
-import Collection from "../../entity/Collection"
 import AWS from "aws-sdk"
 
 const DYNAMODB_STRING = "S"
@@ -20,7 +19,6 @@ const ID_COLUMN = "id"
 const NAME_COLUMN = "n"
 const QUESTION_COLUMN = "q"
 const ANSWER_COLUMN = "a"
-const COLLECTION_ID_COLUMN = "cId"
 const DECK_ID_COLUMN = "dId"
 const USER_ID_COLUMN = "uId"
 const GOOD_INTERVAL_COLUMN = "g"
@@ -28,19 +26,14 @@ const DUE_COLUMN = "d"
 
 const EMAIL_INDEX = "email"
 const DECK_ID_INDEX = "dId"
-const COLLECTION_ID_INDEX = "cId"
 const USER_ID_INDEX = "uId"
 
 const hydrateUser = (item) => {
     return new User(item[ID_COLUMN], item[EMAIL_INDEX])
 }
 
-const hydrateCollection = (item) => {
-    return item === undefined ? undefined : new Collection(item[ID_COLUMN], item[USER_ID_COLUMN])
-}
-
 const hydrateDeck = (item) => {
-    return new Deck(item[ID_COLUMN], item[COLLECTION_ID_COLUMN], item[NAME_COLUMN])
+    return new Deck(item[ID_COLUMN], item[USER_ID_COLUMN], item[NAME_COLUMN])
 }
 
 const hydrateCard = (item) => {
@@ -89,8 +82,7 @@ export default class DynamoDBDao implements Dao {
 
     createTables(): Promise<void> {
         return this.createTable(USER_TABLE, [new IndexDefinition(EMAIL_INDEX, DYNAMODB_STRING)])
-            .then(() => this.createTable(COLLECTION_TABLE, [new IndexDefinition(USER_ID_INDEX, DYNAMODB_STRING)]))
-            .then(() => this.createTable(DECK_TABLE, [new IndexDefinition(COLLECTION_ID_INDEX, DYNAMODB_STRING)]))
+            .then(() => this.createTable(DECK_TABLE, [new IndexDefinition(USER_ID_INDEX, DYNAMODB_STRING)]))
             .then(() => this.createTable(CARD_TABLE, [new IndexDefinition(DECK_ID_INDEX, DYNAMODB_STRING)]))
     }
 
@@ -137,20 +129,11 @@ export default class DynamoDBDao implements Dao {
 
     saveDeck(deck: Deck): Promise<Deck> {
         const id = uuid.v1()
-        const fields: Object = {[NAME_COLUMN]: deck.name, [COLLECTION_ID_INDEX]: deck.collectionId}
+        const fields: Object = {[NAME_COLUMN]: deck.name, [USER_ID_INDEX]: deck.userId}
 
         deck.id = id
 
         return this.insert(DECK_TABLE, {[ID_COLUMN]: id}, fields).then(() => deck)
-    }
-
-    saveCollection(collection: Collection): Promise<Collection> {
-        const id = uuid.v1()
-        const fields: Object = {[USER_ID_INDEX]: collection.userId}
-
-        collection.id = id
-
-        return this.insert(COLLECTION_TABLE, {[ID_COLUMN]: collection.id}, fields).then(() => collection)
     }
 
     deleteUser(id: string): Promise<string> {
@@ -165,10 +148,6 @@ export default class DynamoDBDao implements Dao {
         return this.deleteEntity(DECK_TABLE, {[ID_COLUMN]: id}).then(() => id)
     }
 
-    deleteCollection(id: string): Promise<string> {
-        return this.deleteEntity(COLLECTION_TABLE, {[ID_COLUMN]: id}).then(() => id)
-    }
-
     findUser(id: string): Promise<User> {
         return this.findOne(USER_TABLE, {[ID_COLUMN]: id}).then(data => hydrateUser(data.Item))
     }
@@ -179,11 +158,6 @@ export default class DynamoDBDao implements Dao {
 
     findDeck(id: string): Promise<Deck> {
         return this.findOne(DECK_TABLE, {[ID_COLUMN]: id}).then(data => hydrateDeck(data.Item))
-    }
-
-    findCollection(id: string): Promise<Collection> {
-        // $FlowFixMe
-        return this.findOne(COLLECTION_TABLE, {[ID_COLUMN]: id}).then(data => hydrateCollection(data.Item))
     }
 
     updateUser(user: User): Promise<User> {
@@ -224,20 +198,10 @@ export default class DynamoDBDao implements Dao {
         }
 
         const updates = new Map()
-        updates.set(COLLECTION_ID_INDEX, deck.collectionId)
+        updates.set(USER_ID_COLUMN, deck.userId)
         updates.set(NAME_COLUMN, deck.name)
 
         return this.update(DECK_TABLE, {[ID_COLUMN]: id}, [updates]).then(() => deck)
-    }
-
-    updateCollection(collection: Collection): Promise<Collection> {
-        const id = collection.id
-
-        const updates = new Map()
-        updates.set(USER_ID_INDEX, collection.userId)
-
-        // $FlowFixMe
-        return this.update(COLLECTION_TABLE, {[ID_COLUMN]: id}, [updates]).then(() => collection)
     }
 
     createTable(name: string, indices: Array<IndexDefinition>): Promise<void> {
@@ -440,8 +404,8 @@ export default class DynamoDBDao implements Dao {
         })
     }
 
-    findDecksByCollectionId(collectionId: string): Promise<Array<Deck>> {
-        return this.findByIndexQuery(DECK_TABLE, COLLECTION_ID_INDEX, collectionId)
+    findDecksByUserId(userId: string): Promise<Array<Deck>> {
+        return this.findByIndexQuery(DECK_TABLE, USER_ID_INDEX, userId)
             .then(items => items.map(hydrateDeck))
     }
 
@@ -453,12 +417,5 @@ export default class DynamoDBDao implements Dao {
     findUserByEmail(email: string): Promise<User | void> {
         return this.findByIndexQuery(USER_TABLE, EMAIL_INDEX, email)
             .then(items => items.length === 0 ? undefined : items[0])
-    }
-
-    findCollectionByUserEmail(email: string): Promise<Collection | void> {
-        return this.findUserByEmail(email)
-        //$FlowFixMe
-            .then(user => user ? this.findByIndexQuery(COLLECTION_TABLE, USER_ID_INDEX, user.id) : [])
-            .then(items => items.length === 0 ? undefined : hydrateCollection(items[0]))
     }
 }

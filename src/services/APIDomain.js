@@ -94,7 +94,7 @@ export class CollectionResponse {
 }
 
 export interface DataService {
-    // TODO: This should be collectionId instead of email
+    // TODO: This should be userId instead of email
     addDeck(email: string, name: string): Promise<CollectionResponse>;
 
     init(clearDatabase: boolean): Promise<void>;

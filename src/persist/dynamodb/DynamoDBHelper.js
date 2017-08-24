@@ -1,6 +1,6 @@
 //@flow
 import freeport from 'freeport'
-import {CARD_TABLE, COLLECTION_TABLE, DECK_TABLE, USER_TABLE} from "../Dao"
+import {CARD_TABLE, DECK_TABLE, USER_TABLE} from "../Dao"
 
 const DynamoDbLocal = require('dynamodb-local')
 const AWS = require("aws-sdk")
@@ -137,7 +137,6 @@ export const loadCollectionData = (port: number) => {
 
     const toLoad = new Map()
     toLoad.set(USER_TABLE, `${TEST_DATA_DIR}/user.json`)
-    toLoad.set(COLLECTION_TABLE, `${TEST_DATA_DIR}/collection.json`)
     toLoad.set(DECK_TABLE, `${TEST_DATA_DIR}/deck.json`)
     toLoad.set(CARD_TABLE, `${TEST_DATA_DIR}/card.json`)
 

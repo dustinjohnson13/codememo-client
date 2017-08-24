@@ -1,12 +1,12 @@
 //@flow
 export default class Deck {
     id: ?string
-    collectionId: string
+    userId: string
     name: string
 
-    constructor(id: ?string, collectionId: string, name: string) {
+    constructor(id: ?string, userId: string, name: string) {
         this.id = id
-        this.collectionId = collectionId
+        this.userId = userId
         this.name = name
     }
 }

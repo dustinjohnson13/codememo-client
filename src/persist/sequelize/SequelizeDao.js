@@ -4,9 +4,8 @@ import User from "../../entity/User"
 import {Sequelize} from 'sequelize'
 import Card from "../../entity/Card"
 import Deck from "../../entity/Deck"
-import Collection from "../../entity/Collection"
 import type {Dao} from "../Dao"
-import {CARD_TABLE, COLLECTION_TABLE, DECK_TABLE, USER_TABLE} from "../Dao"
+import {CARD_TABLE, DECK_TABLE, USER_TABLE} from "../Dao"
 
 const modelDefiner = new Sequelize({
         dialect: 'sqlite',
@@ -21,14 +20,8 @@ export const UserEntity = modelDefiner.define(USER_TABLE, {
     }
 })
 
-export const CollectionEntity = modelDefiner.define(COLLECTION_TABLE, {
-    userId: {
-        type: Sequelize.INTEGER
-    }
-})
-
 export const DeckEntity = modelDefiner.define(DECK_TABLE, {
-    collectionId: {
+    userId: {
         type: Sequelize.INTEGER
     },
     name: {
@@ -55,7 +48,7 @@ export const CardEntity = modelDefiner.define(CARD_TABLE, {
 })
 
 const hydrateDeck = (entity: DeckEntity) => {
-    return new Deck(entity.id, entity.collectionId, entity.name)
+    return new Deck(entity.id, entity.userId, entity.name)
 }
 
 const hydrateCard = (entity: CardEntity) => {
@@ -76,7 +69,6 @@ export class SequelizeDao implements Dao {
 
     init(clearDatabase: boolean): Promise<void> {
         return UserEntity.sync({force: clearDatabase})
-            .then(() => CollectionEntity.sync({force: clearDatabase}))
             .then(() => DeckEntity.sync({force: clearDatabase}))
             .then(() => CardEntity.sync({force: clearDatabase}))
     }
@@ -128,7 +120,7 @@ export class SequelizeDao implements Dao {
     saveDeck(deck: Deck): Promise<Deck> {
         return DeckEntity.create({
             name: deck.name,
-            collectionId: deck.collectionId
+            userId: deck.userId
         })
     }
 
@@ -139,28 +131,10 @@ export class SequelizeDao implements Dao {
 
         return DeckEntity.findById(deck.id).then(entity =>
             entity.updateAttributes({
-                collectionId: deck.collectionId,
+                userId: deck.userId,
                 name: deck.name
             })
         ).then(() => Promise.resolve(deck))
-    }
-
-    saveCollection(collection: Collection): Promise<Collection> {
-        return CollectionEntity.create({
-            userId: collection.userId
-        })
-    }
-
-    updateCollection(collection: Collection): Promise<Collection> {
-        if (!collection.id) {
-            throw new Error("Collection must have an id.")
-        }
-
-        return CollectionEntity.findById(collection.id).then(entity =>
-            entity.updateAttributes({
-                userId: collection.userId
-            })
-        ).then(() => Promise.resolve(collection))
     }
 
     deleteUser(id: string): Promise<string> {
@@ -187,14 +161,6 @@ export class SequelizeDao implements Dao {
         })
     }
 
-    deleteCollection(id: string): Promise<string> {
-        return CollectionEntity.destroy({
-            where: {
-                id: id
-            }
-        })
-    }
-
     findUser(id: string): Promise<User> {
         return UserEntity.findById(id).then((entity) => hydrateUser(entity))
     }
@@ -207,14 +173,10 @@ export class SequelizeDao implements Dao {
         return DeckEntity.findById(id).then((entity) => hydrateDeck(entity))
     }
 
-    findCollection(id: string): Promise<Collection> {
-        return CollectionEntity.findById(id).then((entity) => new Collection(entity.id, entity.userId))
-    }
-
-    findDecksByCollectionId(collectionId: string): Promise<Array<Deck>> {
+    findDecksByUserId(userId: string): Promise<Array<Deck>> {
         const q = DeckEntity.findAll({
             where: {
-                collectionId: collectionId
+                userId: userId
             }
         })
         return q.then(entities => {
@@ -238,16 +200,5 @@ export class SequelizeDao implements Dao {
             }
         })
         return q.then(entity => hydrateUser(entity)).catch(() => undefined)
-    }
-
-    findCollectionByUserEmail(email: string): Promise<Collection | void> {
-        return this.findUserByEmail(email).then(user =>
-            CollectionEntity.findOne({
-                where: {
-                    // $FlowFixMe
-                    userId: user.id
-                }
-            })
-        )
     }
 }

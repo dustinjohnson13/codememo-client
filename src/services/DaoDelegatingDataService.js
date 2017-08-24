@@ -18,7 +18,6 @@ import type {Dao} from "../persist/Dao"
 import {TEST_USER_EMAIL} from "../persist/Dao"
 import Card from "../entity/Card"
 import User from "../entity/User"
-import Collection from "../entity/Collection"
 
 const cardToCardDetail = (card: Card) => {
     const failInterval = HALF_DAY_IN_SECONDS
@@ -41,25 +40,10 @@ export default class DaoDelegatingDataService implements DataService {
 
     init(clearDatabase: boolean): Promise<void> {
         return this.dao.init(clearDatabase).then(() => {
-            let user
-
             return this.dao.findUserByEmail(TEST_USER_EMAIL)
                 .then(u => {
                     if (u === undefined) {
-                        return this.dao.saveUser(new User(undefined, TEST_USER_EMAIL)).then(u => {
-                            user = u
-                            return user
-                        })
-                    } else {
-                        user = u
-                        return user;
-                    }
-                })
-                .then(user => this.dao.findCollectionByUserEmail(user.email))
-                .then(collection => {
-                    if (!collection) {
-                        // $FlowFixMe
-                        return this.dao.saveCollection(new Collection(undefined, user.id)).then(() => undefined)
+                        return this.dao.saveUser(new User(undefined, TEST_USER_EMAIL)).then(() => undefined)
                     }
                 })
                 .catch((err) => {
@@ -69,9 +53,9 @@ export default class DaoDelegatingDataService implements DataService {
     }
 
     fetchCollection(email: string): Promise<api.CollectionResponse> {
-        return this.dao.findCollectionByUserEmail(email)
-        // $FlowFixMe
-            .then(collection => this.dao.findDecksByCollectionId(collection.id))
+        return this.dao.findUserByEmail(email)
+        //$FlowFixMe
+            .then(user => this.dao.findDecksByUserId(user.id))
             .then(decks => new api.CollectionResponse(decks.map(it =>
                     //$FlowFixMe
                     new api.Deck(it.id, it.name, 0, 0, 0)
@@ -93,9 +77,9 @@ export default class DaoDelegatingDataService implements DataService {
     }
 
     addDeck(email: string, name: string): Promise<CollectionResponse> {
-        return this.dao.findCollectionByUserEmail(email)
-        // $FlowFixMe
-            .then(collection => this.dao.saveDeck(new Deck(undefined, collection.id, name)))
+        return this.dao.findUserByEmail(email)
+        //$FlowFixMe
+            .then(user => this.dao.saveDeck(new Deck(undefined, user.id, name)))
             .then(deck => this.fetchCollection(email))
     }
 

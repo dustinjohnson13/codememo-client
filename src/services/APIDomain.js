@@ -13,6 +13,8 @@ export const HARD = 'HARD'
 export const GOOD = 'GOOD'
 export const EASY = 'EASY'
 
+export const ANSWERS = [FAIL, HARD, GOOD, EASY]
+
 export class Card {
     id: string
     status: string // TODO: Create enum

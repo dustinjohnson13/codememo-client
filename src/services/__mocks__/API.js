@@ -3,7 +3,8 @@ import DaoDelegatingDataService from "../DaoDelegatingDataService"
 
 export class FrozenClock implements Clock {
     epochSeconds(): number {
-        return 1
+        // 2016, January 1
+        return 1451606400
     }
 }
 

@@ -18,24 +18,17 @@ import type {Dao} from "../persist/Dao"
 import {TEST_USER_EMAIL} from "../persist/Dao"
 import Card from "../entity/Card"
 import User from "../entity/User"
-
-const cardToCardDetail = (card: Card) => {
-    const failInterval = HALF_DAY_IN_SECONDS
-    const hardInterval = card.goodInterval / 2
-    const goodInterval = card.goodInterval
-    const easyInterval = card.goodInterval * 2
-    //$FlowFixMe
-    return new CardDetail(card.id, card.question, card.answer,
-        failInterval, hardInterval, goodInterval, easyInterval, card.due)
-}
+import BusinessRules from "./BusinessRules"
 
 export default class DaoDelegatingDataService implements DataService {
     dao: Dao
     clock: Clock
+    businessRules: BusinessRules
 
     constructor(dao: Dao, clock: Clock) {
         this.dao = dao
         this.clock = clock
+        this.businessRules = new BusinessRules()
     }
 
     init(clearDatabase: boolean): Promise<void> {
@@ -64,7 +57,7 @@ export default class DaoDelegatingDataService implements DataService {
     }
 
     fetchDeck(id: string): Promise<api.DeckResponse> {
-        const now = new Date().getTime()
+        const now = this.clock.epochSeconds()
 
         return this.dao.findDeck(id)
         //$FlowFixMe
@@ -87,42 +80,29 @@ export default class DaoDelegatingDataService implements DataService {
         return this.dao.findDeck(deckId)
         // $FlowFixMe
             .then(deck => this.dao.saveCard(new Card(undefined, deck.id, question, answer, ONE_DAY_IN_SECONDS, undefined)))
-            .then(card => cardToCardDetail(card))
+            .then(card => this.cardToCardDetail(card))
     }
 
     fetchCards(ids: Array<string>): Promise<CardDetailResponse> {
         return Promise.all(ids.map(id => this.dao.findCard(id))).then((cards =>
-                new CardDetailResponse(cards.map(card => cardToCardDetail(card)))
+                new CardDetailResponse(cards.map(card => this.cardToCardDetail(card)))
         ))
     }
 
     answerCard(id: string, answer: string): Promise<CardDetail> {
-        return this.dao.findCard(id).then(card => {
-            let newDue = this.clock.epochSeconds()
-            let newGoodInterval = card.goodInterval
-
-            switch (answer) {
-                case FAIL:
-                    newDue += HALF_DAY_IN_SECONDS
-                    newGoodInterval = ONE_DAY_IN_SECONDS
-                    break
-                case HARD:
-                    newDue += card.goodInterval / 2
-                    newGoodInterval = card.goodInterval
-                    break
-                case GOOD:
-                    newDue += card.goodInterval
-                    newGoodInterval = card.goodInterval * 2
-                    break
-                case EASY:
-                    newDue += card.goodInterval * 2
-                    newGoodInterval = card.goodInterval * 4
-                    break
-                default:
-            }
-            return new Card(card.id, card.deckId, card.question, card.answer, newGoodInterval, newDue)
-        })
+        return this.dao.findCard(id).then(card => this.businessRules.cardAnswered(this.clock.epochSeconds(), card, answer))
             .then(card => this.dao.updateCard(card))
-            .then(card => cardToCardDetail(card))
+            .then(card => this.cardToCardDetail(card))
+    }
+
+    cardToCardDetail(card: Card) {
+        const intervals = this.businessRules.currentAnswerIntervals(card)
+        const failInterval = intervals[0]
+        const hardInterval = intervals[1]
+        const goodInterval = intervals[2]
+        const easyInterval = intervals[3]
+        //$FlowFixMe
+        return new CardDetail(card.id, card.question, card.answer,
+            failInterval, hardInterval, goodInterval, easyInterval, card.due)
     }
 }

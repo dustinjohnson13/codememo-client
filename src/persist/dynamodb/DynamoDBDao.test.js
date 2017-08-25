@@ -13,7 +13,7 @@ import {
 } from "./DynamoDBHelper"
 import DynamoDBDao from "./DynamoDBDao"
 import {CARD_TABLE, DECK_TABLE, TEST_USER_EMAIL, USER_TABLE} from "../Dao"
-import {ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../../services/APIDomain"
+import {DUE_IMMEDIATELY, NO_ID, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../../services/APIDomain"
 
 const AWS = require("aws-sdk")
 
@@ -53,7 +53,7 @@ describe('DynamoDBDao', () => {
     it('should be able to create a user', (done) => {
         expect.assertions(3)
 
-        const user = new User(undefined, "blah@somewhere.com")
+        const user = new User(NO_ID, "blah@somewhere.com")
 
         dao.saveUser(user).then((user) => {
             expect(user.id).toBeDefined()
@@ -97,8 +97,8 @@ describe('DynamoDBDao', () => {
     it('should be able to create a card', (done) => {
         expect.assertions(12)
 
-        const entity = new Card(undefined, "ff279d7e-8413-11e7-bb31-be2e44b06b34", "Question 1?", "Answer 1?", ONE_DAY_IN_SECONDS, undefined)
-        const entity2 = new Card(undefined, "ff279d7e-8413-11e7-bb31-be2e44b06b34", "Question 2?", "Answer 2?", ONE_DAY_IN_SECONDS, 20999)
+        const entity = new Card(NO_ID, "ff279d7e-8413-11e7-bb31-be2e44b06b34", "Question 1?", "Answer 1?", ONE_DAY_IN_SECONDS, DUE_IMMEDIATELY)
+        const entity2 = new Card(NO_ID, "ff279d7e-8413-11e7-bb31-be2e44b06b34", "Question 2?", "Answer 2?", ONE_DAY_IN_SECONDS, 20999)
         const entities = [entity, entity2]
 
         const persist = Promise.all(entities.map((card) => dao.saveCard(card)))
@@ -147,7 +147,7 @@ describe('DynamoDBDao', () => {
 
         expect.assertions(3)
 
-        const entity = new Deck(undefined, "d1eda90c-8413-11e7-bb31-be2e44b06b34", 'Some Name')
+        const entity = new Deck(NO_ID, "d1eda90c-8413-11e7-bb31-be2e44b06b34", 'Some Name')
 
         dao.saveDeck(entity).then((entity) => {
 

@@ -5,7 +5,7 @@ import {Sequelize} from 'sequelize'
 import Deck from "../../entity/Deck"
 import Card from "../../entity/Card"
 import {TEST_USER_EMAIL} from "../Dao"
-import {ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../../services/APIDomain"
+import {DUE_IMMEDIATELY, NO_ID, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../../services/APIDomain"
 
 describe('SequelizeDao', () => {
 
@@ -23,7 +23,7 @@ describe('SequelizeDao', () => {
     it('should be able to create a user', (done) => {
         expect.assertions(3)
 
-        const user = new User(undefined, "blah@somewhere.com")
+        const user = new User(NO_ID, "blah@somewhere.com")
 
         service.saveUser(user).then((user) => {
             UserEntity.findAll().then(users => {
@@ -61,8 +61,8 @@ describe('SequelizeDao', () => {
                 userId: user.id
             })
         }).then((deck) => {
-            const entity = new Card(undefined, deck.id, 'Question 1?', 'Answer 1.', ONE_DAY_IN_SECONDS, undefined)
-            const entity2 = new Card(undefined, deck.id, 'Question 2?', 'Answer 2.', ONE_DAY_IN_SECONDS, 20999)
+            const entity = new Card(NO_ID, deck.id, 'Question 1?', 'Answer 1.', ONE_DAY_IN_SECONDS, DUE_IMMEDIATELY)
+            const entity2 = new Card(NO_ID, deck.id, 'Question 2?', 'Answer 2.', ONE_DAY_IN_SECONDS, 20999)
             const entities = [entity, entity2]
             const persist = Promise.all(entities.map((card) => service.saveCard(card)))
 
@@ -79,7 +79,7 @@ describe('SequelizeDao', () => {
                     expect(all[1].answer).toEqual(entity2.answer)
                     expect(all[0].goodInterval).toEqual(entity.goodInterval)
                     expect(all[1].goodInterval).toEqual(entity.goodInterval)
-                    expect(all[0].due).toEqual(null)
+                    expect(all[0].due).toEqual(DUE_IMMEDIATELY)
                     expect(all[1].due).toEqual(entity2.due)
                     done()
                 })
@@ -94,7 +94,7 @@ describe('SequelizeDao', () => {
         UserEntity.create({
             email: 'someEmail@blah.com'
         }).then((user) => {
-            const entity = new Deck(undefined, user.id, 'Some Deck')
+            const entity = new Deck(NO_ID, user.id, 'Some Deck')
 
             service.saveDeck(entity).then((entity) => {
                 DeckEntity.findAll().then(all => {

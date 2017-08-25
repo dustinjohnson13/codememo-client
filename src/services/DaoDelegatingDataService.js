@@ -2,7 +2,15 @@
 import Deck from "../entity/Deck"
 import type {AnswerType, Clock, DataService} from "./APIDomain"
 import * as api from "./APIDomain"
-import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse, ONE_DAY_IN_SECONDS} from "./APIDomain"
+import {
+    CardDetail,
+    CardDetailResponse,
+    CollectionResponse,
+    DeckResponse,
+    DUE_IMMEDIATELY,
+    NO_ID,
+    ONE_DAY_IN_SECONDS
+} from "./APIDomain"
 import type {Dao} from "../persist/Dao"
 import {TEST_USER_EMAIL} from "../persist/Dao"
 import Card from "../entity/Card"
@@ -25,7 +33,7 @@ export default class DaoDelegatingDataService implements DataService {
             return this.dao.findUserByEmail(TEST_USER_EMAIL)
                 .then(u => {
                     if (u === undefined) {
-                        return this.dao.saveUser(new User(undefined, TEST_USER_EMAIL)).then(() => undefined)
+                        return this.dao.saveUser(new User(NO_ID, TEST_USER_EMAIL)).then(() => undefined)
                     }
                 })
                 .catch((err) => {
@@ -36,10 +44,8 @@ export default class DaoDelegatingDataService implements DataService {
 
     fetchCollection(email: string): Promise<api.CollectionResponse> {
         return this.dao.findUserByEmail(email)
-        //$FlowFixMe
-            .then(user => this.dao.findDecksByUserId(user.id))
+            .then(user => user ? this.dao.findDecksByUserId(user.id) : [])
             .then(decks => new api.CollectionResponse(decks.map(it =>
-                    //$FlowFixMe
                     new api.Deck(it.id, it.name, 0, 0, 0)
                 ))
             )
@@ -49,11 +55,9 @@ export default class DaoDelegatingDataService implements DataService {
         const now = this.clock.epochSeconds()
 
         return this.dao.findDeck(id)
-        //$FlowFixMe
             .then(deck => this.dao.findCardsByDeckId(deck.id)
-                .then(cards => cards.map(card =>
-                    //$FlowFixMe
-                    new api.Card(card.id, (!card.due) ? 'NEW' : card.due > now ? 'OK' : 'DUE')))
+                .then(cards => cards.map(card => // TODO: Move to business rules
+                    new api.Card(card.id, (card.due === DUE_IMMEDIATELY) ? 'NEW' : card.due > now ? 'OK' : 'DUE')))
                 .then(apiCards => new DeckResponse(id, deck.name, apiCards))
             )
     }
@@ -90,7 +94,6 @@ export default class DaoDelegatingDataService implements DataService {
         const hardInterval = intervals[1]
         const goodInterval = intervals[2]
         const easyInterval = intervals[3]
-        //$FlowFixMe
         return new CardDetail(card.id, card.question, card.answer,
             failInterval, hardInterval, goodInterval, easyInterval, card.due)
     }

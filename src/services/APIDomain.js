@@ -3,6 +3,9 @@ export interface Clock {
     epochSeconds(): number;
 }
 
+export const NO_ID = "NONE"
+export const DUE_IMMEDIATELY = -1
+
 export const HALF_DAY_IN_SECONDS = 43200
 export const ONE_DAY_IN_SECONDS = HALF_DAY_IN_SECONDS * 2
 export const TWO_DAYS_IN_SECONDS = ONE_DAY_IN_SECONDS * 2

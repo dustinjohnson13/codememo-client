@@ -4,7 +4,9 @@ import {
     CardDetail,
     CollectionResponse,
     DeckResponse,
+    DUE_IMMEDIATELY,
     HALF_DAY_IN_SECONDS,
+    NO_ID,
     ONE_DAY_IN_SECONDS,
     TWO_DAYS_IN_SECONDS
 } from "./APIDomain"
@@ -72,13 +74,13 @@ function testWithDaoImplementation(createDao: any) {
 
             await service.init(true).then(() =>
                 dao.findUserByEmail(TEST_USER_EMAIL)
-                    .then(user => dao.saveDeck(new Deck(undefined, user.id, TEST_DECK_NAME)))
+                    .then(user => dao.saveDeck(new Deck(NO_ID, user.id, TEST_DECK_NAME)))
                     .then(deck => {
                         const promises = []
                         const currentTime = clock.epochSeconds()
                         for (let i = 0; i < TOTAL_COUNT; i++) {
                             const multiplier = i + 1
-                            let dueTime = null
+                            let dueTime = DUE_IMMEDIATELY
                             let goodInterval = HALF_DAY_IN_SECONDS
                             if (i < GOOD_COUNT) {
                                 dueTime = currentTime + (ONE_DAY_IN_SECONDS * multiplier)
@@ -88,7 +90,7 @@ function testWithDaoImplementation(createDao: any) {
                                 goodInterval = ONE_DAY_IN_SECONDS
                             }
 
-                            const card = new Card(undefined, deck.id, `Question Number ${i}?`, `Answer Number ${i}`, goodInterval, dueTime)
+                            const card = new Card(NO_ID, deck.id, `Question Number ${i}?`, `Answer Number ${i}`, goodInterval, dueTime)
                             promises.push(dao.saveCard(card))
                         }
                         return Promise.all(promises)
@@ -189,7 +191,8 @@ function testWithDaoImplementation(createDao: any) {
                 .then(deckId => service.fetchDeck(deckId))
                 .then(deck => service.fetchCards(deck.cards.map(card => card.id)))
                 .then(response => {
-                    const cardsWithDueTime = response.cards.filter(card => card.due && card.due < clock.epochSeconds())
+                    const cardsWithDueTime = response.cards.filter(card => card.due && card.due !== DUE_IMMEDIATELY &&
+                        card.due < clock.epochSeconds())
                     if (cardsWithDueTime) {
                         const card = cardsWithDueTime[0]
                         const originalDue = card.due

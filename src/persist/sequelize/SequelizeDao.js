@@ -1,11 +1,8 @@
 //@flow
-import User from "../../entity/User"
 
 import {Sequelize} from 'sequelize'
-import Card from "../../entity/Card"
-import Deck from "../../entity/Deck"
 import type {Dao} from "../Dao"
-import {CARD_TABLE, DECK_TABLE, USER_TABLE} from "../Dao"
+import {Card, CARD_TABLE, Deck, DECK_TABLE, User, USER_TABLE} from "../Dao"
 
 const modelDefiner = new Sequelize({
         dialect: 'sqlite',
@@ -161,15 +158,15 @@ export class SequelizeDao implements Dao {
         })
     }
 
-    findUser(id: string): Promise<User> {
+    findUser(id: string): Promise<User | void> {
         return UserEntity.findById(id).then((entity) => hydrateUser(entity))
     }
 
-    findCard(id: string): Promise<Card> {
+    findCard(id: string): Promise<Card | void> {
         return CardEntity.findById(id).then(entity => hydrateCard(entity))
     }
 
-    findDeck(id: string): Promise<Deck> {
+    findDeck(id: string): Promise<Deck | void> {
         return DeckEntity.findById(id).then((entity) => hydrateDeck(entity))
     }
 

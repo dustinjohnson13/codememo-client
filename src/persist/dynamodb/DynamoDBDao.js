@@ -1,11 +1,8 @@
 //@flow
 import IndexDefinition from "./IndexDefinition"
 import type {Dao} from "../Dao"
-import {ALL_TABLES, CARD_TABLE, DECK_TABLE, USER_TABLE} from "../Dao"
-import User from "../../entity/User"
+import {ALL_TABLES, Card, CARD_TABLE, Deck, DECK_TABLE, User, USER_TABLE} from "../Dao"
 import uuid from 'uuid'
-import Card from "../../entity/Card"
-import Deck from "../../entity/Deck"
 import AWS from "aws-sdk"
 
 const DYNAMODB_STRING = "S"
@@ -142,15 +139,15 @@ export default class DynamoDBDao implements Dao {
         return this.deleteEntity(DECK_TABLE, {[ID_COLUMN]: id}).then(() => id)
     }
 
-    findUser(id: string): Promise<User> {
+    findUser(id: string): Promise<User | void> {
         return this.findOne(USER_TABLE, {[ID_COLUMN]: id}).then(data => hydrateUser(data.Item))
     }
 
-    findCard(id: string): Promise<Card> {
+    findCard(id: string): Promise<Card | void> {
         return this.findOne(CARD_TABLE, {[ID_COLUMN]: id}).then(data => hydrateCard(data.Item))
     }
 
-    findDeck(id: string): Promise<Deck> {
+    findDeck(id: string): Promise<Deck | void> {
         return this.findOne(DECK_TABLE, {[ID_COLUMN]: id}).then(data => hydrateDeck(data.Item))
     }
 

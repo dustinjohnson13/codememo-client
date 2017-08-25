@@ -1,5 +1,4 @@
 //@flow
-import Deck from "../entity/Deck"
 import type {AnswerType, Clock, DataService} from "./APIDomain"
 import * as api from "./APIDomain"
 import {
@@ -12,9 +11,7 @@ import {
     ONE_DAY_IN_SECONDS
 } from "./APIDomain"
 import type {Dao} from "../persist/Dao"
-import {TEST_USER_EMAIL} from "../persist/Dao"
-import Card from "../entity/Card"
-import User from "../entity/User"
+import {Card, Deck, TEST_USER_EMAIL, User} from "../persist/Dao"
 import BusinessRules from "./BusinessRules"
 
 export default class DaoDelegatingDataService implements DataService {
@@ -55,10 +52,18 @@ export default class DaoDelegatingDataService implements DataService {
         const now = this.clock.epochSeconds()
 
         return this.dao.findDeck(id)
-            .then(deck => this.dao.findCardsByDeckId(deck.id)
-                .then(cards => cards.map(card => // TODO: Move to business rules
-                    new api.Card(card.id, (card.due === DUE_IMMEDIATELY) ? 'NEW' : card.due > now ? 'OK' : 'DUE')))
-                .then(apiCards => new DeckResponse(id, deck.name, apiCards))
+            .then(deck => {
+                    if (deck) {
+                        const deckName = deck.name
+                        return this.dao.findCardsByDeckId(deck.id)
+                            .then(cards => cards.map(card => // TODO: Move to business rules
+                                new api.Card(card.id, (card.due === DUE_IMMEDIATELY) ? 'NEW' : card.due > now ? 'OK' : 'DUE')))
+                            .then(apiCards => new DeckResponse(id, deckName, apiCards))
+                    } else {
+                        // TODO: Need to provide an error message, the deck doesn't exist
+                        return new DeckResponse(id, "", [])
+                    }
+                }
             )
     }
 
@@ -77,15 +82,30 @@ export default class DaoDelegatingDataService implements DataService {
     }
 
     fetchCards(ids: Array<string>): Promise<CardDetailResponse> {
-        return Promise.all(ids.map(id => this.dao.findCard(id))).then((cards =>
-                new CardDetailResponse(cards.map(card => this.cardToCardDetail(card)))
+        return Promise.all(ids.map(id => this.dao.findCard(id))).then((cards => {
+                const details = []
+                for (let card of cards) {
+                    if (card) {
+                        details.push(this.cardToCardDetail(card))
+                    }
+                }
+                return new CardDetailResponse(details)
+            }
         ))
     }
 
     answerCard(id: string, answer: AnswerType): Promise<CardDetail> {
-        return this.dao.findCard(id).then(card => this.businessRules.cardAnswered(this.clock.epochSeconds(), card, answer))
-            .then(card => this.dao.updateCard(card))
-            .then(card => this.cardToCardDetail(card))
+        return this.dao.findCard(id)
+            .then(card => {
+                if (card) {
+                    const updated = this.businessRules.cardAnswered(this.clock.epochSeconds(), card, answer)
+                    return this.dao.updateCard(updated)
+                        .then(card => this.cardToCardDetail(card))
+                } else {
+                    // TODO: Need to send back an error response
+                    throw new Error(`Card with id ${id} doens't exist.`)
+                }
+            })
     }
 
     cardToCardDetail(card: Card) {

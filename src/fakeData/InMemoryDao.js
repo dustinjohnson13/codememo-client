@@ -1,8 +1,6 @@
 //@flow
-import type {Dao} from "../persist/Dao"
-import User from "../entity/User"
-import Deck from "../entity/Deck"
-import Card from "../entity/Card"
+import type {Dao, Entity} from "../persist/Dao"
+import {Card, Deck, User} from "../persist/Dao"
 
 export class InMemoryDao implements Dao {
     users: Array<User> = []
@@ -62,15 +60,15 @@ export class InMemoryDao implements Dao {
         return Promise.resolve(id)
     }
 
-    findUser(id: string): Promise<User> {
+    findUser(id: string): Promise<User | void> {
         return this.findEntity(id, this.users)
     }
 
-    findCard(id: string): Promise<Card> {
+    findCard(id: string): Promise<Card | void> {
         return this.findEntity(id, this.cards)
     }
 
-    findDeck(id: string): Promise<Deck> {
+    findDeck(id: string): Promise<Deck | void> {
         return this.findEntity(id, this.decks)
     }
 
@@ -92,17 +90,16 @@ export class InMemoryDao implements Dao {
 
     saveEntity<T>(func: (id: string) => T, array: Array<T>): Array<T> {
         const entity = func("" + this.idCounter++)
-        const newArray = [...array, entity]
-        return newArray
+        return [...array, entity]
     }
 
-    updateEntity<T:User | Deck | Card>(entity: T, array: Array<T>): Array<T> {
+    updateEntity<T:Entity>(entity: T, array: Array<T>): Array<T> {
         const newArray = array.filter(it => it.id !== entity.id)
         newArray.push(entity)
         return newArray
     }
 
-    findEntity(id: string, array: Array<any>): Promise<any> {
+    findEntity<T: Entity>(id: string, array: Array<T>): Promise<T | void> {
         return Promise.resolve(array.find(it => it.id === id))
     }
 }

@@ -1,7 +1,8 @@
 //@flow
 import {Answer, DUE_IMMEDIATELY, HALF_DAY_IN_SECONDS, NO_ID, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "./APIDomain"
-import Card from "../entity/Card"
+
 import BusinessRules from "./BusinessRules"
+import {Card} from "../persist/Dao"
 
 describe('BusinessRules', () => {
 

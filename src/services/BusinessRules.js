@@ -1,7 +1,7 @@
 //@flow
-import Card from "../entity/Card"
 import type {AnswerType} from "./APIDomain"
 import {Answer, HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS} from "./APIDomain"
+import {Card} from "../persist/Dao"
 
 export default class BusinessRules {
 

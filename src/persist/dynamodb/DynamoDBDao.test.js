@@ -1,7 +1,4 @@
 //@flow
-import User from "../../entity/User"
-import Deck from "../../entity/Deck"
-import Card from "../../entity/Card"
 import {
     ACCESS_KEY_ID,
     DYNAMODB_TEST_TIMEOUT,
@@ -12,7 +9,7 @@ import {
     stop
 } from "./DynamoDBHelper"
 import DynamoDBDao from "./DynamoDBDao"
-import {CARD_TABLE, DECK_TABLE, TEST_USER_EMAIL, USER_TABLE} from "../Dao"
+import {Card, CARD_TABLE, Deck, DECK_TABLE, TEST_USER_EMAIL, User, USER_TABLE} from "../Dao"
 import {DUE_IMMEDIATELY, NO_ID, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../../services/APIDomain"
 
 const AWS = require("aws-sdk")
@@ -283,9 +280,10 @@ describe('DynamoDBDao', () => {
             const id = "d1eda90c-8413-11e7-bb31-be2e44b06b34"
 
             dao.findUser(id).then((user) => {
-
-                expect(user.id).toEqual(id)
-                expect(user.email).toEqual("someone@blah.com")
+                if (user) {
+                    expect(user.id).toEqual(id)
+                    expect(user.email).toEqual("someone@blah.com")
+                }
                 done()
             })
         })
@@ -299,11 +297,13 @@ describe('DynamoDBDao', () => {
             const id = "7c7a2ddc-8414-11e7-bb31-be2e44b06b34"
 
             dao.findCard(id).then((card) => {
-                expect(card.id).toEqual(id)
-                expect(card.deckId).toEqual("ff2799fa-8413-11e7-bb31-be2e44b06b34")
-                expect(card.question).toEqual("Question 3?")
-                expect(card.answer).toEqual("Answer 3?")
-                expect(card.due).toEqual(1508331802)
+                if (card) {
+                    expect(card.id).toEqual(id)
+                    expect(card.deckId).toEqual("ff2799fa-8413-11e7-bb31-be2e44b06b34")
+                    expect(card.question).toEqual("Question 3?")
+                    expect(card.answer).toEqual("Answer 3?")
+                    expect(card.due).toEqual(1508331802)
+                }
                 done()
             })
         })
@@ -317,10 +317,11 @@ describe('DynamoDBDao', () => {
             const id = "ff279d7e-8413-11e7-bb31-be2e44b06b34"
 
             dao.findDeck(id).then((deck) => {
-
-                expect(deck.id).toEqual(id)
-                expect(deck.userId).toEqual("d1eda90c-8413-11e7-bb31-be2e44b06b34")
-                expect(deck.name).toEqual("Deck2")
+                if (deck) {
+                    expect(deck.id).toEqual(id)
+                    expect(deck.userId).toEqual("d1eda90c-8413-11e7-bb31-be2e44b06b34")
+                    expect(deck.name).toEqual("Deck2")
+                }
                 done()
             })
         })

@@ -11,10 +11,8 @@ import {
     TWO_DAYS_IN_SECONDS
 } from "./APIDomain"
 import DaoDelegatingDataService from "./DaoDelegatingDataService"
-import Deck from "../entity/Deck"
-import Card from "../entity/Card"
 import {createDao} from "../persist/sequelize/SequalizeDao.test"
-import {TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
+import {Card, Deck, TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
 import {
     ACCESS_KEY_ID,
     DYNAMODB_TEST_TIMEOUT,

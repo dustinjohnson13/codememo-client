@@ -1,10 +1,7 @@
 //@flow
-import User from "../../entity/User"
 import {CardEntity, DeckEntity, SequelizeDao, UserEntity} from "./SequelizeDao"
 import {Sequelize} from 'sequelize'
-import Deck from "../../entity/Deck"
-import Card from "../../entity/Card"
-import {TEST_USER_EMAIL} from "../Dao"
+import {Card, Deck, TEST_USER_EMAIL, User} from "../Dao"
 import {DUE_IMMEDIATELY, NO_ID, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../../services/APIDomain"
 
 describe('SequelizeDao', () => {
@@ -168,8 +165,10 @@ describe('SequelizeDao', () => {
 
             UserEntity.findOne().then((entity) => {
                 service.findUser(entity.id).then((user) => {
-                    expect(user.id).toEqual(entity.id)
-                    expect(user.email).toEqual(TEST_USER_EMAIL)
+                    if (user) {
+                        expect(user.id).toEqual(entity.id)
+                        expect(user.email).toEqual(TEST_USER_EMAIL)
+                    }
                     done()
                 })
             })
@@ -182,12 +181,14 @@ describe('SequelizeDao', () => {
         loadCollectionData().then(() => {
 
             CardEntity.findOne().then((entity) => {
-                service.findCard(entity.id).then((returned: Card) => {
-                    expect(returned.id).toEqual(entity.id)
-                    expect(returned.deckId).toEqual(entity.deckId)
-                    expect(returned.question).toEqual(entity.question)
-                    expect(returned.answer).toEqual(entity.answer)
-                    expect(returned.due).toEqual(entity.due)
+                service.findCard(entity.id).then(returned => {
+                    if (returned) {
+                        expect(returned.id).toEqual(entity.id)
+                        expect(returned.deckId).toEqual(entity.deckId)
+                        expect(returned.question).toEqual(entity.question)
+                        expect(returned.answer).toEqual(entity.answer)
+                        expect(returned.due).toEqual(entity.due)
+                    }
                     done()
                 })
             })
@@ -200,10 +201,12 @@ describe('SequelizeDao', () => {
         loadCollectionData().then(() => {
 
             DeckEntity.findOne().then((entity) => {
-                service.findDeck(entity.id).then((returned: Deck) => {
-                    expect(returned.id).toEqual(entity.id)
-                    expect(returned.name).toEqual(entity.name)
-                    expect(returned.userId).toEqual(entity.userId)
+                service.findDeck(entity.id).then(returned => {
+                    if (returned) {
+                        expect(returned.id).toEqual(entity.id)
+                        expect(returned.name).toEqual(entity.name)
+                        expect(returned.userId).toEqual(entity.userId)
+                    }
                     done()
                 })
             })

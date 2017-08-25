@@ -15,7 +15,9 @@ export class InMemoryDao implements Dao {
     }
 
     saveUser(user: User): Promise<User> {
-        return this.saveEntity(user, this.users)
+        const creator = id => new User(id, user.email)
+        this.users = this.saveEntity(creator, this.users)
+        return Promise.resolve(this.users[this.users.length - 1])
     }
 
     updateUser(user: User): Promise<User> {
@@ -24,7 +26,9 @@ export class InMemoryDao implements Dao {
     }
 
     saveCard(card: Card): Promise<Card> {
-        return this.saveEntity(card, this.cards)
+        const creator = id => new Card(id, card.deckId, card.question, card.answer, card.goodInterval, card.due)
+        this.cards = this.saveEntity(creator, this.cards)
+        return Promise.resolve(this.cards[this.cards.length - 1])
     }
 
     updateCard(card: Card): Promise<Card> {
@@ -33,7 +37,9 @@ export class InMemoryDao implements Dao {
     }
 
     saveDeck(deck: Deck): Promise<Deck> {
-        return this.saveEntity(deck, this.decks)
+        const creator = id => new Deck(id, deck.userId, deck.name)
+        this.decks = this.saveEntity(creator, this.decks)
+        return Promise.resolve(this.decks[this.decks.length - 1])
     }
 
     updateDeck(deck: Deck): Promise<Deck> {
@@ -84,17 +90,13 @@ export class InMemoryDao implements Dao {
         return Promise.resolve()
     }
 
-    saveEntity(entity: (User | Deck | Card), array: Array<any>): Promise<any> {
-        return new Promise((resolve, reject) => {
-            entity.id = "" + this.idCounter++
-
-            array.push(entity)
-
-            resolve(entity)
-        })
+    saveEntity<T>(func: (id: string) => T, array: Array<T>): Array<T> {
+        const entity = func("" + this.idCounter++)
+        const newArray = [...array, entity]
+        return newArray
     }
 
-    updateEntity(entity: (User | Deck | Card), array: Array<any>): Array<any> {
+    updateEntity<T:User | Deck | Card>(entity: T, array: Array<T>): Array<T> {
         const newArray = array.filter(it => it.id !== entity.id)
         newArray.push(entity)
         return newArray

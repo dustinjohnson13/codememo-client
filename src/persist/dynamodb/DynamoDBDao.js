@@ -105,9 +105,7 @@ export default class DynamoDBDao implements Dao {
         const id = uuid.v1()
         const fields = {[EMAIL_INDEX]: user.email}
 
-        user.id = id
-
-        return this.insert(USER_TABLE, {[ID_COLUMN]: id}, fields).then(() => user)
+        return this.insert(USER_TABLE, {[ID_COLUMN]: id}, fields).then(() => new User(id, user.email))
     }
 
     saveCard(card: Card): Promise<Card> {
@@ -116,24 +114,20 @@ export default class DynamoDBDao implements Dao {
             [QUESTION_COLUMN]: card.question,
             [ANSWER_COLUMN]: card.answer,
             [DECK_ID_INDEX]: card.deckId,
-            [GOOD_INTERVAL_COLUMN]: card.goodInterval
-        }
-        if (card.due) {
-            fields[DUE_COLUMN] = card.due
+            [GOOD_INTERVAL_COLUMN]: card.goodInterval,
+            [DUE_COLUMN]: card.due
         }
 
-        card.id = id
-
-        return this.insert(CARD_TABLE, {[ID_COLUMN]: id}, fields).then(() => card)
+        return this.insert(CARD_TABLE, {[ID_COLUMN]: id}, fields)
+            .then(() => new Card(id, card.deckId, card.question, card.answer, card.goodInterval, card.due))
     }
 
     saveDeck(deck: Deck): Promise<Deck> {
         const id = uuid.v1()
         const fields: Object = {[NAME_COLUMN]: deck.name, [USER_ID_INDEX]: deck.userId}
 
-        deck.id = id
-
-        return this.insert(DECK_TABLE, {[ID_COLUMN]: id}, fields).then(() => deck)
+        return this.insert(DECK_TABLE, {[ID_COLUMN]: id}, fields).then(() =>
+            new Deck(id, deck.userId, deck.name))
     }
 
     deleteUser(id: string): Promise<string> {

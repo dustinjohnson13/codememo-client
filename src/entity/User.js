@@ -1,11 +1,11 @@
 //@flow
 export default class User {
-    id: string
-    email: string
+    +id: string
+    +email: string
 
     constructor(id: string, email: string) {
-        this.id = id
-        this.email = email
+        (this: any).id = id;
+        (this: any).email = email;
     }
 
 }

@@ -51,12 +51,14 @@ describe('DynamoDBDao', () => {
     })
 
     it('should be able to create a user', (done) => {
-        expect.assertions(3)
+        expect.assertions(5)
 
-        const user = new User(NO_ID, "blah@somewhere.com")
+        const original = new User(NO_ID, "blah@somewhere.com")
 
-        dao.saveUser(user).then((user) => {
-            expect(user.id).toBeDefined()
+        dao.saveUser(original).then((user) => {
+            expect(original.id).toEqual(NO_ID)
+            expect(user.id).not.toEqual(NO_ID)
+            expect(user).not.toBe(original)
 
             const docClient = new AWS.DynamoDB.DocumentClient()
 
@@ -95,18 +97,25 @@ describe('DynamoDBDao', () => {
     // })
 
     it('should be able to create a card', (done) => {
-        expect.assertions(12)
+        expect.assertions(18)
 
         const entity = new Card(NO_ID, "ff279d7e-8413-11e7-bb31-be2e44b06b34", "Question 1?", "Answer 1?", ONE_DAY_IN_SECONDS, DUE_IMMEDIATELY)
         const entity2 = new Card(NO_ID, "ff279d7e-8413-11e7-bb31-be2e44b06b34", "Question 2?", "Answer 2?", ONE_DAY_IN_SECONDS, 20999)
         const entities = [entity, entity2]
 
-        const persist = Promise.all(entities.map((card) => dao.saveCard(card)))
+        const persist = Promise.all(entities.map(original => dao.saveCard(original)
+            .then(entity => {
+                expect(original.id).toEqual(NO_ID)
+                expect(entity.id).not.toEqual(NO_ID)
+                expect(entity).not.toBe(original)
+
+                return entity
+            })))
 
         let doneChecking = 0
         return persist.then((persisted: Array<Card>) => {
 
-            const originalById = new Map(entities.map((i) => [i.id, i]))
+            const originalByQuestion = new Map(entities.map(i => [i.question, i]))
 
             persisted.forEach((entity, idx) => {
 
@@ -125,7 +134,7 @@ describe('DynamoDBDao', () => {
                     if (err) {
                         console.error("Unable to read item. Error JSON:", JSON.stringify(err, null, 2))
                     } else {
-                        const original = originalById.get(data.Item.id)
+                        const original = originalByQuestion.get(data.Item.q)
                         if (original) {
                             expect(data.Item.q).toEqual(original.question)
                             expect(data.Item.a).toEqual(original.answer)
@@ -145,13 +154,15 @@ describe('DynamoDBDao', () => {
 
     it('should be able to create a deck', (done) => {
 
-        expect.assertions(3)
+        expect.assertions(5)
 
-        const entity = new Deck(NO_ID, "d1eda90c-8413-11e7-bb31-be2e44b06b34", 'Some Name')
+        const original = new Deck(NO_ID, "d1eda90c-8413-11e7-bb31-be2e44b06b34", 'Some Name')
 
-        dao.saveDeck(entity).then((entity) => {
+        dao.saveDeck(original).then(entity => {
 
-            expect(entity.id).toBeDefined()
+            expect(original.id).toEqual(NO_ID)
+            expect(entity.id).not.toEqual(NO_ID)
+            expect(entity).not.toBe(original)
 
             const docClient = new AWS.DynamoDB.DocumentClient()
 

@@ -1,0 +1,58 @@
+//@flow
+import {Card, Deck, TEST_USER_EMAIL, User} from "../persist/Dao"
+import type {PreLoadedIds} from "../persist/Dao.test"
+import {testWithDaoImplementation} from "../persist/Dao.test"
+import {InMemoryDao} from "./InMemoryDao"
+import {DUE_IMMEDIATELY, NO_ID, ONE_DAY_IN_SECONDS} from "../services/APIDomain"
+import {testServiceWithDaoImplementation} from "../services/DataService.test"
+
+describe('InMemoryDao', () => {
+
+    const dao = new InMemoryDao()
+
+    const createDao = () => {
+        return dao
+    }
+
+    const loadCollectionData = async (): Promise<PreLoadedIds> => {
+        const persistedUser = await dao.saveUser(new User(NO_ID, TEST_USER_EMAIL))
+        const persistedDecks = await Promise.all(
+            [1, 2, 3, 4].map(i => {
+                return dao.saveDeck(new Deck(NO_ID, persistedUser.id, `Deck${i}`))
+            }))
+
+        const idsFromZero = Array.from({length: 16}, (v, k) => k + 1)
+        const persistedCards = await Promise.all(idsFromZero.map(id => {
+            const deckId = (id < 5 ? persistedDecks[0].id : id < 9 ?
+                persistedDecks[1].id : id < 13 ? persistedDecks[2].id : persistedDecks[3].id).toString()
+            const due = id % 4 === 0 ? DUE_IMMEDIATELY : 1508331802
+
+            const card = new Card(id.toString(), deckId, `Question ${id}?`, `Answer ${id}?`, ONE_DAY_IN_SECONDS, due)
+
+            return dao.saveCard(card)
+        }))
+
+        return {
+            users: [persistedUser.id.toString()],
+            decks: persistedDecks.map(it => it.id.toString()),
+            cards: persistedCards.map(it => it.id.toString())
+        }
+    }
+
+    function getSequelizeUser(id: string): Promise<User | void> {
+        return dao.findUser(id)
+    }
+
+    function getSequelizeDeck(id: string): Promise<Deck | void> {
+        return dao.findDeck(id)
+    }
+
+    function getSequelizeCard(id: string): Promise<Card | void> {
+        return dao.findCard(id)
+    }
+
+    testWithDaoImplementation(createDao, loadCollectionData,
+        getSequelizeUser, getSequelizeDeck, getSequelizeCard)
+
+    testServiceWithDaoImplementation(createDao)
+})

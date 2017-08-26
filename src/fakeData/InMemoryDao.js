@@ -85,6 +85,11 @@ export class InMemoryDao implements Dao {
     }
 
     init(clearDatabase: boolean): Promise<void> {
+        if (clearDatabase) {
+            this.users = []
+            this.decks = []
+            this.cards = []
+        }
         return Promise.resolve()
     }
 

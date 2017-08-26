@@ -1,5 +1,4 @@
 //@flow
-
 import {Sequelize} from 'sequelize'
 import type {Dao} from "../Dao"
 import {Card, CARD_TABLE, Deck, DECK_TABLE, User, USER_TABLE} from "../Dao"
@@ -45,15 +44,15 @@ export const CardEntity = modelDefiner.define(CARD_TABLE, {
 })
 
 const hydrateDeck = (entity: DeckEntity) => {
-    return new Deck(entity.id, entity.userId, entity.name)
+    return new Deck(entity.id.toString(), entity.userId.toString(), entity.name)
 }
 
 const hydrateCard = (entity: CardEntity) => {
-    return new Card(entity.id, entity.deckId, entity.question, entity.answer, entity.goodInterval, entity.due)
+    return new Card(entity.id.toString(), entity.deckId.toString(), entity.question, entity.answer, entity.goodInterval, entity.due)
 }
 
 const hydrateUser = (entity: UserEntity) => {
-    return new User(entity.id, entity.email)
+    return new User(entity.id.toString(), entity.email)
 }
 
 export class SequelizeDao implements Dao {

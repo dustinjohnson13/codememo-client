@@ -11,51 +11,16 @@ import {
     TWO_DAYS_IN_SECONDS
 } from "./APIDomain"
 import DaoDelegatingDataService from "./DaoDelegatingDataService"
-import {createDao} from "../persist/sequelize/SequalizeDao.test"
 import {Card, Deck, TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
-import {
-    ACCESS_KEY_ID,
-    DYNAMODB_TEST_TIMEOUT,
-    REGION,
-    SECRET_ACCESS_KEY,
-    startAndLoadData,
-    stop
-} from "../persist/dynamodb/DynamoDBHelper"
-import DynamoDBDao from "../persist/dynamodb/DynamoDBDao"
-import {InMemoryDao} from "../fakeData/InMemoryDao"
 import {FrozenClock} from "./__mocks__/API"
 
-describe('DaoDelegatingDataService - FakeDataDao', () => {
-    testWithDaoImplementation(() => new InMemoryDao())
-})
-
-describe('DaoDelegatingDataService - sequelize (sqlite3)', () => {
-    testWithDaoImplementation(createDao)
-})
-
-describe('DaoDelegatingDataService - DynamoDB', () => {
-    let port
-    let dao
-    let originalTimeout
-
-    beforeAll(async () => {
-        await startAndLoadData(false).then((assignedPort: number) => {
-            port = assignedPort
-            dao = new DynamoDBDao(REGION, `http://localhost:${port}`, ACCESS_KEY_ID, SECRET_ACCESS_KEY)
-        })
-        originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = DYNAMODB_TEST_TIMEOUT
+describe('Placeholder', () => {
+    it('needs this placeholder', () => {
+        expect(true).toBeTruthy()
     })
-
-    afterAll(() => {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout
-        stop(port)
-    })
-
-    testWithDaoImplementation(() => dao)
 })
 
-function testWithDaoImplementation(createDao: any) {
+export function testServiceWithDaoImplementation(createDao: any) {
     describe('DataService', () => {
 
         const TOTAL_COUNT = 80

@@ -1,6 +1,7 @@
 //@flow
 import freeport from 'freeport'
 import {CARD_TABLE, DECK_TABLE, USER_TABLE} from "../Dao"
+import type {PreLoadedIds} from "../Dao.test"
 
 const DynamoDbLocal = require('dynamodb-local')
 const AWS = require("aws-sdk")
@@ -131,7 +132,7 @@ const loadSampleData = (port: number, loadSampleData: boolean) => {
     return Promise.all(promises).then(() => port)
 }
 
-export const loadCollectionData = (port: number) => {
+export const loadCollectionData = (port: number): Promise<PreLoadedIds> => {
 
     console.log("Loading collection data.")
 
@@ -164,5 +165,35 @@ export const loadCollectionData = (port: number) => {
     })
 
 
-    return Promise.all(promises).then(() => port)
+    return Promise.all(promises).then(() => {
+            return {
+                users: [
+                    "d1eda90c-8413-11e7-bb31-be2e44b06b34"],
+                decks: [
+                    "ff2799fa-8413-11e7-bb31-be2e44b06b34",
+                    "ff279d7e-8413-11e7-bb31-be2e44b06b34",
+                    "ff279e8c-8413-11e7-bb31-be2e44b06b34",
+                    "ff27a03a-8413-11e7-bb31-be2e44b06b34",
+                ],
+                cards: [
+                    "7c7a263e-8414-11e7-bb31-be2e44b06b34",
+                    "7c7a2c92-8414-11e7-bb31-be2e44b06b34",
+                    "7c7a2ddc-8414-11e7-bb31-be2e44b06b34",
+                    "7c7a2ef4-8414-11e7-bb31-be2e44b06b34",
+                    "ede15e3c-8414-11e7-bb31-be2e44b06b34",
+                    "ede160bc-8414-11e7-bb31-be2e44b06b34",
+                    "ede16422-8414-11e7-bb31-be2e44b06b34",
+                    "ede16512-8414-11e7-bb31-be2e44b06b34",
+                    "f6226c9e-8414-11e7-bb31-be2e44b06b34",
+                    "f62275ea-8414-11e7-bb31-be2e44b06b34",
+                    "f6227856-8414-11e7-bb31-be2e44b06b34",
+                    "f6227bda-8414-11e7-bb31-be2e44b06b34",
+                    "019a7bb6-8415-11e7-bb31-be2e44b06b34",
+                    "019a7fda-8415-11e7-bb31-be2e44b06b34",
+                    "019a8278-8415-11e7-bb31-be2e44b06b34",
+                    "019a835e-8415-11e7-bb31-be2e44b06b34",
+                ]
+            }
+        }
+    )
 }

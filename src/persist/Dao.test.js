@@ -24,336 +24,276 @@ testWithDaoImplementation(createDao: () => Dao,
 
     describe('Dao', () => {
 
-        let dao: Dao
+            let dao: Dao
 
-        beforeEach(async () => {
-            dao = createDao()
-            await dao.init(true)
-        })
+            beforeEach(async () => {
+                dao = createDao()
+                await dao.init(true)
+            })
 
-        it('should be able to create a user', async (done) => {
-            expect.assertions(5)
+            it('should be able to create a user', async () => {
+                const original = newUser("blah@somewhere.com")
 
-            const original = newUser("blah@somewhere.com")
-
-            dao.saveUser(original).then(user => {
+                const user = await dao.saveUser(original)
                 expect(original.id).toEqual(NO_ID)
                 expect(user.id).not.toEqual(NO_ID)
                 expect(user).not.toBe(original)
 
-                getDBUser(user.id).then(dbUser => {
-                    if (dbUser) {
-                        expect(dbUser.id).toBeDefined()
-                        expect(dbUser.email).toEqual(user.email)
-                    }
-                    done()
-                })
+                const dbUser = await getDBUser(user.id)
+                if (!dbUser) {
+                    throw new Error(`Unable to find user ${user.id} in the DB!`)
+                }
+
+                expect(dbUser.id).toBeDefined()
+                expect(dbUser.email).toEqual(user.email)
             })
-        })
 
-        // it('should not be able to create multiple users with the same email', (done) => {
-        //     expect.assertions(2)
-        //
-        //     const email = "blah@somewhere.com"
-        //     const user = new User(undefined, email)
-        //
-        //     return dao.saveUser(user)
-        //         .then((user) => expect(user.id).toBeDefined())
-        //         .then(() => dao.saveUser(new User(undefined, email)))
-        //         .catch((err) => {
-        //             expect(err).toEqual(`User blah@somewhere.com already exists.`)
-        //             done()
-        //         })
-        // })
+            // it('should not be able to create multiple users with the same email', (done) => {
+            //     expect.assertions(2)
+            //
+            //     const email = "blah@somewhere.com"
+            //     const user = new User(undefined, email)
+            //
+            //     return dao.saveUser(user)
+            //         .then((user) => expect(user.id).toBeDefined())
+            //         .then(() => dao.saveUser(new User(undefined, email)))
+            //         .catch((err) => {
+            //             expect(err).toEqual(`User blah@somewhere.com already exists.`)
+            //             done()
+            //         })
+            // })
 
-        it('should be able to create a card', (done) => {
-            expect.assertions(18)
+            it('should be able to create a card', async () => {
+                const deckId = "1"
+                const entity = newCard(deckId, "Question 1?", "Answer 1?")
+                const entity2 = newCard(deckId, "Question 2?", "Answer 2?")
+                const entities = [entity, entity2]
 
-            const deckId = "1"
-            const entity = newCard(deckId, "Question 1?", "Answer 1?")
-            const entity2 = newCard(deckId, "Question 2?", "Answer 2?")
-            const entities = [entity, entity2]
+                const persistedCards = await Promise.all(entities.map(original => dao.saveCard(original)))
+                expect(persistedCards.length).toEqual(entities.length)
 
-            const persist = Promise.all(entities.map(original => dao.saveCard(original)
-                .then(entity => {
-                    expect(original.id).toEqual(NO_ID)
-                    expect(entity.id).not.toEqual(NO_ID)
-                    expect(entity).not.toBe(original)
-
-                    return entity
-                })))
-
-            let doneChecking = 0
-            return persist.then((persisted: Array<Card>) => {
+                entities.forEach(original => expect(original.id).toEqual(NO_ID))
+                persistedCards.forEach(entity => expect(entity.id).not.toEqual(NO_ID))
 
                 const originalByQuestion = new Map(entities.map(i => [i.question, i]))
 
-                persisted.forEach((entity, idx) => {
+                const dbCards = await Promise.all(persistedCards.map(entity => getDBCard(entity.id)))
 
-                    expect(entity.id).toBeDefined()
+                dbCards.forEach((dbCard?: Card) => {
+                    if (!dbCard) {
+                        throw new Error("Unable to find a card in the database!")
+                    }
 
-                    getDBCard(entity.id).then((dbCard?: Card) => {
-                        if (dbCard) {
-                            const original = originalByQuestion.get(dbCard.question)
-                            if (original) {
-                                expect(dbCard.question).toEqual(original.question)
-                                expect(dbCard.answer).toEqual(original.answer)
-                                expect(dbCard.goodInterval).toEqual(original.goodInterval)
-                                expect(dbCard.due).toEqual(original.due)
-                                expect(dbCard.deckId).toEqual(original.deckId)
-                            }
-                        }
+                    const original = originalByQuestion.get(dbCard.question)
+                    if (!original) {
+                        throw new Error(`Unable to find the original card with question ${dbCard.question}!`)
+                    }
 
-                        if (++doneChecking === 2) {
-                            done()
-                        }
-                    })
+                    expect(dbCard.question).toEqual(original.question)
+                    expect(dbCard.answer).toEqual(original.answer)
+                    expect(dbCard.goodInterval).toEqual(original.goodInterval)
+                    expect(dbCard.due).toEqual(original.due)
+                    expect(dbCard.deckId).toEqual(original.deckId)
                 })
             })
-        })
 
-        it('should be able to create a deck', (done) => {
+            it('should be able to create a deck', async () => {
 
-            expect.assertions(5)
+                const userId = "1"
+                const original = newDeck(userId, 'Some Name')
 
-            const userId = "1"
-            const original = newDeck(userId, 'Some Name')
-
-            dao.saveDeck(original).then(entity => {
+                const entity = await dao.saveDeck(original)
 
                 expect(original.id).toEqual(NO_ID)
                 expect(entity.id).not.toEqual(NO_ID)
                 expect(entity).not.toBe(original)
 
-                getDBDeck(entity.id).then((dbDeck?: Deck) => {
-                    if (dbDeck) {
-                        expect(dbDeck.name).toEqual(entity.name)
-                        expect(dbDeck.userId).toEqual(entity.userId)
-                    }
-                    done()
-                })
+                const dbDeck = await getDBDeck(entity.id)
+
+                if (!dbDeck) {
+                    throw new Error(`Unable to find a deck with id ${entity.id} in the database!`)
+                }
+
+                expect(dbDeck.name).toEqual(entity.name)
+                expect(dbDeck.userId).toEqual(entity.userId)
             })
-        })
 
-        it('should be able to delete a user', (done) => {
-            expect.assertions(1)
+            it('should be able to delete a user', async () => {
 
-            loadCollectionData().then(preLoadedIds => {
-
+                const preLoadedIds = await loadCollectionData()
                 const id = preLoadedIds.users[0]
 
-                dao.deleteUser(id).then(() => {
-                    getDBUser(id).then(result => {
-                        expect(result).toBeUndefined()
-                        done()
-                    })
-                })
+                await dao.deleteUser(id)
+
+                const result = await getDBUser(id)
+                expect(result).toBeUndefined()
             })
-        })
 
-        it('should be able to delete a card', (done) => {
-            expect.assertions(1)
+            it('should be able to delete a card', async () => {
 
-            loadCollectionData().then(preLoadedIds => {
-
+                const preLoadedIds = await loadCollectionData()
                 const id = preLoadedIds.cards[0]
 
-                dao.deleteCard(id).then(() => {
-                    getDBCard(id).then(result => {
-                        expect(result).toBeUndefined()
-                        done()
-                    })
-                })
+                await dao.deleteCard(id)
+
+                const result = await getDBCard(id)
+                expect(result).toBeUndefined()
             })
-        })
 
-        it('should be able to delete a deck', (done) => {
-            expect.assertions(1)
+            it('should be able to delete a deck', async () => {
 
-            loadCollectionData().then(preLoadedIds => {
-
+                const preLoadedIds = await loadCollectionData()
                 const id = preLoadedIds.decks[0]
 
-                dao.deleteDeck(id).then((id) => {
-                    getDBDeck(id).then(result => {
-                        expect(result).toBeUndefined()
-                        done()
-                    })
-                })
+                await dao.deleteDeck(id)
+
+                const result = await getDBDeck(id)
+                expect(result).toBeUndefined()
             })
-        })
 
-        it('should be able to query for a user', (done) => {
-            expect.assertions(2)
+            it('should be able to query for a user', async () => {
 
-            loadCollectionData().then(preLoadedIds => {
-
+                const preLoadedIds = await loadCollectionData()
                 const id = preLoadedIds.users[0]
 
-                dao.findUser(id).then((user) => {
-                    if (user) {
-                        expect(user.id).toEqual(id)
-                        expect(user.email).toEqual("someone@blah.com")
-                    }
-                    done()
-                })
+                const user = await dao.findUser(id)
+                if (!user) {
+                    throw new Error(`Unable to find user with id ${id}`)
+                }
+
+                expect(user.id).toEqual(id)
+                expect(user.email).toEqual("someone@blah.com")
             })
-        })
 
-        it('should be able to query for a card', (done) => {
-            expect.assertions(5)
+            it('should be able to query for a card', async () => {
 
-            loadCollectionData().then(preLoadedIds => {
-
+                const preLoadedIds = await loadCollectionData()
                 const id = preLoadedIds.cards[2]
+                const result = await dao.findCard(id)
 
-                dao.findCard(id).then((card) => {
-                    if (card) {
-                        expect(card.id).toEqual(id)
-                        expect(card.deckId).toEqual(preLoadedIds.decks[0])
-                        expect(card.question).toEqual("Question 3?")
-                        expect(card.answer).toEqual("Answer 3?")
-                        expect(card.due).toEqual(1508331802)
-                    }
-                    done()
-                })
+                if (!result) {
+                    throw new Error(`Unable to find card with id ${id}`)
+                }
+
+                expect(result.id).toEqual(id)
+                expect(result.deckId).toEqual(preLoadedIds.decks[0])
+                expect(result.question).toEqual("Question 3?")
+                expect(result.answer).toEqual("Answer 3?")
+                expect(result.due).toEqual(1508331802)
             })
-        })
 
-        it('should be able to query for a deck', (done) => {
-            expect.assertions(3)
-
-            loadCollectionData().then(preLoadedIds => {
-
+            it('should be able to query for a deck', async () => {
+                const preLoadedIds = await loadCollectionData()
                 const id = preLoadedIds.decks[2]
+                const result = await dao.findDeck(id)
 
-                dao.findDeck(id).then((deck) => {
-                    if (deck) {
-                        expect(deck.id).toEqual(id)
-                        expect(deck.userId).toEqual(preLoadedIds.users[0])
-                        expect(deck.name).toEqual("Deck3")
-                    }
-                    done()
-                })
+                if (!result) {
+                    throw new Error(`Unable to find deck with id ${id}`)
+                }
+
+                expect(result.id).toEqual(id)
+                expect(result.userId).toEqual(preLoadedIds.users[0])
+                expect(result.name).toEqual("Deck3")
             })
-        })
 
-        it('should be able to update a user', (done) => {
-            expect.assertions(1)
+            it('should be able to update a user', async () => {
 
-            loadCollectionData().then(preLoadedIds => {
-
+                const preLoadedIds = await loadCollectionData()
                 const id = preLoadedIds.users[0]
                 const newEmail = "yoyoyo@somewhereelse.com"
 
-                dao.updateUser(new User(id, newEmail)).then((user) => {
-                    getDBUser(user.id).then(dbUser => {
-                        if (dbUser) {
-                            expect(dbUser.email).toEqual(newEmail)
-                        }
-                        done()
-                    })
-                })
+                const user = await dao.updateUser(new User(id, newEmail))
+                const dbUser = await getDBUser(user.id)
+
+                if (!dbUser) {
+                    throw new Error(`Unable to find db user with id ${id}`)
+                }
+
+                expect(dbUser.email).toEqual(newEmail)
             })
-        })
 
-        it('should be able to update a card', (done) => {
+            it('should be able to update a card', async () => {
 
-            expect.assertions(5)
-
-            loadCollectionData().then(preLoadedIds => {
-
+                const preLoadedIds = await loadCollectionData()
                 const id = preLoadedIds.cards[2]
+
                 const newDeckId = "newDeckId"
                 const newQuestion = "newQuestion?"
                 const newAnswer = "newAnswer?"
                 const newGoodInterval = TWO_DAYS_IN_SECONDS
                 const newDue = 12
 
-                dao.updateCard(new Card(id, newDeckId, newQuestion, newAnswer, TWO_DAYS_IN_SECONDS, newDue)).then((updated) => {
-                    getDBCard(id).then(dbCard => {
-                        if (dbCard) {
-                            expect(dbCard.deckId).toEqual(newDeckId)
-                            expect(dbCard.question).toEqual(newQuestion)
-                            expect(dbCard.answer).toEqual(newAnswer)
-                            expect(dbCard.goodInterval).toEqual(newGoodInterval)
-                            expect(dbCard.due).toEqual(newDue)
-                        }
-                        done()
-                    })
-                })
+                await dao.updateCard(new Card(id, newDeckId, newQuestion, newAnswer, TWO_DAYS_IN_SECONDS, newDue))
+
+                const dbCard = await getDBCard(id)
+
+                if (!dbCard) {
+                    throw new Error(`Unable to find db card with id ${id}`)
+                }
+
+                expect(dbCard.deckId).toEqual(newDeckId)
+                expect(dbCard.question).toEqual(newQuestion)
+                expect(dbCard.answer).toEqual(newAnswer)
+                expect(dbCard.goodInterval).toEqual(newGoodInterval)
+                expect(dbCard.due).toEqual(newDue)
             })
-        })
 
-        it('should be able to update a deck', (done) => {
-            expect.assertions(2)
+            it('should be able to update a deck', async () => {
 
-            loadCollectionData().then(preLoadedIds => {
-
+                const preLoadedIds = await loadCollectionData()
                 const id = preLoadedIds.decks[1]
+
                 const newUserId = "another-user"
                 const newName = "SomeNewName"
 
-                dao.updateDeck(new Deck(id, newUserId, newName)).then((updated) => {
-                    getDBDeck(id).then(deck => {
-                        if (deck) {
-                            expect(deck.userId).toEqual(newUserId)
-                            expect(deck.name).toEqual(newName)
-                        }
-                        done()
-                    })
-                })
+                await dao.updateDeck(new Deck(id, newUserId, newName))
+
+                const dbDeck = await getDBDeck(id)
+
+                if (!dbDeck) {
+                    throw new Error(`Unable to find db card with id ${id}`)
+                }
+
+                expect(dbDeck.userId).toEqual(newUserId)
+                expect(dbDeck.name).toEqual(newName)
             })
-        })
 
-        it('should be able to find decks by user id', (done) => {
-            expect.assertions(3)
+            it('should be able to find decks by user id', async () => {
 
-            loadCollectionData().then(preLoadedIds => {
-
+                const preLoadedIds = await loadCollectionData()
                 const id = preLoadedIds.users[0]
+                const decks = await dao.findDecksByUserId(id)
 
-                dao.findDecksByUserId(id).then(decks => {
-                    expect(decks.length).toEqual(4)
-                    expect(decks.map(it => it.id).sort()).toEqual(preLoadedIds.decks.sort())
-                    expect(decks.map(it => it.name).sort()).toEqual([
-                        "Deck1", "Deck2", "Deck3", "Deck4",
-                    ].sort())
-                    done()
-                })
+                expect(decks.length).toEqual(4)
+                expect(decks.map(it => it.id).sort()).toEqual(preLoadedIds.decks.sort())
+                expect(decks.map(it => it.name).sort()).toEqual([
+                    "Deck1", "Deck2", "Deck3", "Deck4",
+                ].sort())
             })
-        })
 
-        it('should be able to find cards by deck id', (done) => {
-            expect.assertions(3)
+            it('should be able to find cards by deck id', async () => {
 
-            loadCollectionData().then(preLoadedIds => {
-
+                const preLoadedIds = await loadCollectionData()
                 const id = preLoadedIds.decks[0]
+                const cards = await dao.findCardsByDeckId(id)
 
-                dao.findCardsByDeckId(id).then(cards => {
-                    expect(cards.length).toEqual(4)
-                    expect(cards.map(it => it.id)).toEqual(preLoadedIds.cards.slice(0, 4))
-                    expect(cards.map(it => it.question)).toEqual([
-                        "Question 1?", "Question 2?", "Question 3?", "Question 4?",
-                    ])
-                    done()
-                })
+                expect(cards.length).toEqual(4)
+                expect(cards.map(it => it.id)).toEqual(preLoadedIds.cards.slice(0, 4))
+                expect(cards.map(it => it.question)).toEqual([
+                    "Question 1?", "Question 2?", "Question 3?", "Question 4?",
+                ])
             })
-        })
 
-        it('should be able to find user by email', (done) => {
-            expect.assertions(1)
+            it('should be able to find user by email', async () => {
+                const preLoadedIds = await loadCollectionData()
+                const user = await dao.findUserByEmail(TEST_USER_EMAIL)
 
-            loadCollectionData().then(preLoadedIds => {
+                if (!user) {
+                    throw new Error(`Unable to find user with email ${TEST_USER_EMAIL}!`)
+                }
 
-                dao.findUserByEmail(TEST_USER_EMAIL).then(user => {
-                    if (user) {
-                        expect(user.email).toEqual(TEST_USER_EMAIL)
-                    }
-                    done()
-                })
+                expect(user.email).toEqual(TEST_USER_EMAIL)
             })
-        })
-    })
+        }
+    )
 }

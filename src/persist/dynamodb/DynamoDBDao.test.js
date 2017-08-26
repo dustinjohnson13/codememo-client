@@ -74,13 +74,10 @@ describe('DynamoDBDao', () => {
     testWithDaoImplementation(() => dao, loadDynamoDB,
         getDynamoDBUser, getDynamoDBDeck, getDynamoDBCard)
 
-    it('should be able to list tables', (done) => {
-        expect.assertions(1)
+    it('should be able to list tables', async () => {
 
-        dao.listTables().then((tables) => {
-            expect(tables).toEqual(["card", "deck", "user"])
-            done()
-        })
+        const tables = await dao.listTables()
+        expect(tables).toEqual(["card", "deck", "user"])
     })
 
     testServiceWithDaoImplementation(() => dao)

@@ -2,9 +2,12 @@
 import {Answer, HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "./APIDomain"
 
 import BusinessRules from "./BusinessRules"
-import {Card} from "../persist/Dao"
+import {Card, Deck, DUE_IMMEDIATELY} from "../persist/Dao"
+import {fakeCards, fakeDecks} from "../fakeData/InMemoryDao"
 
 describe('BusinessRules', () => {
+
+    const businessRules = new BusinessRules()
 
     it('should set next due time on answer card: due card', () => {
 
@@ -21,7 +24,7 @@ describe('BusinessRules', () => {
         const original = new Card('1', 'deckId', 'Some question', 'Some answer', currentGoodInterval, 2000)
 
         const actuals = [Answer.FAIL, Answer.HARD, Answer.GOOD, Answer.EASY].map(it => {
-            return {answer: it, newCard: new BusinessRules().cardAnswered(currentTime, original, it)}
+            return {answer: it, newCard: businessRules.cardAnswered(currentTime, original, it)}
         })
 
         for (let answerAndActual of actuals) {
@@ -47,7 +50,7 @@ describe('BusinessRules', () => {
         const original = new Card('1', 'deckId', 'Some question', 'Some answer', currentGoodInterval, 2000)
 
         const actuals = [Answer.FAIL, Answer.HARD, Answer.GOOD, Answer.EASY].map(it => {
-            return {answer: it, newCard: new BusinessRules().cardAnswered(currentTime, original, it)}
+            return {answer: it, newCard: businessRules.cardAnswered(currentTime, original, it)}
         })
 
         for (let answerAndActual of actuals) {
@@ -67,8 +70,56 @@ describe('BusinessRules', () => {
             HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, TWO_DAYS_IN_SECONDS * 2
         ]
 
-        const actual = new BusinessRules().currentAnswerIntervals(card)
+        const actual = businessRules.currentAnswerIntervals(card)
 
         expect(actual).toEqual(expectedIntervals)
+    })
+
+    it('should map cards to api cards based on due time', () => {
+        const currentTime = 2000
+
+        const brandNew = new Card('1', 'deckId', 'Some Question?', 'Some Answer', ONE_DAY_IN_SECONDS, DUE_IMMEDIATELY)
+        const dueEarlier = new Card('2', 'deckId', "I'm due?", 'Sure am.', ONE_DAY_IN_SECONDS, currentTime - 100)
+        const dueNow = new Card('3', 'deckId', "I'm due?", 'Sure am.', ONE_DAY_IN_SECONDS, currentTime)
+        const ok = new Card('4', 'deckId', "Am I due?", 'Nope.', ONE_DAY_IN_SECONDS, currentTime + 1);
+
+        [brandNew, dueEarlier, dueNow, ok].forEach((card, idx) => {
+            const apiCard = businessRules.cardToAPICard(currentTime, card)
+            expect(apiCard.id).toEqual(card.id)
+
+            const expectedStatus = idx === 0 ? 'NEW' : idx === 3 ? 'OK' : 'DUE'
+            expect(apiCard.status).toEqual(expectedStatus)
+        })
+    })
+
+    it('should create a collection response with the correct card counts', async () => {
+        const currentTime = 2000
+
+        const decks: Array<Deck> = fakeDecks('1', 2, true)
+        const cards: Array<Array<Card>> = []
+        const expectedCounts: Array<{ expectedTotal: number, expectedDue: number, expectedNew: number }> = []
+
+        decks.forEach((deck, idx) => {
+            const multiplier = idx + 1
+            const totalCount = multiplier * 10
+            const dueCount = multiplier * 4
+            const newCount = multiplier * 2
+
+            expectedCounts.push({expectedTotal: totalCount, expectedDue: dueCount, expectedNew: newCount})
+            cards.push(fakeCards(currentTime, deck.id, totalCount, dueCount, newCount, true))
+        })
+
+
+        const response = businessRules.decksToAPICollectionResponse(currentTime, decks, cards)
+        expect(response.decks.length).toEqual(2)
+
+        decks.forEach((deck, idx) => {
+            const apiDeck = response.decks[idx]
+
+            expect(apiDeck.name).toEqual(deck.name)
+            expect(apiDeck.totalCount).toEqual(expectedCounts[idx].expectedTotal)
+            expect(apiDeck.dueCount).toEqual(expectedCounts[idx].expectedDue)
+            expect(apiDeck.newCount).toEqual(expectedCounts[idx].expectedNew)
+        })
     })
 })

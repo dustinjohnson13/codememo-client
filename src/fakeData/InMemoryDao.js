@@ -1,6 +1,55 @@
 //@flow
 import type {Dao, Entity} from "../persist/Dao"
-import {Card, Deck, User} from "../persist/Dao"
+import {Card, Deck, newCard, newDeck, NO_ID, User} from "../persist/Dao"
+import {ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../services/APIDomain"
+
+export const fakeDecks = (userId: string, count: number, setId: boolean): Array<Deck> => {
+    const decks = []
+    for (let i = 0; i < count; i++) {
+        const name = `Deck${i}`
+        const deck = setId ? new Deck(i.toString(), userId, name) : newDeck(userId, name)
+        decks.push(deck)
+    }
+    return decks;
+}
+
+export const fakeCards = (currentTime: number, deckId: string, totalCount: number,
+                          dueCount: number, newCount: number, setId: boolean): Array<Card> => {
+    const goodCount = totalCount - dueCount - newCount
+
+    if (dueCount + newCount > totalCount) {
+        throw new Error("Cannot specify more due and new cards than total!")
+    }
+
+    const cards = []
+    for (let i = 0; i < totalCount; i++) {
+        const question = `Question Number ${i}?`
+        const answer = `Answer Number ${i}`
+
+        if (i < goodCount + dueCount) {
+            const multiplier = i + 1
+            const goodCard = i < goodCount
+
+            const id = setId ? i.toString() : NO_ID
+            const goodInterval = goodCard ? TWO_DAYS_IN_SECONDS : ONE_DAY_IN_SECONDS
+            const dueTime = goodCard ? currentTime + (ONE_DAY_IN_SECONDS * multiplier) :
+                currentTime - (ONE_DAY_IN_SECONDS * multiplier)
+
+            const card = new Card(id, deckId, question, answer, goodInterval, dueTime)
+            cards.push(card)
+        } else {
+            let card = newCard(deckId, question, answer)
+
+            if (setId) {
+                card = new Card(i.toString(), card.deckId, card.question, card.answer, card.goodInterval, card.due)
+            }
+
+            cards.push(card)
+        }
+    }
+
+    return cards
+}
 
 export class InMemoryDao implements Dao {
     users: Array<User> = []

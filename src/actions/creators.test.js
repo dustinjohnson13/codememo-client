@@ -31,6 +31,7 @@ import {deckId, deckName, getDeck1DueCards, gotDeck1} from "./creators.test.acti
 import API from '../services/API'
 import {collectionState} from "../fakeData/collectionState"
 import {initialState} from "../reducers/collectionPage"
+import {DUE_IMMEDIATELY} from "../persist/Dao"
 
 jest.mock('../services/API') // Set mock API for module importing
 
@@ -48,7 +49,7 @@ describe('creators', () => {
         expect(gen.next().value).toEqual(call(API.addCard, action.id, action.question, action.answer))
 
         const newCard = new CardDetail('deck-1-card-0', 'Some Question', 'Some Answer', HALF_DAY_IN_SECONDS,
-            ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, null)
+            ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, DUE_IMMEDIATELY)
         //$FlowFixMe
         expect(gen.next(newCard).value).toEqual(put(addCardSuccess(newCard, 'deck-1')))
     })

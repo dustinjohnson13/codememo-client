@@ -1,7 +1,8 @@
 //@flow
 import type {AnswerType} from "./APIDomain"
+import * as api from "./APIDomain"
 import {Answer, HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS} from "./APIDomain"
-import {Card} from "../persist/Dao"
+import {Card, Deck, DUE_IMMEDIATELY} from "../persist/Dao"
 
 export default class BusinessRules {
 
@@ -39,5 +40,25 @@ export default class BusinessRules {
         const easyInterval = card.goodInterval * 2
 
         return [failInterval, hardInterval, goodInterval, easyInterval]
+    }
+
+    cardToAPICard(currentTime: number, card: Card): api.Card {
+        const status = card.due === DUE_IMMEDIATELY ? 'NEW' : card.due > currentTime ? 'OK' : 'DUE'
+
+        return new api.Card(card.id, status)
+    }
+
+    decksToAPICollectionResponse(currentTime: number, decks: Array<Deck>, cardsForDecks: Array<Array<Card>>) {
+        const apiDecks = []
+        decks.forEach((deck, idx) => {
+                const deckCards: Array<Card> = cardsForDecks[idx]
+                const totalCount = deckCards.length
+                const dueCount = deckCards.filter(it => it.due !== DUE_IMMEDIATELY && it.due <= currentTime).length
+                const newCount = deckCards.filter(it => it.due === DUE_IMMEDIATELY).length
+
+                apiDecks.push(new api.Deck(deck.id, deck.name, totalCount, dueCount, newCount))
+            }
+        )
+        return new api.CollectionResponse(apiDecks)
     }
 }

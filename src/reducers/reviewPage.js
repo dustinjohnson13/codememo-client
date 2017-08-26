@@ -9,6 +9,7 @@ import {
     SHOW_ANSWER
 } from '../actions/actionTypes'
 import {ONE_DAY_IN_SECONDS} from "../services/APIDomain"
+import {DUE_IMMEDIATELY} from "../persist/Dao"
 
 export const initialState = {
     dueCards: [],
@@ -75,8 +76,8 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
 
             return getViewState({
                 ...state,
-                dueCards: cards.filter(card => card.due),
-                newCards: cards.filter(card => !card.due),
+                dueCards: cards.filter(card => card.due !== DUE_IMMEDIATELY),
+                newCards: cards.filter(card => card.due === DUE_IMMEDIATELY),
                 question: question,
                 answer: answer,
                 cardId: cardId,

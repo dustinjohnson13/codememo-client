@@ -18,6 +18,7 @@ import {
     ONE_DAY_IN_SECONDS,
     TWO_DAYS_IN_SECONDS
 } from "../services/APIDomain"
+import {DUE_IMMEDIATELY} from "../persist/Dao"
 
 describe('reviewPage', () => {
 
@@ -29,7 +30,7 @@ describe('reviewPage', () => {
         new Card('5', 'OK'), new Card('6', 'OK')]
     const deck = new DeckResponse(expectedDeckID, expectedDeckName, cards)
 
-    const addCardResponse = new CardDetail('deck-1-card-99', 'Some Question', 'Some Answer', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, null)
+    const addCardResponse = new CardDetail('deck-1-card-99', 'Some Question', 'Some Answer', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, DUE_IMMEDIATELY)
 
     it('adds new card on add card success', () => {
 
@@ -43,7 +44,7 @@ describe('reviewPage', () => {
                 new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, -309999)
             ],
             newCards: [
-                new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, null)
+                new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, DUE_IMMEDIATELY)
             ]
         }
 
@@ -146,7 +147,7 @@ describe('reviewPage', () => {
 
         const cardDetails = [new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, -299999),
             new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, -309999),
-            new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, null)]
+            new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, DUE_IMMEDIATELY)]
         const cardsResponse = new CardDetailResponse(cardDetails)
 
         const previousState = {...initialState}
@@ -157,7 +158,7 @@ describe('reviewPage', () => {
                 new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, -309999)
             ],
             newCards: [
-                new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, null)
+                new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, DUE_IMMEDIATELY)
             ],
             answer: "Answer Number 30",
             question: "Question Number 30?",
@@ -202,7 +203,7 @@ describe('reviewPage', () => {
                     'Answer Number 32',
                     HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS,
                     FOUR_DAYS_IN_SECONDS,
-                    null)
+                    DUE_IMMEDIATELY)
             ],
             showingAnswer: true
         }

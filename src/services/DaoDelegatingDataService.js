@@ -3,7 +3,7 @@ import type {AnswerType, Clock, DataService} from "./APIDomain"
 import * as api from "./APIDomain"
 import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "./APIDomain"
 import type {Dao} from "../persist/Dao"
-import {Card, Deck, DUE_IMMEDIATELY, newCard, newDeck, newUser, TEST_USER_EMAIL, User} from "../persist/Dao"
+import {Card, Deck, newCard, newDeck, newUser, TEST_USER_EMAIL, User} from "../persist/Dao"
 import BusinessRules from "./BusinessRules"
 
 export default class DaoDelegatingDataService implements DataService {
@@ -35,9 +35,11 @@ export default class DaoDelegatingDataService implements DataService {
         const user: ?User = await this.dao.findUserByEmail(email)
         if (user) {
             const decks: Array<Deck> = await this.dao.findDecksByUserId(user.id)
-            return new api.CollectionResponse(decks.map(it =>
-                new api.Deck(it.id, it.name, 0, 0, 0)
-            ))
+            const cardsForDecks: Array<Array<Card>> = await Promise.all(
+                decks.map(deck => this.dao.findCardsByDeckId(deck.id)))
+
+            return this.businessRules.decksToAPICollectionResponse(
+                this.clock.epochSeconds(), decks, cardsForDecks)
         } else {
             throw new Error(`No user found with email ${email}`)
         }
@@ -51,9 +53,7 @@ export default class DaoDelegatingDataService implements DataService {
             const deckName = deck.name
             const cards = await this.dao.findCardsByDeckId(deck.id)
 
-            // TODO: Move to business rules
-            const apiCards = cards.map(card =>
-                new api.Card(card.id, (card.due === DUE_IMMEDIATELY) ? 'NEW' : card.due > now ? 'OK' : 'DUE'))
+            const apiCards = cards.map(card => this.businessRules.cardToAPICard(now, card))
             return new DeckResponse(id, deckName, apiCards)
         } else {
             // TODO: Need to provide an error message, the deck doesn't exist

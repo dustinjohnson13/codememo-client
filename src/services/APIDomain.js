@@ -51,11 +51,11 @@ export class CardDetail {
     hardInterval: number
     goodInterval: number
     easyInterval: number
-    due: ?number
+    due: number
 
     constructor(id: string, question: string, answer: string,
                 failInterval: number, hardInterval: number,
-                goodInterval: number, easyInterval: number, due: ?number) {
+                goodInterval: number, easyInterval: number, due: number) {
         this.id = id
         this.question = question
         this.answer = answer

@@ -45,7 +45,7 @@ import {
 import type {PageType} from "./pages"
 import {Page} from './pages'
 import type {AnswerType} from "../services/APIDomain"
-import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "../services/APIDomain"
+import {CardDetail, CardDetailResponse, CardStatus, CollectionResponse, DeckResponse} from "../services/APIDomain"
 import API from '../services/API'
 import {call, put, select, takeEvery} from 'redux-saga/effects'
 import * as selectors from './selectors'
@@ -229,7 +229,7 @@ export function* reviewDeck(action: ReviewDeckRequestAction): Generator<ReviewDe
     yield put(fetchDeckSuccess(deck))
 
     // $FlowFixMe
-    const dueOrNewCards = deck.cards.filter(card => card.status !== 'OK')
+    const dueOrNewCards = deck.cards.filter(card => card.status !== CardStatus.OK)
     if (dueOrNewCards.length > 0) {
         yield put(fetchCardsRequest(dueOrNewCards.map(card => card.id)))
     } else {

@@ -1,5 +1,5 @@
 //@flow
-import {Answer, HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "./APIDomain"
+import {Answer, CardStatus, HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "./APIDomain"
 
 import BusinessRules from "./BusinessRules"
 import {Card, Deck, DUE_IMMEDIATELY} from "../persist/Dao"
@@ -87,7 +87,7 @@ describe('BusinessRules', () => {
             const apiCard = businessRules.cardToAPICard(currentTime, card)
             expect(apiCard.id).toEqual(card.id)
 
-            const expectedStatus = idx === 0 ? 'NEW' : idx === 3 ? 'OK' : 'DUE'
+            const expectedStatus = idx === 0 ? CardStatus.NEW : idx === 3 ? CardStatus.OK : CardStatus.DUE
             expect(apiCard.status).toEqual(expectedStatus)
         })
     })

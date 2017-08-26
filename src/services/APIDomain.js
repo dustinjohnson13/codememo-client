@@ -17,83 +17,91 @@ export const Answer = {
 
 export type AnswerType = $Keys<typeof Answer>;
 
-export class Card {
-    id: string
-    status: string // TODO: Create enum
+export const CardStatus = {
+    DUE: 'DUE',
+    NEW: 'NEW',
+    OK: 'OK'
+}
 
-    constructor(id: string, status: string) {
-        this.id = id
-        this.status = status
+export type CardStatusType = $Keys<typeof CardStatus>;
+
+export class Card {
+    +id: string
+    +status: CardStatusType // TODO: Create enum
+
+    constructor(id: string, status: CardStatusType) {
+        (this: any).id = id;
+        (this: any).status = status;
     }
 }
 
 export class Deck {
-    id: string
-    name: string
-    totalCount: number
-    dueCount: number
-    newCount: number
+    +id: string
+    +name: string
+    +totalCount: number
+    +dueCount: number
+    +newCount: number
 
     constructor(id: string, name: string, totalCount: number, dueCount: number, newCount: number) {
-        this.id = id
-        this.name = name
-        this.totalCount = totalCount
-        this.dueCount = dueCount
-        this.newCount = newCount
+        (this: any).id = id;
+        (this: any).name = name;
+        (this: any).totalCount = totalCount;
+        (this: any).dueCount = dueCount;
+        (this: any).newCount = newCount;
     }
 }
 
 export class CardDetail {
-    id: string
-    question: string
-    answer: string
-    failInterval: number
-    hardInterval: number
-    goodInterval: number
-    easyInterval: number
-    due: number
+    +id: string
+    +question: string
+    +answer: string
+    +failInterval: number
+    +hardInterval: number
+    +goodInterval: number
+    +easyInterval: number
+    +due: number
 
     constructor(id: string, question: string, answer: string,
                 failInterval: number, hardInterval: number,
                 goodInterval: number, easyInterval: number, due: number) {
-        this.id = id
-        this.question = question
-        this.answer = answer
-        this.failInterval = failInterval
-        this.hardInterval = hardInterval
-        this.goodInterval = goodInterval
-        this.easyInterval = easyInterval
-        this.due = due
+        (this: any).id = id;
+        (this: any).question = question;
+        (this: any).answer = answer;
+        (this: any).failInterval = failInterval;
+        (this: any).hardInterval = hardInterval;
+        (this: any).goodInterval = goodInterval;
+        (this: any).easyInterval = easyInterval;
+        (this: any).due = due;
     }
 }
 
 export class CardDetailResponse {
-    cards: Array<CardDetail>
+    +cards: Array<CardDetail>
 
     constructor(cards: Array<CardDetail>) {
-        this.cards = cards
+        (this: any).cards = cards
     }
 }
 
 export class DeckResponse {
-    id: string
-    name: string
-    cards: Array<Card>
+    +id: string
+    +name: string
+    +cards: Array<Card>
 
     constructor(id: string, name: string, cards: Array<Card>) {
-        this.id = id
-        this.name = name
-        this.cards = cards
+        (this: any).id = id;
+        (this: any).name = name;
+        (this: any).cards = cards;
     }
 }
 
 export class CollectionResponse {
-    decks: Array<Deck>
-    error: ?string
+    +decks: Array<Deck>
+    +error: ?string
 
     constructor(decks: Array<Deck>, error: ?string) {
-        this.decks = decks
-        this.error = error
+        (this: any).decks = decks;
+        (this: any).error = error;
     }
 }
 

@@ -1,7 +1,7 @@
 //@flow
 import type {AnswerType} from "./APIDomain"
 import * as api from "./APIDomain"
-import {Answer, HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS} from "./APIDomain"
+import {Answer, CardStatus, HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS} from "./APIDomain"
 import {Card, Deck, DUE_IMMEDIATELY} from "../persist/Dao"
 
 export default class BusinessRules {
@@ -43,7 +43,7 @@ export default class BusinessRules {
     }
 
     cardToAPICard(currentTime: number, card: Card): api.Card {
-        const status = card.due === DUE_IMMEDIATELY ? 'NEW' : card.due > currentTime ? 'OK' : 'DUE'
+        const status = card.due === DUE_IMMEDIATELY ? CardStatus.NEW : card.due > currentTime ? CardStatus.OK : CardStatus.DUE
 
         return new api.Card(card.id, status)
     }

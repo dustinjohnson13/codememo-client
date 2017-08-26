@@ -12,6 +12,7 @@ import {
     Card,
     CardDetail,
     CardDetailResponse,
+    CardStatus,
     DeckResponse,
     FOUR_DAYS_IN_SECONDS,
     HALF_DAY_IN_SECONDS,
@@ -25,9 +26,9 @@ describe('reviewPage', () => {
     const expectedDeckName = 'My Deck'
     const expectedDeckID = 'deck1'
 
-    const cards = [new Card('deck-1-card-32', 'NEW'),
-        new Card('deck-1-card-30', 'DUE'), new Card('deck-1-card-31', 'DUE'),
-        new Card('5', 'OK'), new Card('6', 'OK')]
+    const cards = [new Card('deck-1-card-32', CardStatus.NEW),
+        new Card('deck-1-card-30', CardStatus.DUE), new Card('deck-1-card-31', CardStatus.DUE),
+        new Card('5', CardStatus.OK), new Card('6', CardStatus.OK)]
     const deck = new DeckResponse(expectedDeckID, expectedDeckName, cards)
 
     const addCardResponse = new CardDetail('deck-1-card-99', 'Some Question', 'Some Answer', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, DUE_IMMEDIATELY)

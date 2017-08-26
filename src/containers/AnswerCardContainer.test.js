@@ -1,11 +1,20 @@
+//@flow
 import React from 'react'
 
 import {mapDispatchToProps, mapStateToProps} from "./AnswerCardContainer"
-import {reviewState} from "../fakeData/reviewState"
 import {answerCardRequest, hideAnswer} from "../actions/creators"
+import type {AnswerType} from "../services/APIDomain"
 import {Answer} from "../services/APIDomain"
+import {defaultState} from "../fakeData/storeFake"
 
 describe('<AnswerCardContainer />', () => {
+
+    const deckId = 'some-deck-id'
+    const cardId = 'some-id'
+    const answerCard = (answer: AnswerType) => {
+    }
+
+    const ownProps = {id: cardId, deckId: deckId, answerCard: answerCard}
 
     it('maps card attributes from state', () => {
         const expectedState = {
@@ -14,16 +23,12 @@ describe('<AnswerCardContainer />', () => {
             goodInterval: '3d',
             easyInterval: '5d'
         }
-        const state = {review: reviewState}
-
-        const props = mapStateToProps(state)
+        const props = mapStateToProps(defaultState, ownProps)
 
         expect(props).toEqual(expectedState)
     })
 
     it('answerCard will hide answer section and send an answer request', () => {
-        const deckId = 'some-deck-id'
-        const cardId = 'some-id'
         const expectedActions = [
             hideAnswer(),
             answerCardRequest(cardId, deckId, Answer.HARD),
@@ -35,7 +40,7 @@ describe('<AnswerCardContainer />', () => {
             answered.push(action)
         }
 
-        const props = mapDispatchToProps(dispatcher, {id: cardId, deckId: deckId})
+        const props = mapDispatchToProps(dispatcher, ownProps)
 
         props.answerCard(Answer.HARD)
         props.answerCard(Answer.GOOD)

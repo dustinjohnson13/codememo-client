@@ -1,23 +1,34 @@
+//@flow
 import React from 'react'
 import {Input, InputGroup} from 'reactstrap'
 import '../styles/AddCardModal.css'
 import ModalWrapper from "./ModalWrapper"
 
-class AddCardModal extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {answer: '', question: ''}
+type Props = {
+    +deckId: string,
+    +addCard: (deckId: string, question: string, answer: string) => void
+}
 
-        this.handleQuestionChange = this.handleQuestionChange.bind(this)
-        this.handleAnswerChange = this.handleAnswerChange.bind(this)
-        this.addCard = this.addCard.bind(this)
+type State = {
+    question: string,
+    answer: string
+}
+
+class AddCardModal extends React.Component<Props, State> {
+    constructor(props: Props) {
+        super(props)
+        this.state = {answer: '', question: ''};
+
+        (this: any).handleQuestionChange = this.handleQuestionChange.bind(this);
+        (this: any).handleAnswerChange = this.handleAnswerChange.bind(this);
+        (this: any).addCard = this.addCard.bind(this);
     }
 
-    handleQuestionChange(event) {
+    handleQuestionChange(event: SyntheticInputEvent<Input>) {
         this.setState({question: event.target.value})
     }
 
-    handleAnswerChange(event) {
+    handleAnswerChange(event: SyntheticInputEvent<Input>) {
         this.setState({answer: event.target.value})
     }
 

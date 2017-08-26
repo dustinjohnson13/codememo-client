@@ -1,9 +1,11 @@
+//@flow
 import React from 'react'
 import {Provider} from 'react-redux'
 import {storeFake} from "../fakeData/storeFake"
 import CollectionPage from "./CollectionPage"
 import jsdom from 'jsdom'
 import {mount} from 'enzyme'
+import {Deck} from "../services/APIDomain"
 
 const doc = jsdom.jsdom('<!doctype html><html><body></body></html>')
 global.document = doc
@@ -11,24 +13,19 @@ global.window = doc.defaultView
 
 describe('<CollectionPage />', () => {
 
-    const testDecks = [{name: 'deck1', due: 10, new: 1}]
+    const testDecks = [new Deck('1', 'Deck 1', 20, 10, 1)]
 
-    let requestedDecks
-    let app
-
-    const invokedFunction = (deck) => {
-        requestedDecks.push(deck)
+    const reviewDeck = (deck) => {
     }
     const addDeck = (name) => {
     }
 
+    let app
     beforeEach(() => {
-        requestedDecks = []
-
         const store = storeFake()
         const wrapper = mount(
             <Provider store={store}>
-                <CollectionPage decks={testDecks} fetchDeck={invokedFunction} addDeck={addDeck}/>
+                <CollectionPage decks={testDecks} addDeck={addDeck} reviewDeck={reviewDeck}/>
             </Provider>
         )
 

@@ -7,8 +7,9 @@ import {
     TWO_DAYS_IN_SECONDS
 } from "../services/APIDomain"
 import {DUE_IMMEDIATELY} from "../persist/Dao"
+import type {ReviewState} from "../actions/actionTypes"
 
-export const reviewState = {
+export const reviewState: ReviewState = {
     deckName: 'Deck1', deckId: 'deck-1', cardId: 'deck-1-card-30', totalCount: 6,
     failInterval: '10m', hardInterval: '1d', goodInterval: '3d', easyInterval: '5d',
     answer: '', question: '', showingAnswer: false,

@@ -17,7 +17,7 @@ const loggerMiddleware = createLogger()
 
 let store = createStore(flashcardApp, applyMiddleware(
     sagaMiddleware,
-    loggerMiddleware // neat middleware that logs actions
+    loggerMiddleware
 ))
 
 sagaMiddleware.run(saga)

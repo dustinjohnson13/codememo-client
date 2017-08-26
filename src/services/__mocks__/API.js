@@ -1,5 +1,7 @@
+//@flow
 import {InMemoryDao} from "../../fakeData/InMemoryDao"
 import DaoDelegatingDataService from "../DaoDelegatingDataService"
+import type {Clock} from "../APIDomain"
 
 export class FrozenClock implements Clock {
     epochSeconds(): number {

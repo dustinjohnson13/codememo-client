@@ -1,8 +1,9 @@
+//@flow
 import React from 'react'
 import {mapDispatchToProps, mapStateToProps} from "./CollectionPageContainer"
 import {collectionState} from "../fakeData/collectionState"
-import {Deck} from "../components/CollectionPage"
 import {addDeckRequest, reviewDeckRequest} from "../actions/creators"
+import {defaultState} from "../fakeData/storeFake"
 
 describe('<CollectionPageContainer />', () => {
 
@@ -12,9 +13,9 @@ describe('<CollectionPageContainer />', () => {
             expectedDecks.push(collectionState.decksById[deckId])
         }
 
-        const state = {collection: collectionState}
+        const state = defaultState
 
-        const props = mapStateToProps(state)
+        const props = mapStateToProps(state, {})
 
         expect(props).toEqual({decks: expectedDecks})
     })
@@ -25,7 +26,9 @@ describe('<CollectionPageContainer />', () => {
         const expectedActions = [reviewDeckRequest(deckId)]
 
         const actions = []
-        const invoke = (action: Action) => actions.push(action)
+        const invoke = (action) => {
+            actions.push(action)
+        }
 
         const {reviewDeck} = mapDispatchToProps(invoke, {})
         reviewDeck(deckId)
@@ -38,7 +41,9 @@ describe('<CollectionPageContainer />', () => {
         const expectedActions = [addDeckRequest('BrandNew')]
 
         const actions = []
-        const invoke = (action: Action) => actions.push(action)
+        const invoke = (action) => {
+            actions.push(action)
+        }
 
         const {addDeck} = mapDispatchToProps(invoke, {})
         addDeck('BrandNew')

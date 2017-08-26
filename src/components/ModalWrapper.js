@@ -1,15 +1,29 @@
-import React from 'react'
+//@flow
+import * as React from 'react'
 import {Button, Modal, ModalBody, ModalFooter, ModalHeader} from 'reactstrap'
 
-class ModalWrapper extends React.Component {
-    constructor(props) {
+type Props = {
+    +confirmAction: () => void,
+    +children?: React.Node,
+    +closeOnConfirmation: boolean,
+    +toggleText: string,
+    +title: string,
+    +className?: string
+}
+
+type State = {
+    modal: boolean
+}
+
+class ModalWrapper extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props)
         this.state = {
             modal: false
-        }
+        };
 
-        this.confirmed = this.confirmed.bind(this)
-        this.toggle = this.toggle.bind(this)
+        (this: any).confirmed = this.confirmed.bind(this);
+        (this: any).toggle = this.toggle.bind(this);
     }
 
     confirmed() {

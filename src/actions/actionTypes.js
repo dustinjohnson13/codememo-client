@@ -81,7 +81,6 @@ export type ReviewState = {
     +deckId: string;
     +cardId: string;
     +totalCount: number;
-    // TODO: Should these stay here?
     +question: string;
     +answer: string;
     +failInterval: string;
@@ -97,5 +96,4 @@ export type CombinedState = {
     review: ReviewState
 }
 
-type PromiseAction = Promise<Action>;
-export type Dispatch = (action: Action | PromiseAction) => any;
+export type Dispatch = (action: Action) => void;

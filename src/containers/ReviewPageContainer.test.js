@@ -1,8 +1,8 @@
+//@flow
 import React from 'react'
-import {reviewState} from "../fakeData/reviewState"
 import {addCardRequest, collectionPage} from "../actions/creators"
 import {mapDispatchToProps, mapStateToProps} from "./ReviewPageContainer"
-import {Deck} from "../components/CollectionPage"
+import {defaultState} from "../fakeData/storeFake"
 
 jest.mock('../services/API') // Set mock API for module importing
 
@@ -16,9 +16,7 @@ describe('<ReviewPageContainer/>', () => {
             "newCount": 1,
             "totalCount": 6
         }
-        const state = {review: reviewState}
-
-        const props = mapStateToProps(state)
+        const props = mapStateToProps(defaultState, {})
 
         expect(props).toEqual(expectedState)
 
@@ -26,7 +24,9 @@ describe('<ReviewPageContainer/>', () => {
 
     it('maps back to the appropriate action', () => {
         const dispatchedActions = []
-        const dispatcher = (action: Action) => dispatchedActions.push(action)
+        const dispatcher = (action) => {
+            dispatchedActions.push(action)
+        }
 
         const props = mapDispatchToProps(dispatcher, {})
         props.back()
@@ -43,7 +43,9 @@ describe('<ReviewPageContainer/>', () => {
         const expectedActions = [addCardRequest(deckId, question, answer)]
 
         const actions = []
-        const invoke = (action: Action) => actions.push(action)
+        const invoke = (action) => {
+            actions.push(action)
+        }
 
         const {addCard} = mapDispatchToProps(invoke, {})
         addCard(deckId, question, answer)

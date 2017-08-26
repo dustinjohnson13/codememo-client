@@ -1,9 +1,11 @@
+//@flow
 import type {AnswerType, Clock, DataService} from "./APIDomain"
+import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "./APIDomain"
 import DynamoDBDao from "../persist/dynamodb/DynamoDBDao"
 import DaoDelegatingDataService from "./DaoDelegatingDataService"
 import {InMemoryDao} from "../fakeData/InMemoryDao"
 
-export class SystemClock {
+export class SystemClock implements Clock {
     epochSeconds(): number {
         return new Date().getTime()
     }
@@ -15,7 +17,7 @@ if (process.env.NODE_ENV === 'production') {
     const REGION = 'us-east-1'
     const ENDPOINT = `https://dynamodb.${REGION}.amazonaws.com`
 
-    dao = new DynamoDBDao(REGION, ENDPOINT)
+    dao = new DynamoDBDao(REGION, ENDPOINT, '', '')
 }
 
 class DelegatingDataService implements DataService {

@@ -3,7 +3,7 @@ import type {CombinedState} from "../actions/actionTypes"
 import {collectionState} from "./collectionState"
 import {reviewState} from "./reviewState"
 
-export const defaultState = {
+export const defaultState: CombinedState = {
     app: {page: null},
     collection: collectionState,
     review: reviewState

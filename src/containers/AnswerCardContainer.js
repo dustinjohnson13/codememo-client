@@ -6,9 +6,9 @@ import {answerCardRequest, hideAnswer} from "../actions/creators"
 import type {AnswerType} from "../services/APIDomain"
 
 type OwnProps = {
-    id: string;
-    deckId: string;
-    answerCard: any
+    +id: string,
+    +deckId: string,
+    +answerCard: (answer: AnswerType) => void
 }
 
 export const mapStateToProps = (state: CombinedState, ownProps: OwnProps) => {

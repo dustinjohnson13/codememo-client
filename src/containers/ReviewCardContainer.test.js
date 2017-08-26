@@ -42,9 +42,10 @@ describe('<ReviewCardContainer/>', () => {
         const expectedActions = [showAnswer()]
 
         const actions = []
-        const invoke = (action: Action) => actions.push(action)
+        const invoke = (action: Action): void => {
+            actions.push(action)
+        }
 
-        // $FlowFixMe: Need to be able to be a Dispatch
         const {showAnswer: fn} = mapDispatchToProps(invoke, {})
         fn()
 

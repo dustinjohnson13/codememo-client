@@ -1,2 +1,4 @@
 //@flow
-export const appState = {page: null}
+import type {AppState} from "../actions/actionTypes"
+
+export const appState: AppState = {page: null}

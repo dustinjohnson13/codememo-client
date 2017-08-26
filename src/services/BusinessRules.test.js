@@ -1,5 +1,5 @@
 //@flow
-import {Answer, DUE_IMMEDIATELY, HALF_DAY_IN_SECONDS, NO_ID, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "./APIDomain"
+import {Answer, HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "./APIDomain"
 
 import BusinessRules from "./BusinessRules"
 import {Card} from "../persist/Dao"
@@ -18,7 +18,7 @@ describe('BusinessRules', () => {
             [Answer.EASY]: currentTime + (TWO_DAYS_IN_SECONDS * 2)
         }
 
-        const original = new Card(NO_ID, 'deckId', 'Some question', 'Some answer', currentGoodInterval, DUE_IMMEDIATELY)
+        const original = new Card('1', 'deckId', 'Some question', 'Some answer', currentGoodInterval, 2000)
 
         const actuals = [Answer.FAIL, Answer.HARD, Answer.GOOD, Answer.EASY].map(it => {
             return {answer: it, newCard: new BusinessRules().cardAnswered(currentTime, original, it)}
@@ -44,7 +44,7 @@ describe('BusinessRules', () => {
             [Answer.EASY]: (TWO_DAYS_IN_SECONDS * 4)
         }
 
-        const original = new Card(NO_ID, 'deckId', 'Some question', 'Some answer', currentGoodInterval, DUE_IMMEDIATELY)
+        const original = new Card('1', 'deckId', 'Some question', 'Some answer', currentGoodInterval, 2000)
 
         const actuals = [Answer.FAIL, Answer.HARD, Answer.GOOD, Answer.EASY].map(it => {
             return {answer: it, newCard: new BusinessRules().cardAnswered(currentTime, original, it)}
@@ -61,7 +61,7 @@ describe('BusinessRules', () => {
     it('should return a multiple of two for card good interval for all current intervals', () => {
 
         const currentGoodInterval = TWO_DAYS_IN_SECONDS
-        const card = new Card(NO_ID, 'deckId', 'Some question', 'Some answer', currentGoodInterval, DUE_IMMEDIATELY)
+        const card = new Card('1', 'deckId', 'Some question', 'Some answer', currentGoodInterval, 2000)
 
         const expectedIntervals = [
             HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, TWO_DAYS_IN_SECONDS * 2

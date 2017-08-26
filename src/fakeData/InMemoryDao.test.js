@@ -1,9 +1,9 @@
 //@flow
-import {Card, Deck, TEST_USER_EMAIL, User} from "../persist/Dao"
+import {Card, Deck, DUE_IMMEDIATELY, newDeck, newUser, TEST_USER_EMAIL, User} from "../persist/Dao"
 import type {PreLoadedIds} from "../persist/Dao.test"
 import {testWithDaoImplementation} from "../persist/Dao.test"
 import {InMemoryDao} from "./InMemoryDao"
-import {DUE_IMMEDIATELY, NO_ID, ONE_DAY_IN_SECONDS} from "../services/APIDomain"
+import {ONE_DAY_IN_SECONDS} from "../services/APIDomain"
 import {testServiceWithDaoImplementation} from "../services/DataService.test"
 
 describe('InMemoryDao', () => {
@@ -15,10 +15,10 @@ describe('InMemoryDao', () => {
     }
 
     const loadCollectionData = async (): Promise<PreLoadedIds> => {
-        const persistedUser = await dao.saveUser(new User(NO_ID, TEST_USER_EMAIL))
+        const persistedUser = await dao.saveUser(newUser(TEST_USER_EMAIL))
         const persistedDecks = await Promise.all(
             [1, 2, 3, 4].map(i => {
-                return dao.saveDeck(new Deck(NO_ID, persistedUser.id, `Deck${i}`))
+                return dao.saveDeck(newDeck(persistedUser.id, `Deck${i}`))
             }))
 
         const idsFromZero = Array.from({length: 16}, (v, k) => k + 1)

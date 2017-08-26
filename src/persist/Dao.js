@@ -1,4 +1,6 @@
 //@flow
+import {ONE_DAY_IN_SECONDS} from "../services/APIDomain"
+
 export const USER_TABLE = "user"
 export const CARD_TABLE = "card"
 export const DECK_TABLE = "deck"
@@ -6,8 +8,15 @@ export const ALL_TABLES = [
     USER_TABLE, CARD_TABLE, DECK_TABLE
 ]
 
+export const NO_ID = "NONE"
+export const DUE_IMMEDIATELY = -1
 export const TEST_USER_EMAIL = 'someone@blah.com'
 export const TEST_DECK_NAME = 'Test Deck'
+
+export const newUser = (email: string) => new User(NO_ID, email)
+export const newDeck = (userId: string, name: string) => new Deck(NO_ID, userId, name)
+export const newCard = (deckId: string, question: string, answer: string) =>
+    new Card(NO_ID, deckId, question, answer, ONE_DAY_IN_SECONDS, DUE_IMMEDIATELY)
 
 export class User {
     +id: string

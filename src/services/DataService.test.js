@@ -4,14 +4,12 @@ import {
     CardDetail,
     CollectionResponse,
     DeckResponse,
-    DUE_IMMEDIATELY,
     HALF_DAY_IN_SECONDS,
-    NO_ID,
     ONE_DAY_IN_SECONDS,
     TWO_DAYS_IN_SECONDS
 } from "./APIDomain"
 import DaoDelegatingDataService from "./DaoDelegatingDataService"
-import {Card, Deck, TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
+import {Card, Deck, DUE_IMMEDIATELY, NO_ID, TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
 import {FrozenClock} from "./__mocks__/API"
 
 describe('Placeholder', () => {

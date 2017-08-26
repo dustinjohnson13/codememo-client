@@ -1,17 +1,9 @@
 //@flow
 import type {AnswerType, Clock, DataService} from "./APIDomain"
 import * as api from "./APIDomain"
-import {
-    CardDetail,
-    CardDetailResponse,
-    CollectionResponse,
-    DeckResponse,
-    DUE_IMMEDIATELY,
-    NO_ID,
-    ONE_DAY_IN_SECONDS
-} from "./APIDomain"
+import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "./APIDomain"
 import type {Dao} from "../persist/Dao"
-import {Card, Deck, TEST_USER_EMAIL, User} from "../persist/Dao"
+import {Card, Deck, DUE_IMMEDIATELY, newCard, newDeck, newUser, TEST_USER_EMAIL, User} from "../persist/Dao"
 import BusinessRules from "./BusinessRules"
 
 export default class DaoDelegatingDataService implements DataService {
@@ -31,7 +23,7 @@ export default class DaoDelegatingDataService implements DataService {
             const u = await this.dao.findUserByEmail(TEST_USER_EMAIL)
 
             if (u === undefined) {
-                await this.dao.saveUser(new User(NO_ID, TEST_USER_EMAIL))
+                await this.dao.saveUser(newUser(TEST_USER_EMAIL))
             }
         }
         catch (err) {
@@ -72,7 +64,7 @@ export default class DaoDelegatingDataService implements DataService {
     async addDeck(email: string, name: string): Promise<CollectionResponse> {
         const user = await this.dao.findUserByEmail(email)
         if (user) {
-            await this.dao.saveDeck(new Deck(NO_ID, user.id, name))
+            await this.dao.saveDeck(newDeck(user.id, name))
             return this.fetchCollection(email)
         } else {
             throw new Error(`No user with email ${email}`)
@@ -82,7 +74,7 @@ export default class DaoDelegatingDataService implements DataService {
     async addCard(deckId: string, question: string, answer: string): Promise<CardDetail> {
         const deck = await this.dao.findDeck(deckId)
         if (deck) {
-            const card = await this.dao.saveCard(new Card(NO_ID, deck.id, question, answer, ONE_DAY_IN_SECONDS, DUE_IMMEDIATELY))
+            const card = await this.dao.saveCard(newCard(deck.id, question, answer))
             return this.cardToCardDetail(card)
         } else {
             throw new Error(`No deck with id ${deckId}`)

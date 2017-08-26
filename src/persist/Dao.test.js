@@ -1,7 +1,7 @@
 //@flow
 import type {Dao} from "./Dao"
-import {Card, Deck, TEST_USER_EMAIL, User} from "./Dao"
-import {DUE_IMMEDIATELY, NO_ID, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../services/APIDomain"
+import {Card, Deck, newCard, newDeck, newUser, NO_ID, TEST_USER_EMAIL, User} from "./Dao"
+import {TWO_DAYS_IN_SECONDS} from "../services/APIDomain"
 
 export type PreLoadedIds = {
     users: Array<string>,
@@ -34,7 +34,7 @@ testWithDaoImplementation(createDao: () => Dao,
         it('should be able to create a user', async (done) => {
             expect.assertions(5)
 
-            const original = new User(NO_ID, "blah@somewhere.com")
+            const original = newUser("blah@somewhere.com")
 
             dao.saveUser(original).then(user => {
                 expect(original.id).toEqual(NO_ID)
@@ -70,8 +70,8 @@ testWithDaoImplementation(createDao: () => Dao,
             expect.assertions(18)
 
             const deckId = "1"
-            const entity = new Card(NO_ID, deckId, "Question 1?", "Answer 1?", ONE_DAY_IN_SECONDS, DUE_IMMEDIATELY)
-            const entity2 = new Card(NO_ID, deckId, "Question 2?", "Answer 2?", ONE_DAY_IN_SECONDS, 20999)
+            const entity = newCard(deckId, "Question 1?", "Answer 1?")
+            const entity2 = newCard(deckId, "Question 2?", "Answer 2?")
             const entities = [entity, entity2]
 
             const persist = Promise.all(entities.map(original => dao.saveCard(original)
@@ -117,7 +117,7 @@ testWithDaoImplementation(createDao: () => Dao,
             expect.assertions(5)
 
             const userId = "1"
-            const original = new Deck(NO_ID, userId, 'Some Name')
+            const original = newDeck(userId, 'Some Name')
 
             dao.saveDeck(original).then(entity => {
 

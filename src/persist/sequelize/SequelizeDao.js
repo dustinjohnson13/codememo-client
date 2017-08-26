@@ -98,20 +98,20 @@ export class SequelizeDao implements Dao {
         })
     }
 
-    updateCard(card: Card): Promise<Card> {
+    async updateCard(card: Card): Promise<Card> {
         if (!card.id) {
             throw new Error("Card must have an id.")
         }
 
-        return CardEntity.findById(card.id).then(entity =>
-            entity.updateAttributes({
-                deckId: card.deckId,
-                question: card.question,
-                answer: card.answer,
-                goodInterval: card.goodInterval,
-                due: card.due
-            })
-        ).then(() => Promise.resolve(card))
+        const entity = await CardEntity.findById(card.id)
+        await entity.updateAttributes({
+            deckId: card.deckId,
+            question: card.question,
+            answer: card.answer,
+            goodInterval: card.goodInterval,
+            due: card.due
+        })
+        return card
     }
 
     saveDeck(deck: Deck): Promise<Deck> {
@@ -121,17 +121,17 @@ export class SequelizeDao implements Dao {
         })
     }
 
-    updateDeck(deck: Deck): Promise<Deck> {
+    async updateDeck(deck: Deck): Promise<Deck> {
         if (!deck.id) {
             throw new Error("Deck must have an id.")
         }
 
-        return DeckEntity.findById(deck.id).then(entity =>
-            entity.updateAttributes({
-                userId: deck.userId,
-                name: deck.name
-            })
-        ).then(() => Promise.resolve(deck))
+        const entity = await DeckEntity.findById(deck.id)
+        await entity.updateAttributes({
+            userId: deck.userId,
+            name: deck.name
+        })
+        return deck
     }
 
     deleteUser(id: string): Promise<string> {

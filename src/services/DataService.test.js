@@ -158,7 +158,7 @@ function testWithDaoImplementation(createDao: any) {
                         expect(actual.id).toBeDefined()
                         expect(actual.question).toEqual(question)
                         expect(actual.answer).toEqual(answer)
-                        expect(actual.due).toBeUndefined()
+                        expect(actual.due).toEqual(DUE_IMMEDIATELY)
                         done()
                     })
                 })

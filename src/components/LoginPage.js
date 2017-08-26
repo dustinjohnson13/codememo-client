@@ -25,13 +25,11 @@ class LoginPage extends Component<Props, State> {
         (this: any).login = this.login.bind(this);
     }
 
-    handleEmailChange(event: Event) {
-        // $FlowFixMe
+    handleEmailChange(event: SyntheticInputEvent<Input>) {
         this.setState({email: event.target.value})
     }
 
-    handlePasswordChange(event: Event) {
-        // $FlowFixMe
+    handlePasswordChange(event: SyntheticInputEvent<Input>) {
         this.setState({password: event.target.value})
     }
 

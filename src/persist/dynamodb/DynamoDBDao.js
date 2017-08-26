@@ -218,7 +218,7 @@ export default class DynamoDBDao implements Dao {
             ...additionalIndexDefinitions
         ]
 
-        const params = {
+        let params = {
             TableName: name,
             KeySchema: keySchema,
             AttributeDefinitions: columnDefinitions,
@@ -229,25 +229,27 @@ export default class DynamoDBDao implements Dao {
         }
 
         if (indices.length > 0) {
-            // $FlowFixMe
-            params["GlobalSecondaryIndexes"] = indices.map((column: IndexDefinition) => {
-                return {
-                    IndexName: column.name,
-                    KeySchema: [
-                        {
-                            AttributeName: column.name,
-                            KeyType: DYNAMODB_HASH
+            params = {
+                ...params,
+                GlobalSecondaryIndexes: indices.map((column: IndexDefinition) => {
+                    return {
+                        IndexName: column.name,
+                        KeySchema: [
+                            {
+                                AttributeName: column.name,
+                                KeyType: DYNAMODB_HASH
+                            }
+                        ],
+                        Projection: {
+                            ProjectionType: DYNAMODB_PROJECT_ALL
+                        },
+                        ProvisionedThroughput: {
+                            "ReadCapacityUnits": DEFAULT_READ_CAPACITY_UNITS,
+                            "WriteCapacityUnits": 1
                         }
-                    ],
-                    Projection: {
-                        ProjectionType: DYNAMODB_PROJECT_ALL
-                    },
-                    ProvisionedThroughput: {
-                        "ReadCapacityUnits": DEFAULT_READ_CAPACITY_UNITS,
-                        "WriteCapacityUnits": 1
                     }
-                }
-            })
+                })
+            }
         }
 
         return new Promise((resolve, reject) => {

@@ -182,9 +182,9 @@ export const addCardSuccess = (response: CardDetail, deckId: string): AddCardSuc
     }
 }
 
-export function* loadCollectionPage(): Generator<LoadCollectionPageAction, any, void> {
+// TODO: Remove requirement to support both CollectionResponse and CollectionState as input
+export function* loadCollectionPage(): Generator<LoadCollectionPageAction, void, any> {
     const collection = yield select(selectors.collection)
-    // $FlowFixMe
     if (collection.decks.length === 0) {
         yield call(fetchCollection)
     }
@@ -204,31 +204,27 @@ export function* login(action: LoginRequestAction): Generator<LoginRequestAction
     yield call(loadCollectionPage)
 }
 
-export function* addDeck(action: AddDeckRequestAction): Generator<AddDeckRequestAction, any, void> {
+export function* addDeck(action: AddDeckRequestAction): Generator<AddDeckRequestAction, any, CollectionResponse> {
     // TODO: Should be using a collection id or real email
     const deck = yield call(API.addDeck, TEST_USER_EMAIL, action.name)
-    // $FlowFixMe
     yield put(addDeckSuccess(deck))
 }
 
-export function* addCard(action: AddCardRequestAction): Generator<AddCardRequestAction, any, void> {
+export function* addCard(action: AddCardRequestAction): Generator<CardDetail, void, CardDetail> {
     const card = yield call(API.addCard, action.id, action.question, action.answer)
-    // $FlowFixMe
     yield put(addCardSuccess(card, action.id))
 }
 
-export function* answerCard(action: AnswerCardRequestAction): Generator<AnswerCardRequestAction, any, void> {
+export function* answerCard(action: AnswerCardRequestAction): Generator<CardDetail, void, CardDetail> {
     const card = yield call(API.answerCard, action.id, action.answer)
-    // $FlowFixMe
     yield put(answerCardSuccess(card, action.deckId))
 }
 
-export function* reviewDeck(action: ReviewDeckRequestAction): Generator<ReviewDeckRequestAction, any, void> {
+//TODO: Split up to not need to support both DeckResponse and an array of ids as input
+export function* reviewDeck(action: ReviewDeckRequestAction): Generator<DeckResponse, void, any> {
     const deck = yield call(API.fetchDeck, action.id)
-    // $FlowFixMe
     yield put(fetchDeckSuccess(deck))
 
-    // $FlowFixMe
     const dueOrNewCards = deck.cards.filter(card => card.status !== CardStatus.OK)
     if (dueOrNewCards.length > 0) {
         yield put(fetchCardsRequest(dueOrNewCards.map(card => card.id)))
@@ -239,16 +235,14 @@ export function* reviewDeck(action: ReviewDeckRequestAction): Generator<ReviewDe
     yield put(loadPage(Page.REVIEW))
 }
 
-export function* fetchCollection(action: FetchCollectionRequestAction): Generator<FetchCollectionRequestAction, any, void> {
+export function* fetchCollection(action: FetchCollectionRequestAction): Generator<FetchCollectionRequestAction, any, CollectionResponse> {
     // TODO: Should be using real email
     const response = yield call(API.fetchCollection, TEST_USER_EMAIL)
-    // $FlowFixMe
     yield put(fetchCollectionSuccess(response))
 }
 
-export function* fetchCards(action: FetchCardsRequestAction): Generator<FetchCardsRequestAction, any, void> {
+export function* fetchCards(action: FetchCardsRequestAction): Generator<FetchCardsRequestAction, any, CardDetailResponse> {
     const response = yield call(API.fetchCards, action.ids)
-    // $FlowFixMe
     yield put(fetchCardsSuccess(response))
 }
 

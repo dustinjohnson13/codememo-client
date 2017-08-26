@@ -50,7 +50,7 @@ describe('creators', () => {
 
         const newCard = new CardDetail('deck-1-card-0', 'Some Question', 'Some Answer', HALF_DAY_IN_SECONDS,
             ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, DUE_IMMEDIATELY)
-        //$FlowFixMe
+
         expect(gen.next(newCard).value).toEqual(put(addCardSuccess(newCard, 'deck-1')))
     })
 
@@ -64,7 +64,6 @@ describe('creators', () => {
 
         const newCard = new CardDetail(action.id, 'question', 'answer', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS,
             TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, 9000)
-        //$FlowFixMe
         expect(gen.next(newCard).value).toEqual(put(answerCardSuccess(newCard, deckId)))
     })
 
@@ -73,7 +72,6 @@ describe('creators', () => {
         const gen = loadCollectionPage()
         expect(gen.next().value).toEqual(select(selectors.collection))
 
-        //$FlowFixMe
         let next = gen.next(collectionState)
         expect(next.value).toEqual(put(loadPage(Page.COLLECTION)))
     })
@@ -83,11 +81,9 @@ describe('creators', () => {
         const gen = loadCollectionPage()
         expect(gen.next().value).toEqual(select(selectors.collection))
 
-        //$FlowFixMe
         let next = gen.next(initialState)
         expect(next.value).toEqual(call(fetchCollection))
 
-        //$FlowFixMe
         next = gen.next(new CollectionResponse([]))
         expect(next.value).toEqual(put(loadPage(Page.COLLECTION)))
     })
@@ -99,11 +95,9 @@ describe('creators', () => {
         expect(gen.next().value)
             .toEqual(call(API.fetchDeck, deckId))
 
-        //$FlowFixMe
         expect(gen.next(gotDeck1.deck).value)
             .toEqual(put(gotDeck1))
 
-        //$FlowFixMe
         expect(gen.next(getDeck1DueCards.ids).value)
             .toEqual(put(getDeck1DueCards))
 
@@ -118,7 +112,6 @@ describe('creators', () => {
             .toEqual(call(API.fetchDeck, deckId))
 
         const deckResponse = new DeckResponse(deckId, deckName, [])
-        //$FlowFixMe
         expect(gen.next(deckResponse).value)
             .toEqual(put(fetchDeckSuccess(deckResponse)))
 

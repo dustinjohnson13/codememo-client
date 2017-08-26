@@ -5,18 +5,18 @@ import '../styles/ReviewPage.css'
 import ReviewCardContainer from "../containers/ReviewCardContainer"
 import AddCardModal from "./AddCardModal"
 
-class ReviewPage extends Component {
-    props: {
-        id: string,
-        deckName: string,
-        totalCount: number,
-        dueCount: number,
-        newCount: number,
-        back: any,
-        addCard: any,
-        showAnswer: any
-    }
+type Props = {
+    +id: string,
+    +deckName: string,
+    +totalCount: number,
+    +dueCount: number,
+    +newCount: number,
+    +back: () => void,
+    +addCard: (deckId: string, question: string, answer: string) => void,
+    +showAnswer: () => void
+}
 
+class ReviewPage extends Component<Props, void> {
     render() {
         const reviewSection = (this.props.dueCount === 0 && this.props.newCount === 0) ?
             <div>Congratulations, you're caught up!</div> :

@@ -2,8 +2,14 @@
 import React, {Component} from 'react'
 import Deck from './Deck'
 import {Col, Row} from 'reactstrap'
+import * as api from "../services/APIDomain"
 
-class Collection extends Component {
+type Props = {
+    +decks: Array<api.Deck>,
+    +reviewDeck: (id: string) => void
+}
+
+class Collection extends Component<Props, void> {
 
     render() {
         const decks = this.props.decks.map(deck =>

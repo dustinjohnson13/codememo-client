@@ -4,11 +4,11 @@ import {Col, Row} from 'reactstrap'
 import {Deck as APIDeck} from "../services/APIDomain"
 
 type Props = {
-    reviewDeck: any;
-    deck: APIDeck;
+    +reviewDeck: (id: string) => void;
+    +deck: APIDeck;
 }
 
-class Deck extends Component {
+class Deck extends Component<Props, void> {
     constructor(props: Props) {
         super(props);
 

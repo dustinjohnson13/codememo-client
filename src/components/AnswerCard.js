@@ -4,17 +4,17 @@ import {Button} from 'reactstrap'
 import '../styles/ReviewPage.css'
 import {Answer} from "../services/APIDomain"
 
-type Foo = {
-    answerCard: any,
-    failInterval: string,
-    hardInterval: string,
-    goodInterval: string,
-    easyInterval: string
+type Props = {
+    +answerCard: (answer: string) => void,
+    +failInterval: string,
+    +hardInterval: string,
+    +goodInterval: string,
+    +easyInterval: string
 };
 
-class AnswerCard extends Component {
+class AnswerCard extends Component<Props, void> {
 
-    constructor(props: Foo) {
+    constructor(props: Props) {
         super(props);
 
         (this: any).fail = this.fail.bind(this);

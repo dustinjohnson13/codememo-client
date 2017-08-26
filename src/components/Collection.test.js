@@ -5,6 +5,7 @@ import {storeFake} from "../fakeData/storeFake"
 import Collection from "./Collection"
 import jsdom from 'jsdom'
 import {mount} from 'enzyme'
+import {Deck} from "../services/APIDomain"
 
 const doc = jsdom.jsdom('<!doctype html><html><body></body></html>')
 global.document = doc
@@ -12,8 +13,8 @@ global.window = doc.defaultView
 
 describe('<Collection />', () => {
 
-    const testDecks = [{id: 'deck-1', name: 'Deck1', total: 16, due: 7, new: 3},
-        {id: 'deck-2', name: 'Deck2', total: 26, due: 17, new: 4}]
+    const testDecks = [new Deck('deck-1', 'Deck1', 16, 7, 3),
+        new Deck('deck-2', 'Deck2', 26, 17, 4)]
 
     const invokedFunction = (deck) => {
     }

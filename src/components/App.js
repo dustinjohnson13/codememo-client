@@ -5,9 +5,15 @@ import LoadingPage from './LoadingPage'
 import CollectionPageContainer from '../containers/CollectionPageContainer'
 import LoginPageContainer from '../containers/LoginPageContainer'
 import ReviewPageContainer from '../containers/ReviewPageContainer'
+import type {PageType} from "../actions/pages"
 import {Page} from "../actions/pages"
 
-class App extends Component {
+type Props = {
+    +page?: PageType,
+    +nospin: boolean
+}
+
+class App extends Component<Props, void> {
     render() {
         const requestedPage = this.props.page
         let page = <LoadingPage nospin={this.props.nospin}/>

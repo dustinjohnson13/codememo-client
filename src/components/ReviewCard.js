@@ -5,15 +5,15 @@ import AnswerCardContainer from '../containers/AnswerCardContainer'
 import {Button} from 'reactstrap'
 
 type Props = {
-    cardId: string,
-    deckId: string,
-    answer: string,
-    question: string,
-    showingAnswer: boolean,
-    showAnswer: any
+    +cardId: string,
+    +deckId: string,
+    +answer: string,
+    +question: string,
+    +showingAnswer: boolean,
+    +showAnswer: () => void
 }
 
-class ReviewCard extends Component<void, Props, void> {
+class ReviewCard extends Component<Props, void> {
 
     render() {
         const answerSection = this.props.showingAnswer ?

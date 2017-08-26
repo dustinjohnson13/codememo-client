@@ -7,12 +7,12 @@ import Collection from './Collection'
 import {Deck} from "../services/APIDomain"
 
 type Props = {
-    decks: Array<Deck>,
-    reviewDeck: any,
-    addDeck: any
+    +decks: Array<Deck>,
+    +reviewDeck: (id: string) => void,
+    +addDeck: (name: string) => void
 }
 
-class CollectionPage extends Component<void, Props, void> {
+class CollectionPage extends Component<Props, void> {
 
     render() {
         return (

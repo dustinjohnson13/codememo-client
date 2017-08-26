@@ -2,7 +2,11 @@
 import React, {Component} from 'react'
 import Spinner from 'react-spin'
 
-class LoadingPage extends Component {
+type Props = {
+    +nospin: boolean
+}
+
+class LoadingPage extends Component<Props, void> {
 
     rawMarkup() {
         var spinner = new Spinner().spin()

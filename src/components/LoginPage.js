@@ -4,7 +4,7 @@ import {Button, Col, Container, Input, InputGroup, Row} from 'reactstrap'
 import '../styles/LoginPage.css'
 
 type Props = {
-    login: any,
+    +login: (email: string, password: string) => void,
 }
 
 type State = {
@@ -12,7 +12,7 @@ type State = {
     password: string;
 }
 
-class LoginPage extends Component<void, Props, State> {
+class LoginPage extends Component<Props, State> {
     state: State;
 
     constructor(props: Props) {

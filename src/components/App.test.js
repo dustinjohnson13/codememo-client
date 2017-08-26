@@ -22,7 +22,7 @@ global.window = doc.defaultView
 
 describe('<App />', () => {
 
-    const prepareContainer = (page: ?PageType, state = defaultState) => {
+    const prepareContainer = (page?: PageType, state = defaultState) => {
         const store = storeFake({...state})
 
         const wrapper = mount(

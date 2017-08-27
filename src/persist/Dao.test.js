@@ -1,7 +1,7 @@
 //@flow
 import type {Dao} from "./Dao"
 import {Card, Deck, newCard, newDeck, newUser, NO_ID, TEST_USER_EMAIL, User} from "./Dao"
-import {TWO_DAYS_IN_SECONDS} from "../services/APIDomain"
+import {ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../services/APIDomain"
 
 export type PreLoadedIds = {
     users: Array<string>,
@@ -196,6 +196,30 @@ testWithDaoImplementation(createDao: () => Dao,
                 expect(result.name).toEqual("Deck3")
             })
 
+            it('should return undefined querying for non-existent user', async () => {
+
+                const id = '9999999'
+
+                const result = await dao.findUser(id)
+                expect(result).toBeUndefined()
+            })
+
+            it('should return undefined querying for non-existent deck', async () => {
+
+                const id = '9999999'
+
+                const result = await dao.findDeck(id)
+                expect(result).toBeUndefined()
+            })
+
+            it('should return undefined querying for non-existent card', async () => {
+
+                const id = '9999999'
+
+                const result = await dao.findCard(id)
+                expect(result).toBeUndefined()
+            })
+
             it('should be able to update a user', async () => {
 
                 const preLoadedIds = await loadCollectionData()
@@ -256,6 +280,78 @@ testWithDaoImplementation(createDao: () => Dao,
 
                 expect(dbDeck.userId).toEqual(newUserId)
                 expect(dbDeck.name).toEqual(newName)
+            })
+
+            it('should throw exception on updating new user', async () => {
+                expect.assertions(1)
+
+                const entity = newUser("yoyoyo@somewhereelse.com")
+                try {
+                    await dao.updateUser(entity)
+                } catch (e) {
+                    expect(e).toEqual(new Error("Unable to update non-persisted user!"))
+                }
+            })
+
+            it('should throw exception on updating new deck', async () => {
+                expect.assertions(1)
+
+                const entity = newDeck("2", "Some Deck Name")
+                try {
+                    await dao.updateDeck(entity)
+                } catch (e) {
+                    expect(e).toEqual(new Error("Unable to update non-persisted deck!"))
+                }
+            })
+
+            it('should throw exception on updating new card', async () => {
+                expect.assertions(1)
+
+                const entity = newCard("2", "Some Question", "Some Answer")
+                try {
+                    await dao.updateCard(entity)
+                } catch (e) {
+                    expect(e).toEqual(new Error("Unable to update non-persisted card!"))
+                }
+            })
+
+            it('should throw exception on updating non-existent user', async () => {
+                expect.assertions(1)
+
+                const id = '9999999'
+
+                const entity = new User(id, "yoyoyo@somewhereelse.com")
+                try {
+                    await dao.updateUser(entity)
+                } catch (e) {
+                    expect(e).toEqual(new Error("Unable to update non-existent user!"))
+                }
+            })
+
+            it('should throw exception on updating non-existent deck', async () => {
+                expect.assertions(1)
+
+                const id = '9999999'
+
+                const entity = new Deck(id, '1', "Some Deck Name")
+                try {
+                    await dao.updateDeck(entity)
+                } catch (e) {
+                    expect(e).toEqual(new Error("Unable to update non-existent deck!"))
+                }
+            })
+
+            it('should throw exception on updating non-existent card', async () => {
+                expect.assertions(1)
+
+                const id = '9999999'
+
+                const entity = new Card(id, '1', "Some Question", "Some Answer", ONE_DAY_IN_SECONDS, 2000)
+                try {
+                    await dao.updateCard(entity)
+                } catch (e) {
+                    expect(e).toEqual(new Error("Unable to update non-existent card!"))
+                }
             })
 
             it('should be able to find decks by user id', async () => {

@@ -68,6 +68,16 @@ export class InMemoryDao implements Dao {
     }
 
     updateUser(user: User): Promise<User> {
+        const id = user.id
+
+        if (id === NO_ID) {
+            throw new Error("Unable to update non-persisted user!")
+        }
+
+        if (this.users.find(it => it.id === id) === undefined) {
+            throw new Error("Unable to update non-existent user!")
+        }
+
         this.users = this.updateEntity(user, this.users)
         return Promise.resolve(user)
     }
@@ -79,6 +89,16 @@ export class InMemoryDao implements Dao {
     }
 
     updateCard(card: Card): Promise<Card> {
+        const id = card.id
+
+        if (id === NO_ID) {
+            throw new Error("Unable to update non-persisted card!")
+        }
+
+        if (this.cards.find(it => it.id === id) === undefined) {
+            throw new Error("Unable to update non-existent card!")
+        }
+
         this.cards = this.updateEntity(card, this.cards)
         return Promise.resolve(card)
     }
@@ -90,6 +110,16 @@ export class InMemoryDao implements Dao {
     }
 
     updateDeck(deck: Deck): Promise<Deck> {
+        const id = deck.id
+
+        if (id === NO_ID) {
+            throw new Error("Unable to update non-persisted deck!")
+        }
+
+        if (this.decks.find(it => it.id === id) === undefined) {
+            throw new Error("Unable to update non-existent deck!")
+        }
+
         this.decks = this.updateEntity(deck, this.decks)
         return Promise.resolve(deck)
     }

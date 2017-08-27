@@ -1,7 +1,7 @@
 //@flow
 import IndexDefinition from "./IndexDefinition"
 import type {Dao} from "../Dao"
-import {ALL_TABLES, Card, CARD_TABLE, Deck, DECK_TABLE, User, USER_TABLE} from "../Dao"
+import {ALL_TABLES, Card, CARD_TABLE, Deck, DECK_TABLE, NO_ID, User, USER_TABLE} from "../Dao"
 import uuid from 'uuid'
 import AWS from "aws-sdk"
 
@@ -25,17 +25,17 @@ const EMAIL_INDEX = "email"
 const DECK_ID_INDEX = "dId"
 const USER_ID_INDEX = "uId"
 
-const hydrateUser = (item) => {
-    return new User(item[ID_COLUMN], item[EMAIL_INDEX])
+const hydrateUser = (item): User | void => {
+    return item ? new User(item[ID_COLUMN], item[EMAIL_INDEX]) : undefined
 }
 
-const hydrateDeck = (item) => {
-    return new Deck(item[ID_COLUMN], item[USER_ID_COLUMN], item[NAME_COLUMN])
+const hydrateDeck = (item): Deck | void => {
+    return item ? new Deck(item[ID_COLUMN], item[USER_ID_COLUMN], item[NAME_COLUMN]) : undefined
 }
 
-const hydrateCard = (item) => {
-    return new Card(item[ID_COLUMN], item[DECK_ID_COLUMN], item[QUESTION_COLUMN], item[ANSWER_COLUMN],
-        item[GOOD_INTERVAL_COLUMN], item[DUE_COLUMN])
+const hydrateCard = (item): Card | void => {
+    return item ? new Card(item[ID_COLUMN], item[DECK_ID_COLUMN], item[QUESTION_COLUMN], item[ANSWER_COLUMN],
+        item[GOOD_INTERVAL_COLUMN], item[DUE_COLUMN]) : undefined
 }
 
 export default class DynamoDBDao implements Dao {
@@ -158,21 +158,25 @@ export default class DynamoDBDao implements Dao {
     updateUser(user: User): Promise<User> {
         const id = user.id
 
+        if (id === NO_ID) {
+            throw new Error("Unable to update non-persisted user!")
+        }
+
         const updates = new Map()
         updates.set(EMAIL_INDEX, user.email)
 
-        if (!id) {
-            throw new Error("User must have id specified.")
-        }
-
-        return this.update(USER_TABLE, {[ID_COLUMN]: id}, [updates]).then(() => user)
+        return this.update(USER_TABLE, {[ID_COLUMN]: id}, [updates])
+            .then(() => user)
+            .catch(err => {
+                throw new Error("Unable to update non-existent user!")
+            })
     }
 
     updateCard(card: Card): Promise<Card> {
         const id = card.id
 
-        if (!id) {
-            throw new Error("Card must have id specified.")
+        if (id === NO_ID) {
+            throw new Error("Unable to update non-persisted card!")
         }
 
         const updates = new Map()
@@ -183,13 +187,16 @@ export default class DynamoDBDao implements Dao {
         updates.set(DUE_COLUMN, card.due)
 
         return this.update(CARD_TABLE, {[ID_COLUMN]: id}, [updates]).then(() => card)
+            .catch(err => {
+                throw new Error("Unable to update non-existent card!")
+            })
     }
 
     updateDeck(deck: Deck): Promise<Deck> {
         const id = deck.id
 
-        if (!id) {
-            throw new Error("Deck must have id specified.")
+        if (id === NO_ID) {
+            throw new Error("Unable to update non-persisted deck!")
         }
 
         const updates = new Map()
@@ -197,6 +204,9 @@ export default class DynamoDBDao implements Dao {
         updates.set(NAME_COLUMN, deck.name)
 
         return this.update(DECK_TABLE, {[ID_COLUMN]: id}, [updates]).then(() => deck)
+            .catch(err => {
+                throw new Error("Unable to update non-existent deck!")
+            })
     }
 
     createTable(name: string, indices: Array<IndexDefinition>): Promise<void> {
@@ -322,13 +332,13 @@ export default class DynamoDBDao implements Dao {
             TableName: table,
             Key: key,
             UpdateExpression: 'SET ' + expressions.join(","),
-            ExpressionAttributeValues: expressionValues
+            ExpressionAttributeValues: expressionValues,
+            ConditionExpression: `attribute_exists(${Object.keys(key)[0]})`,
         }
 
         return new Promise((resolve, reject) => {
             docClient.update(params, (err, data) => {
                 if (err) {
-                    console.error("Unable to update item. Error JSON:", JSON.stringify(err, null, 2))
                     reject(err)
                 } else {
                     resolve(data)

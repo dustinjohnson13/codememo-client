@@ -1,7 +1,7 @@
 //@flow
 import {Sequelize} from 'sequelize'
 import type {Dao} from "../Dao"
-import {Card, CARD_TABLE, Deck, DECK_TABLE, User, USER_TABLE} from "../Dao"
+import {Card, CARD_TABLE, Deck, DECK_TABLE, NO_ID, User, USER_TABLE} from "../Dao"
 
 const modelDefiner = new Sequelize({
         dialect: 'sqlite',
@@ -43,16 +43,16 @@ export const CardEntity = modelDefiner.define(CARD_TABLE, {
     }
 })
 
-const hydrateDeck = (entity: DeckEntity) => {
-    return new Deck(entity.id.toString(), entity.userId.toString(), entity.name)
+const hydrateDeck = (entity: DeckEntity): Deck | void => {
+    return entity ? new Deck(entity.id.toString(), entity.userId.toString(), entity.name) : undefined
 }
 
-const hydrateCard = (entity: CardEntity) => {
-    return new Card(entity.id.toString(), entity.deckId.toString(), entity.question, entity.answer, entity.goodInterval, entity.due)
+const hydrateCard = (entity: CardEntity): Card | void => {
+    return entity ? new Card(entity.id.toString(), entity.deckId.toString(), entity.question, entity.answer, entity.goodInterval, entity.due) : undefined
 }
 
-const hydrateUser = (entity: UserEntity) => {
-    return new User(entity.id.toString(), entity.email)
+const hydrateUser = (entity: UserEntity): User | void => {
+    return entity ? new User(entity.id.toString(), entity.email) : undefined
 }
 
 export class SequelizeDao implements Dao {
@@ -76,15 +76,18 @@ export class SequelizeDao implements Dao {
     }
 
     updateUser(user: User): Promise<User> {
-        if (!user.id) {
-            throw new Error("User must have an id.")
+        if (user.id === NO_ID) {
+            throw new Error("Unable to update non-persisted user!")
         }
 
         return UserEntity.findById(user.id).then(entity => {
             entity.updateAttributes({
                 email: user.email
             })
-        }).then(() => Promise.resolve(user))
+        }).then(() => user)
+            .catch(err => {
+                throw new Error("Unable to update non-existent user!")
+            })
     }
 
     saveCard(card: Card): Promise<Card> {
@@ -98,18 +101,22 @@ export class SequelizeDao implements Dao {
     }
 
     async updateCard(card: Card): Promise<Card> {
-        if (!card.id) {
-            throw new Error("Card must have an id.")
+        if (card.id === NO_ID) {
+            throw new Error("Unable to update non-persisted card!")
         }
 
-        const entity = await CardEntity.findById(card.id)
-        await entity.updateAttributes({
-            deckId: card.deckId,
-            question: card.question,
-            answer: card.answer,
-            goodInterval: card.goodInterval,
-            due: card.due
-        })
+        try {
+            const entity = await CardEntity.findById(card.id)
+            await entity.updateAttributes({
+                deckId: card.deckId,
+                question: card.question,
+                answer: card.answer,
+                goodInterval: card.goodInterval,
+                due: card.due
+            })
+        } catch (e) {
+            throw new Error("Unable to update non-existent card!")
+        }
         return card
     }
 
@@ -121,15 +128,20 @@ export class SequelizeDao implements Dao {
     }
 
     async updateDeck(deck: Deck): Promise<Deck> {
-        if (!deck.id) {
-            throw new Error("Deck must have an id.")
+        if (deck.id === NO_ID) {
+            throw new Error("Unable to update non-persisted deck!")
         }
 
-        const entity = await DeckEntity.findById(deck.id)
-        await entity.updateAttributes({
-            userId: deck.userId,
-            name: deck.name
-        })
+        try {
+            const entity = await DeckEntity.findById(deck.id)
+            await entity.updateAttributes({
+                userId: deck.userId,
+                name: deck.name
+            })
+        } catch (e) {
+            throw new Error("Unable to update non-existent deck!")
+        }
+
         return deck
     }
 

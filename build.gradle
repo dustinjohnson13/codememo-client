@@ -4,6 +4,8 @@ plugins {
 
 apply plugin: 'base'
 
+buildDir = './gradle-build'
+
 node {
     download = true
 
@@ -35,7 +37,7 @@ task flow(type: YarnTask, dependsOn: [install]) {
 }
 
 task test(type: YarnTask, dependsOn: [flow, install]) {
-    args = ['run', 'test']
+    args = ['run', 'test:ci']
 
     execOverrides {
         it.environment['CI'] = 'true'
@@ -52,6 +54,7 @@ task productionBuild(type: YarnTask, dependsOn: [install]) {
 }
 
 clean.delete << nodeModules
+clean.delete << file('build')
 
 tasks.build.dependsOn flow, test, productionBuild
 

@@ -25,6 +25,17 @@ stage('Test') {
             sh cmd
 
             throw err
+        } finally {
+            junit "gradle-build/test-results/**/*.xml"
+
+            publishHTML target: [
+                    allowMissing         : false,
+                    alwaysLinkToLastBuild: false,
+                    keepAll              : true,
+                    reportDir            : 'gradle-build/coverage/lcov-report',
+                    reportFiles          : 'index.html',
+                    reportName           : "Coverage Report"
+            ]
         }
     }
 }

@@ -23,10 +23,19 @@
     "sqlite3": "^3.1.9",
     "uuid": "^3.1.0"
   },
+  "jest-junit": {
+    "suiteName": "CodeMemo Tests",
+    "output": "./gradle-build/test-results/junit.xml",
+    "classNameTemplate": "{classname}-{title}",
+    "titleTemplate": "{classname}-{title}",
+    "ancestorSeparator": " › ",
+    "usePathForSuiteName": "true"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
+    "test:ci": "react-scripts test --env=jsdom --coverage --coverageDirectory ./gradle-build/coverage --testResultsProcessor ./node_modules/jest-junit",
     "eject": "react-scripts eject",
     "deploy": "gh-pages -d build"
   },
@@ -36,6 +45,7 @@
     "gh-pages": "^1.0.0",
     "jest": "21.0.0-beta.1",
     "jest-cli": "^20.0.4",
+    "jest-junit": "^2.1.0",
     "react-dom": "^15.6.1",
     "react-test-renderer": "^15.6.1",
     "redux-mock-store": "^1.2.3"

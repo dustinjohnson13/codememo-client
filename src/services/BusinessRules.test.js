@@ -21,7 +21,7 @@ describe('BusinessRules', () => {
             [Answer.EASY]: currentTime + (TWO_DAYS_IN_SECONDS * 2)
         }
 
-        const original = new Card('1', 'deckId', 'Some question', 'Some answer', currentGoodInterval, 2000)
+        const original = new Card('1', 'templateId', 1, currentGoodInterval, 2000)
 
         const actuals = [Answer.FAIL, Answer.HARD, Answer.GOOD, Answer.EASY].map(it => {
             return {answer: it, newCard: businessRules.cardAnswered(currentTime, original, it)}
@@ -47,7 +47,7 @@ describe('BusinessRules', () => {
             [Answer.EASY]: (TWO_DAYS_IN_SECONDS * 4)
         }
 
-        const original = new Card('1', 'deckId', 'Some question', 'Some answer', currentGoodInterval, 2000)
+        const original = new Card('1', 'templateId', 1, currentGoodInterval, 2000)
 
         const actuals = [Answer.FAIL, Answer.HARD, Answer.GOOD, Answer.EASY].map(it => {
             return {answer: it, newCard: businessRules.cardAnswered(currentTime, original, it)}
@@ -64,7 +64,7 @@ describe('BusinessRules', () => {
     it('should return a multiple of two for card good interval for all current intervals', () => {
 
         const currentGoodInterval = TWO_DAYS_IN_SECONDS
-        const card = new Card('1', 'deckId', 'Some question', 'Some answer', currentGoodInterval, 2000)
+        const card = new Card('1', 'templateId', 1, currentGoodInterval, 2000)
 
         const expectedIntervals = [
             HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, TWO_DAYS_IN_SECONDS * 2
@@ -78,10 +78,10 @@ describe('BusinessRules', () => {
     it('should map cards to api cards based on due time', () => {
         const currentTime = 2000
 
-        const brandNew = new Card('1', 'deckId', 'Some Question?', 'Some Answer', ONE_DAY_IN_SECONDS, DUE_IMMEDIATELY)
-        const dueEarlier = new Card('2', 'deckId', "I'm due?", 'Sure am.', ONE_DAY_IN_SECONDS, currentTime - 100)
-        const dueNow = new Card('3', 'deckId', "I'm due?", 'Sure am.', ONE_DAY_IN_SECONDS, currentTime)
-        const ok = new Card('4', 'deckId', "Am I due?", 'Nope.', ONE_DAY_IN_SECONDS, currentTime + 1);
+        const brandNew = new Card('1', 'templateId', 1, ONE_DAY_IN_SECONDS, DUE_IMMEDIATELY)
+        const dueEarlier = new Card('2', 'templateId', 1, ONE_DAY_IN_SECONDS, currentTime - 100)
+        const dueNow = new Card('3', 'templateId', 1, ONE_DAY_IN_SECONDS, currentTime)
+        const ok = new Card('4', 'templateId', 1, ONE_DAY_IN_SECONDS, currentTime + 1);
 
         [brandNew, dueEarlier, dueNow, ok].forEach((card, idx) => {
             const apiCard = businessRules.cardToAPICard(currentTime, card)
@@ -106,7 +106,8 @@ describe('BusinessRules', () => {
             const newCount = multiplier * 2
 
             expectedCounts.push({expectedTotal: totalCount, expectedDue: dueCount, expectedNew: newCount})
-            cards.push(fakeCards(currentTime, deck.id, totalCount, dueCount, newCount, true))
+            const {templates, cards: cardsForTemplates} = fakeCards(currentTime, deck.id, totalCount, dueCount, newCount, true)
+            cards.push(cardsForTemplates)
         })
 
 

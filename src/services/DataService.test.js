@@ -1,7 +1,7 @@
 //@flow
 import {Answer, CollectionResponse} from "./APIDomain"
 import DaoDelegatingDataService from "./DaoDelegatingDataService"
-import {Deck, DUE_IMMEDIATELY, NO_ID, TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
+import {Card, Deck, DUE_IMMEDIATELY, NO_ID, TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
 import {FrozenClock} from "./__mocks__/API"
 import {fakeCards} from "../fakeData/InMemoryDao"
 
@@ -31,10 +31,14 @@ export function testServiceWithDaoImplementation(createDao: any) {
                     .then(user => dao.saveDeck(new Deck(NO_ID, user.id, TEST_DECK_NAME)))
                     .then(deck => {
                         const currentTime = clock.epochSeconds()
-                        const cards = fakeCards(currentTime, deck.id, TOTAL_COUNT,
+                        const {templates, cards} = fakeCards(currentTime, deck.id, TOTAL_COUNT,
                             DUE_COUNT, TOTAL_COUNT - GOOD_COUNT - DUE_COUNT, false)
 
-                        return Promise.all(cards.map(card => dao.saveCard(card)))
+                        return Promise.all(templates.map(it => dao.saveTemplate(it))).then(templates =>
+                            Promise.all(cards.map((card, idx) => {
+                                const cardWithTemplateId = new Card(card.id, templates[idx].id, card.cardNumber, card.goodInterval, card.due)
+                                return dao.saveCard(cardWithTemplateId)
+                            })))
                     }))
         })
 

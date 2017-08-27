@@ -83,7 +83,7 @@ describe('DynamoDBDao', () => {
     }
 
     function getDynamoDBCard(id: string): Promise<Card | void> {
-        return getById(CARD_TABLE, id).then(item => item ? new Card(item.id, item.dId, item.q, item.a, item.g, item.d) : undefined)
+        return getById(CARD_TABLE, id).then(item => item ? new Card(item.id, item.tId, item.n, item.g, item.d) : undefined)
     }
 
     testWithDaoImplementation(() => dao, loadDynamoDB,

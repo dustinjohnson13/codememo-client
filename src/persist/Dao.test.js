@@ -111,9 +111,9 @@ testWithDaoImplementation(createDao: () => Dao,
             })
 
             it('should be able to create a card', async () => {
-                const deckId = "1"
-                const entity = newCard(deckId, "Question 1?", "Answer 1?")
-                const entity2 = newCard(deckId, "Question 2?", "Answer 2?")
+                const templateId = "1"
+                const entity = newCard(templateId, 1)
+                const entity2 = newCard(templateId, 2)
                 const entities = [entity, entity2]
 
                 const persistedCards = await Promise.all(entities.map(original => dao.saveCard(original)))
@@ -122,7 +122,7 @@ testWithDaoImplementation(createDao: () => Dao,
                 entities.forEach(original => expect(original.id).toEqual(NO_ID))
                 persistedCards.forEach(entity => expect(entity.id).not.toEqual(NO_ID))
 
-                const originalByQuestion = new Map(entities.map(i => [i.question, i]))
+                const originalByQuestion = new Map(entities.map(i => [i.cardNumber, i]))
 
                 const dbCards = await Promise.all(persistedCards.map(entity => getDBCard(entity.id)))
 
@@ -131,16 +131,15 @@ testWithDaoImplementation(createDao: () => Dao,
                         throw new Error("Unable to find a card in the database!")
                     }
 
-                    const original = originalByQuestion.get(dbCard.question)
+                    const original = originalByQuestion.get(dbCard.cardNumber)
                     if (!original) {
-                        throw new Error(`Unable to find the original card with question ${dbCard.question}!`)
+                        throw new Error(`Unable to find the original card with card number ${dbCard.cardNumber}!`)
                     }
 
-                    expect(dbCard.question).toEqual(original.question)
-                    expect(dbCard.answer).toEqual(original.answer)
+                    expect(dbCard.templateId).toEqual(original.templateId)
+                    expect(dbCard.cardNumber).toEqual(original.cardNumber)
                     expect(dbCard.goodInterval).toEqual(original.goodInterval)
                     expect(dbCard.due).toEqual(original.due)
-                    expect(dbCard.deckId).toEqual(original.deckId)
                 })
             })
 
@@ -223,6 +222,23 @@ testWithDaoImplementation(createDao: () => Dao,
                 expect(user.email).toEqual("someone@blah.com")
             })
 
+            it('should be able to query for a template', async () => {
+
+                const preLoadedIds = await loadCollectionData()
+                const id = preLoadedIds.templates[2]
+                const result = await dao.findTemplate(id)
+
+                if (!result) {
+                    throw new Error(`Unable to find template with id ${id}`)
+                }
+
+                expect(result.id).toEqual(id)
+                expect(result.deckId).toEqual(preLoadedIds.decks[0])
+                expect(result.type).toEqual(Templates.FRONT_BACK)
+                expect(result.field1).toEqual("Question 3?")
+                expect(result.field2).toEqual("Answer 3?")
+            })
+
             it('should be able to query for a card', async () => {
 
                 const preLoadedIds = await loadCollectionData()
@@ -234,9 +250,9 @@ testWithDaoImplementation(createDao: () => Dao,
                 }
 
                 expect(result.id).toEqual(id)
-                expect(result.deckId).toEqual(preLoadedIds.decks[0])
-                expect(result.question).toEqual("Question 3?")
-                expect(result.answer).toEqual("Answer 3?")
+                expect(result.templateId).toEqual(preLoadedIds.templates[2])
+                expect(result.cardNumber).toEqual(1)
+                expect(result.goodInterval).toEqual(ONE_DAY_IN_SECONDS)
                 expect(result.due).toEqual(1508331802)
             })
 
@@ -322,13 +338,12 @@ testWithDaoImplementation(createDao: () => Dao,
                 const preLoadedIds = await loadCollectionData()
                 const id = preLoadedIds.cards[2]
 
-                const newDeckId = "newDeckId"
-                const newQuestion = "newQuestion?"
-                const newAnswer = "newAnswer?"
+                const newTemplateId = "newDeckId"
+                const newCardNumber = 2
                 const newGoodInterval = TWO_DAYS_IN_SECONDS
                 const newDue = 12
 
-                await dao.updateCard(new Card(id, newDeckId, newQuestion, newAnswer, TWO_DAYS_IN_SECONDS, newDue))
+                await dao.updateCard(new Card(id, newTemplateId, newCardNumber, TWO_DAYS_IN_SECONDS, newDue))
 
                 const dbCard = await getDBCard(id)
 
@@ -336,9 +351,8 @@ testWithDaoImplementation(createDao: () => Dao,
                     throw new Error(`Unable to find db card with id ${id}`)
                 }
 
-                expect(dbCard.deckId).toEqual(newDeckId)
-                expect(dbCard.question).toEqual(newQuestion)
-                expect(dbCard.answer).toEqual(newAnswer)
+                expect(dbCard.templateId).toEqual(newTemplateId)
+                expect(dbCard.cardNumber).toEqual(newCardNumber)
                 expect(dbCard.goodInterval).toEqual(newGoodInterval)
                 expect(dbCard.due).toEqual(newDue)
             })
@@ -399,7 +413,7 @@ testWithDaoImplementation(createDao: () => Dao,
             it('should throw exception on updating new card', async () => {
                 expect.assertions(1)
 
-                const entity = newCard("2", "Some Question", "Some Answer")
+                const entity = newCard("2", 1)
                 try {
                     await dao.updateCard(entity)
                 } catch (e) {
@@ -451,7 +465,7 @@ testWithDaoImplementation(createDao: () => Dao,
 
                 const id = '9999999'
 
-                const entity = new Card(id, '1', "Some Question", "Some Answer", ONE_DAY_IN_SECONDS, 2000)
+                const entity = new Card(id, '1', 1, ONE_DAY_IN_SECONDS, 2000)
                 try {
                     await dao.updateCard(entity)
                 } catch (e) {
@@ -479,10 +493,7 @@ testWithDaoImplementation(createDao: () => Dao,
                 const cards = await dao.findCardsByDeckId(id)
 
                 expect(cards.length).toEqual(4)
-                expect(cards.map(it => it.id)).toEqual(preLoadedIds.cards.slice(0, 4))
-                expect(cards.map(it => it.question)).toEqual([
-                    "Question 1?", "Question 2?", "Question 3?", "Question 4?",
-                ])
+                expect(cards.map(it => it.id).sort()).toEqual(preLoadedIds.cards.slice(0, 4).sort())
             })
 
             it('should be able to find user by email', async () => {

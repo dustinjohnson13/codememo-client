@@ -14,13 +14,6 @@ export const DUE_IMMEDIATELY = -1
 export const TEST_USER_EMAIL = 'someone@blah.com'
 export const TEST_DECK_NAME = 'Test Deck'
 
-export const newUser = (email: string) => new User(NO_ID, email)
-export const newDeck = (userId: string, name: string) => new Deck(NO_ID, userId, name)
-export const newTemplate = (deckId: string, type: TemplateType, field1: string, field2: string) =>
-    new Template(NO_ID, deckId, type, field1, field2)
-export const newCard = (deckId: string, question: string, answer: string) =>
-    new Card(NO_ID, deckId, question, answer, ONE_DAY_IN_SECONDS, DUE_IMMEDIATELY)
-
 export const Templates = {
     FRONT_BACK: 'FRONT_BACK'
 }
@@ -85,17 +78,15 @@ export class Template {
 
 export class Card {
     +id: string
-    +deckId: string
-    +question: string
-    +answer: string
+    +templateId: string
+    +cardNumber: number
     +goodInterval: number
     +due: number
 
-    constructor(id: string, deckId: string, question: string, answer: string, goodInterval: number, due: number) {
+    constructor(id: string, templateId: string, cardNumber: number, goodInterval: number, due: number) {
         (this: any).id = id;
-        (this: any).deckId = deckId;
-        (this: any).question = question;
-        (this: any).answer = answer;
+        (this: any).templateId = templateId;
+        (this: any).cardNumber = cardNumber;
         (this: any).goodInterval = goodInterval;
         (this: any).due = due;
     }
@@ -133,6 +124,8 @@ export interface Dao {
 
     findUser(id: string): Promise<User | void>;
 
+    findTemplate(id: string): Promise<Template | void>;
+
     findCard(id: string): Promise<Card | void>;
 
     findDeck(id: string): Promise<Deck | void>;
@@ -143,3 +136,13 @@ export interface Dao {
 
     findUserByEmail(email: string): Promise<User | void>;
 }
+
+export const newUser = (email: string) => new User(NO_ID, email)
+
+export const newDeck = (userId: string, name: string) => new Deck(NO_ID, userId, name)
+
+export const newTemplate = (deckId: string, type: TemplateType, field1: string, field2: string) =>
+    new Template(NO_ID, deckId, type, field1, field2)
+
+export const newCard = (templateId: string, cardNumber: number) =>
+    new Card(NO_ID, templateId, cardNumber, ONE_DAY_IN_SECONDS, DUE_IMMEDIATELY)

@@ -5,7 +5,6 @@ import {testWithDaoImplementation} from "../persist/Dao.test"
 import {InMemoryDao} from "./InMemoryDao"
 import {ONE_DAY_IN_SECONDS} from "../services/APIDomain"
 import {testServiceWithDaoImplementation} from "../services/DataService.test"
-import type {TemplateType} from "../persist/Dao"
 
 describe('InMemoryDao', () => {
 
@@ -31,12 +30,12 @@ describe('InMemoryDao', () => {
 
             return dao.saveTemplate(entity)
         }))
-        const persistedCards = await Promise.all(idsFromZero.map(id => {
+        const persistedCards = await Promise.all(idsFromZero.map((id, idx) => {
             const deckId = (id < 5 ? persistedDecks[0].id : id < 9 ?
                 persistedDecks[1].id : id < 13 ? persistedDecks[2].id : persistedDecks[3].id).toString()
             const due = id % 4 === 0 ? DUE_IMMEDIATELY : 1508331802
 
-            const card = new Card(id.toString(), deckId, `Question ${id}?`, `Answer ${id}?`, ONE_DAY_IN_SECONDS, due)
+            const card = new Card(id.toString(), persistedTemplates[idx].id, 1, ONE_DAY_IN_SECONDS, due)
 
             return dao.saveCard(card)
         }))

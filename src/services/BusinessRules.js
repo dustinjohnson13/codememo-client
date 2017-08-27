@@ -30,7 +30,7 @@ export default class BusinessRules {
             default:
         }
 
-        return new Card(original.id, original.deckId, original.question, original.answer, newGoodInterval, newDue)
+        return new Card(original.id, original.templateId, original.cardNumber, newGoodInterval, newDue)
     }
 
     currentAnswerIntervals(card: Card): Array<number> {

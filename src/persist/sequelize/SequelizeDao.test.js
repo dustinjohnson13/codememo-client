@@ -1,10 +1,21 @@
 //@flow
 import {CardEntity, DeckEntity, SequelizeDao, TemplateEntity, UserEntity} from "./SequelizeDao"
 import {Sequelize} from 'sequelize'
-import {Card, Deck, Template, Templates, templateTypeFromDBId, templateTypeToDBId, TEST_USER_EMAIL, User} from "../Dao"
+import {
+    Card,
+    Deck,
+    DUE_IMMEDIATELY,
+    Template,
+    Templates,
+    templateTypeFromDBId,
+    templateTypeToDBId,
+    TEST_USER_EMAIL,
+    User
+} from "../Dao"
 import type {PreLoadedIds} from "../Dao.test"
 import {testWithDaoImplementation} from "../Dao.test"
 import {testServiceWithDaoImplementation} from "../../services/DataService.test"
+import {ONE_DAY_IN_SECONDS} from "../../services/APIDomain"
 
 describe('SequelizeDao', () => {
 
@@ -47,13 +58,12 @@ describe('SequelizeDao', () => {
                 field2: `Answer ${id}?`
             })
         }))
-        const persistedCards = await Promise.all(idsFromZero.map(id => {
+        const persistedCards = await Promise.all(idsFromZero.map((id, idx) => {
             return CardEntity.create({
-                question: `Question ${id}?`,
-                answer: `Answer ${id}?`,
-                deckId: id < 5 ? persistedDecks[0].id : id < 9 ?
-                    persistedDecks[1].id : id < 13 ? persistedDecks[2].id : persistedDecks[3].id,
-                due: id % 4 === 0 ? undefined : 1508331802
+                templateId: persistedTemplates[idx].id,
+                cardNumber: 1,
+                goodInterval: ONE_DAY_IN_SECONDS,
+                due: id % 4 === 0 ? DUE_IMMEDIATELY : 1508331802
             })
         }))
 
@@ -82,7 +92,7 @@ describe('SequelizeDao', () => {
 
     function getSequelizeCard(id: string): Promise<Card | void> {
         return CardEntity.findById(parseInt(id)).then(entity => entity ? new Card(entity.id.toString(),
-            entity.deckId.toString(), entity.question, entity.answer, entity.goodInterval, entity.due) : undefined)
+            entity.templateId.toString(), entity.cardNumber, entity.goodInterval, entity.due) : undefined)
     }
 
     testWithDaoImplementation(createDao, loadCollectionData,

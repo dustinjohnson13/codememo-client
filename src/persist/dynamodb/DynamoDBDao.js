@@ -10,6 +10,7 @@ import {
     NO_ID,
     Template,
     TEMPLATE_TABLE,
+    templateTypeFromDBId,
     templateTypeToDBId,
     User,
     USER_TABLE
@@ -26,18 +27,17 @@ const DEFAULT_WRITE_CAPACITY_UNITS = 1
 
 const ID_COLUMN = "id"
 const NAME_COLUMN = "n"
-const QUESTION_COLUMN = "q"
-const ANSWER_COLUMN = "a"
-const DECK_ID_COLUMN = "dId"
 const USER_ID_COLUMN = "uId"
 const GOOD_INTERVAL_COLUMN = "g"
 const DUE_COLUMN = "d"
 const FIELD1_COLUMN = "f1"
 const FIELD2_COLUMN = "f2"
 const TYPE_COLUMN = "t"
+const CARD_NUMBER_COLUMN = "n"
 
 const EMAIL_INDEX = "email"
 const DECK_ID_INDEX = "dId"
+const TEMPLATE_ID_INDEX = "tId"
 const USER_ID_INDEX = "uId"
 
 const hydrateUser = (item): User | void => {
@@ -48,8 +48,13 @@ const hydrateDeck = (item): Deck | void => {
     return item ? new Deck(item[ID_COLUMN], item[USER_ID_COLUMN], item[NAME_COLUMN]) : undefined
 }
 
+const hydrateTemplate = (item): Template | void => {
+    return item ? new Template(item[ID_COLUMN], item[DECK_ID_INDEX], templateTypeFromDBId(item[TYPE_COLUMN]),
+        item[FIELD1_COLUMN], item[FIELD2_COLUMN]) : undefined
+}
+
 const hydrateCard = (item): Card | void => {
-    return item ? new Card(item[ID_COLUMN], item[DECK_ID_COLUMN], item[QUESTION_COLUMN], item[ANSWER_COLUMN],
+    return item ? new Card(item[ID_COLUMN], item[TEMPLATE_ID_INDEX], item[CARD_NUMBER_COLUMN],
         item[GOOD_INTERVAL_COLUMN], item[DUE_COLUMN]) : undefined
 }
 
@@ -98,7 +103,7 @@ export default class DynamoDBDao implements Dao {
             this.createTable(USER_TABLE, [new IndexDefinition(EMAIL_INDEX, DYNAMODB_STRING)]),
             this.createTable(DECK_TABLE, [new IndexDefinition(USER_ID_INDEX, DYNAMODB_STRING)]),
             this.createTable(TEMPLATE_TABLE, [new IndexDefinition(DECK_ID_INDEX, DYNAMODB_STRING)]),
-            this.createTable(CARD_TABLE, [new IndexDefinition(DECK_ID_INDEX, DYNAMODB_STRING)])
+            this.createTable(CARD_TABLE, [new IndexDefinition(TEMPLATE_ID_INDEX, DYNAMODB_STRING)])
         ])
     }
 
@@ -141,15 +146,14 @@ export default class DynamoDBDao implements Dao {
     async saveCard(card: Card): Promise<Card> {
         const id = uuid.v1()
         const fields: Object = {
-            [QUESTION_COLUMN]: card.question,
-            [ANSWER_COLUMN]: card.answer,
-            [DECK_ID_INDEX]: card.deckId,
+            [TEMPLATE_ID_INDEX]: card.templateId,
+            [CARD_NUMBER_COLUMN]: card.cardNumber,
             [GOOD_INTERVAL_COLUMN]: card.goodInterval,
             [DUE_COLUMN]: card.due
         }
 
         await this.insert(CARD_TABLE, {[ID_COLUMN]: id}, fields)
-        return new Card(id, card.deckId, card.question, card.answer, card.goodInterval, card.due)
+        return new Card(id, card.templateId, card.cardNumber, card.goodInterval, card.due)
     }
 
     async saveDeck(deck: Deck): Promise<Deck> {
@@ -178,6 +182,10 @@ export default class DynamoDBDao implements Dao {
 
     findUser(id: string): Promise<User | void> {
         return this.findOne(USER_TABLE, {[ID_COLUMN]: id}).then(data => hydrateUser(data.Item))
+    }
+
+    findTemplate(id: string): Promise<Template | void> {
+        return this.findOne(TEMPLATE_TABLE, {[ID_COLUMN]: id}).then(data => hydrateTemplate(data.Item))
     }
 
     findCard(id: string): Promise<Card | void> {
@@ -232,9 +240,8 @@ export default class DynamoDBDao implements Dao {
         }
 
         const updates = new Map()
-        updates.set(DECK_ID_INDEX, card.deckId)
-        updates.set(QUESTION_COLUMN, card.question)
-        updates.set(ANSWER_COLUMN, card.answer)
+        updates.set(TEMPLATE_ID_INDEX, card.templateId)
+        updates.set(CARD_NUMBER_COLUMN, card.cardNumber)
         updates.set(GOOD_INTERVAL_COLUMN, card.goodInterval)
         updates.set(DUE_COLUMN, card.due)
 
@@ -454,6 +461,7 @@ export default class DynamoDBDao implements Dao {
 
             docClient.query(params, (err, data) => {
                 if (err) {
+                    console.log(params)
                     console.log("Unable to query. Error:", JSON.stringify(err, null, 2))
                     reject(err)
                 } else {
@@ -469,8 +477,13 @@ export default class DynamoDBDao implements Dao {
     }
 
     async findCardsByDeckId(deckId: string): Promise<Array<Card>> {
-        const items = await this.findByIndexQuery(CARD_TABLE, DECK_ID_INDEX, deckId)
-        return items.map(hydrateCard)
+        const templateItems = await this.findByIndexQuery(TEMPLATE_TABLE, DECK_ID_INDEX, deckId)
+        const templateIds = templateItems.map(item => item[ID_COLUMN])
+        // This returns an array of arrays
+        const items = await Promise.all(templateIds.map(templateId => this.findByIndexQuery(CARD_TABLE, TEMPLATE_ID_INDEX, templateId)))
+        return items.map(item => {
+            return hydrateCard(item[0])
+        })
     }
 
     async findUserByEmail(email: string): Promise<User | void> {

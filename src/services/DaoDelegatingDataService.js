@@ -3,7 +3,18 @@ import type {AnswerType, Clock, DataService} from "./APIDomain"
 import * as api from "./APIDomain"
 import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "./APIDomain"
 import type {Dao} from "../persist/Dao"
-import {Card, Deck, newCard, newDeck, newUser, TEST_USER_EMAIL, User} from "../persist/Dao"
+import {
+    Card,
+    Deck,
+    newCard,
+    newDeck,
+    newTemplate,
+    newUser,
+    Template,
+    Templates,
+    TEST_USER_EMAIL,
+    User
+} from "../persist/Dao"
 import BusinessRules from "./BusinessRules"
 
 export default class DaoDelegatingDataService implements DataService {
@@ -74,8 +85,9 @@ export default class DaoDelegatingDataService implements DataService {
     async addCard(deckId: string, question: string, answer: string): Promise<CardDetail> {
         const deck = await this.dao.findDeck(deckId)
         if (deck) {
-            const card = await this.dao.saveCard(newCard(deck.id, question, answer))
-            return this.cardToCardDetail(card)
+            const template = await this.dao.saveTemplate(newTemplate(deck.id, Templates.FRONT_BACK, question, answer))
+            const card = await this.dao.saveCard(newCard(template.id, 1))
+            return this.createCardDetail(template, card)
         } else {
             throw new Error(`No deck with id ${deckId}`)
         }
@@ -86,7 +98,11 @@ export default class DaoDelegatingDataService implements DataService {
         const details = []
         for (let card of cards) {
             if (card) {
-                details.push(this.cardToCardDetail(card))
+                const template = await this.dao.findTemplate(card.templateId)
+                if (!template) {
+                    throw new Error(`Unable to find template for card ${card.id}`)
+                }
+                details.push(this.createCardDetail(template, card))
             }
         }
         return new CardDetailResponse(details)
@@ -97,20 +113,25 @@ export default class DaoDelegatingDataService implements DataService {
         if (card) {
             const updated = this.businessRules.cardAnswered(this.clock.epochSeconds(), card, answer)
             const newCard = await this.dao.updateCard(updated)
-            return this.cardToCardDetail(newCard)
+            const template = await this.dao.findTemplate(card.templateId)
+            if (!template) {
+                throw new Error(`Unable to find template for card ${id}`)
+            }
+
+            return this.createCardDetail(template, newCard)
         } else {
             // TODO: Need to send back an error response
             throw new Error(`Card with id ${id} doens't exist.`)
         }
     }
 
-    cardToCardDetail(card: Card): CardDetail {
+    createCardDetail(template: Template, card: Card): CardDetail {
         const intervals = this.businessRules.currentAnswerIntervals(card)
         const failInterval = intervals[0]
         const hardInterval = intervals[1]
         const goodInterval = intervals[2]
         const easyInterval = intervals[3]
-        return new CardDetail(card.id, card.question, card.answer,
+        return new CardDetail(card.id, template.field1, template.field2,
             failInterval, hardInterval, goodInterval, easyInterval, card.due)
     }
 }

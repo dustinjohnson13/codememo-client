@@ -1,6 +1,6 @@
 //@flow
 import type {Dao, Entity} from "../persist/Dao"
-import {Card, Deck, newCard, newDeck, NO_ID, Template, User} from "../persist/Dao"
+import {Card, Deck, newCard, newDeck, NO_ID, Template, Templates, User} from "../persist/Dao"
 import {ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../services/APIDomain"
 
 export const fakeDecks = (userId: string, count: number, setId: boolean): Array<Deck> => {
@@ -13,18 +13,24 @@ export const fakeDecks = (userId: string, count: number, setId: boolean): Array<
     return decks;
 }
 
+// TODO: Split up template and card creation
 export const fakeCards = (currentTime: number, deckId: string, totalCount: number,
-                          dueCount: number, newCount: number, setId: boolean): Array<Card> => {
+                          dueCount: number, newCount: number, setId: boolean): { templates: Array<Template>, cards: Array<Card> } => {
     const goodCount = totalCount - dueCount - newCount
 
     if (dueCount + newCount > totalCount) {
         throw new Error("Cannot specify more due and new cards than total!")
     }
 
+    const templates = []
     const cards = []
     for (let i = 0; i < totalCount; i++) {
         const question = `Question Number ${i}?`
         const answer = `Answer Number ${i}`
+
+        const templateId = setId ? (i * 100).toString() : NO_ID
+        const template = new Template(templateId, deckId, Templates.FRONT_BACK, question, answer)
+        templates.push(template)
 
         if (i < goodCount + dueCount) {
             const multiplier = i + 1
@@ -35,20 +41,20 @@ export const fakeCards = (currentTime: number, deckId: string, totalCount: numbe
             const dueTime = goodCard ? currentTime + (ONE_DAY_IN_SECONDS * multiplier) :
                 currentTime - (ONE_DAY_IN_SECONDS * multiplier)
 
-            const card = new Card(id, deckId, question, answer, goodInterval, dueTime)
+            const card = new Card(id, template.id, 1, goodInterval, dueTime)
             cards.push(card)
         } else {
-            let card = newCard(deckId, question, answer)
+            let card = newCard(template.id, 1)
 
             if (setId) {
-                card = new Card(i.toString(), card.deckId, card.question, card.answer, card.goodInterval, card.due)
+                card = new Card(i.toString(), card.templateId, card.cardNumber, card.goodInterval, card.due)
             }
 
             cards.push(card)
         }
     }
 
-    return cards
+    return {templates: templates, cards: cards}
 }
 
 export class InMemoryDao implements Dao {
@@ -105,7 +111,7 @@ export class InMemoryDao implements Dao {
     }
 
     saveCard(card: Card): Promise<Card> {
-        const creator = id => new Card(id, card.deckId, card.question, card.answer, card.goodInterval, card.due)
+        const creator = id => new Card(id, card.templateId, card.cardNumber, card.goodInterval, card.due)
         this.cards = this.saveEntity(creator, this.cards)
         return Promise.resolve(this.cards[this.cards.length - 1])
     }
@@ -187,7 +193,8 @@ export class InMemoryDao implements Dao {
     }
 
     findCardsByDeckId(deckId: string): Promise<Array<Card>> {
-        return Promise.resolve(this.cards.filter(it => it.deckId === deckId))
+        const templateIds = this.templates.filter(it => it.deckId === deckId).map(it => it.id)
+        return Promise.resolve(this.cards.filter(it => templateIds.indexOf(it.templateId) !== -1))
     }
 
     findUserByEmail(email: string): Promise<User | void> {

@@ -2,7 +2,16 @@
 import {Sequelize} from 'sequelize'
 import type {Dao} from "../Dao"
 import {
-    Card, CARD_TABLE, Deck, DECK_TABLE, NO_ID, Template, TEMPLATE_TABLE, templateTypeToDBId, User,
+    Card,
+    CARD_TABLE,
+    Deck,
+    DECK_TABLE,
+    NO_ID,
+    Template,
+    TEMPLATE_TABLE,
+    templateTypeFromDBId,
+    templateTypeToDBId,
+    User,
     USER_TABLE
 } from "../Dao"
 
@@ -44,14 +53,11 @@ export const TemplateEntity = modelDefiner.define(TEMPLATE_TABLE, {
 })
 
 export const CardEntity = modelDefiner.define(CARD_TABLE, {
-    deckId: {
+    templateId: {
         type: Sequelize.INTEGER
     },
-    question: {
-        type: Sequelize.STRING
-    },
-    answer: {
-        type: Sequelize.STRING
+    cardNumber: {
+        type: Sequelize.INTEGER
     },
     goodInterval: {
         type: Sequelize.INTEGER
@@ -65,8 +71,12 @@ const hydrateDeck = (entity: DeckEntity): Deck | void => {
     return entity ? new Deck(entity.id.toString(), entity.userId.toString(), entity.name) : undefined
 }
 
+const hydrateTemplate = (entity: TemplateEntity): Template | void => {
+    return entity ? new Template(entity.id.toString(), entity.deckId.toString(), templateTypeFromDBId(entity.type), entity.field1, entity.field2) : undefined
+}
+
 const hydrateCard = (entity: CardEntity): Card | void => {
-    return entity ? new Card(entity.id.toString(), entity.deckId.toString(), entity.question, entity.answer, entity.goodInterval, entity.due) : undefined
+    return entity ? new Card(entity.id.toString(), entity.templateId.toString(), entity.cardNumber, entity.goodInterval, entity.due) : undefined
 }
 
 const hydrateUser = (entity: UserEntity): User | void => {
@@ -139,9 +149,8 @@ export class SequelizeDao implements Dao {
 
     saveCard(card: Card): Promise<Card> {
         return CardEntity.create({
-            deckId: card.deckId,
-            question: card.question,
-            answer: card.answer,
+            templateId: card.templateId,
+            cardNumber: card.cardNumber,
             goodInterval: card.goodInterval,
             due: card.due
         })
@@ -155,9 +164,8 @@ export class SequelizeDao implements Dao {
         try {
             const entity = await CardEntity.findById(card.id)
             await entity.updateAttributes({
-                deckId: card.deckId,
-                question: card.question,
-                answer: card.answer,
+                templateId: card.templateId,
+                cardNumber: card.cardNumber,
                 goodInterval: card.goodInterval,
                 due: card.due
             })
@@ -228,6 +236,10 @@ export class SequelizeDao implements Dao {
         return UserEntity.findById(id).then((entity) => hydrateUser(entity))
     }
 
+    findTemplate(id: string): Promise<Template | void> {
+        return TemplateEntity.findById(id).then(entity => hydrateTemplate(entity))
+    }
+
     findCard(id: string): Promise<Card | void> {
         return CardEntity.findById(id).then(entity => hydrateCard(entity))
     }
@@ -247,13 +259,23 @@ export class SequelizeDao implements Dao {
         })
     }
 
-    findCardsByDeckId(deckId: string): Promise<Array<Card>> {
-        const q = CardEntity.findAll({
+    async findCardsByDeckId(deckId: string): Promise<Array<Card>> {
+        const templates = await TemplateEntity.findAll({
             where: {
                 deckId: deckId
             }
         })
-        return q.then(entities => entities.map(hydrateCard))
+
+        const templateIds = templates.map(it => it.id)
+
+        const entities = await CardEntity.findAll({
+            where: {
+                templateId: {
+                    $in: templateIds
+                }
+            }
+        })
+        return entities.map(hydrateCard)
     }
 
     findUserByEmail(email: string): Promise<User | void> {

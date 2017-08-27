@@ -1,7 +1,19 @@
 //@flow
 import IndexDefinition from "./IndexDefinition"
 import type {Dao} from "../Dao"
-import {ALL_TABLES, Card, CARD_TABLE, Deck, DECK_TABLE, NO_ID, User, USER_TABLE} from "../Dao"
+import {
+    ALL_TABLES,
+    Card,
+    CARD_TABLE,
+    Deck,
+    DECK_TABLE,
+    NO_ID,
+    Template,
+    TEMPLATE_TABLE,
+    templateTypeToDBId,
+    User,
+    USER_TABLE
+} from "../Dao"
 import uuid from 'uuid'
 import AWS from "aws-sdk"
 
@@ -20,6 +32,9 @@ const DECK_ID_COLUMN = "dId"
 const USER_ID_COLUMN = "uId"
 const GOOD_INTERVAL_COLUMN = "g"
 const DUE_COLUMN = "d"
+const FIELD1_COLUMN = "f1"
+const FIELD2_COLUMN = "f2"
+const TYPE_COLUMN = "t"
 
 const EMAIL_INDEX = "email"
 const DECK_ID_INDEX = "dId"
@@ -82,6 +97,7 @@ export default class DynamoDBDao implements Dao {
         await Promise.all([
             this.createTable(USER_TABLE, [new IndexDefinition(EMAIL_INDEX, DYNAMODB_STRING)]),
             this.createTable(DECK_TABLE, [new IndexDefinition(USER_ID_INDEX, DYNAMODB_STRING)]),
+            this.createTable(TEMPLATE_TABLE, [new IndexDefinition(DECK_ID_INDEX, DYNAMODB_STRING)]),
             this.createTable(CARD_TABLE, [new IndexDefinition(DECK_ID_INDEX, DYNAMODB_STRING)])
         ])
     }
@@ -109,6 +125,19 @@ export default class DynamoDBDao implements Dao {
         return new User(id, user.email)
     }
 
+    async saveTemplate(template: Template): Promise<Template> {
+        const id = uuid.v1()
+        const fields: Object = {
+            [DECK_ID_INDEX]: template.deckId,
+            [TYPE_COLUMN]: templateTypeToDBId(template.type),
+            [FIELD1_COLUMN]: template.field1,
+            [FIELD2_COLUMN]: template.field2
+        }
+
+        await this.insert(TEMPLATE_TABLE, {[ID_COLUMN]: id}, fields)
+        return new Template(id, template.deckId, template.type, template.field1, template.field2)
+    }
+
     async saveCard(card: Card): Promise<Card> {
         const id = uuid.v1()
         const fields: Object = {
@@ -133,6 +162,10 @@ export default class DynamoDBDao implements Dao {
 
     deleteUser(id: string): Promise<string> {
         return this.deleteEntity(USER_TABLE, {[ID_COLUMN]: id}).then(() => id)
+    }
+
+    deleteTemplate(id: string): Promise<string> {
+        return this.deleteEntity(TEMPLATE_TABLE, {[ID_COLUMN]: id}).then(() => id)
     }
 
     deleteCard(id: string): Promise<string> {
@@ -169,6 +202,25 @@ export default class DynamoDBDao implements Dao {
             .then(() => user)
             .catch(err => {
                 throw new Error("Unable to update non-existent user!")
+            })
+    }
+
+    updateTemplate(template: Template): Promise<Template> {
+        const id = template.id
+
+        if (id === NO_ID) {
+            throw new Error("Unable to update non-persisted template!")
+        }
+
+        const updates = new Map()
+        updates.set(DECK_ID_INDEX, template.deckId)
+        updates.set(TYPE_COLUMN, templateTypeToDBId(template.type))
+        updates.set(FIELD1_COLUMN, template.field1)
+        updates.set(FIELD2_COLUMN, template.field2)
+
+        return this.update(TEMPLATE_TABLE, {[ID_COLUMN]: id}, [updates]).then(() => template)
+            .catch(err => {
+                throw new Error("Unable to update non-existent template!")
             })
     }
 

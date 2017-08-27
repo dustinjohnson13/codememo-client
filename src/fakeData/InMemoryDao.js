@@ -1,6 +1,6 @@
 //@flow
 import type {Dao, Entity} from "../persist/Dao"
-import {Card, Deck, newCard, newDeck, NO_ID, User} from "../persist/Dao"
+import {Card, Deck, newCard, newDeck, NO_ID, Template, User} from "../persist/Dao"
 import {ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../services/APIDomain"
 
 export const fakeDecks = (userId: string, count: number, setId: boolean): Array<Deck> => {
@@ -54,6 +54,7 @@ export const fakeCards = (currentTime: number, deckId: string, totalCount: numbe
 export class InMemoryDao implements Dao {
     users: Array<User> = []
     decks: Array<Deck> = []
+    templates: Array<Template> = []
     cards: Array<Card> = []
     idCounter: number
 
@@ -80,6 +81,27 @@ export class InMemoryDao implements Dao {
 
         this.users = this.updateEntity(user, this.users)
         return Promise.resolve(user)
+    }
+
+    saveTemplate(template: Template): Promise<Template> {
+        const creator = id => new Template(id, template.deckId, template.type, template.field1, template.field2)
+        this.templates = this.saveEntity(creator, this.templates)
+        return Promise.resolve(this.templates[this.templates.length - 1])
+    }
+
+    updateTemplate(template: Template): Promise<Template> {
+        const id = template.id
+
+        if (id === NO_ID) {
+            throw new Error("Unable to update non-persisted template!")
+        }
+
+        if (this.templates.find(it => it.id === id) === undefined) {
+            throw new Error("Unable to update non-existent template!")
+        }
+
+        this.templates = this.updateEntity(template, this.templates)
+        return Promise.resolve(template)
     }
 
     saveCard(card: Card): Promise<Card> {
@@ -129,6 +151,11 @@ export class InMemoryDao implements Dao {
         return Promise.resolve(id)
     }
 
+    deleteTemplate(id: string): Promise<string> {
+        this.templates = this.templates.filter(it => it.id !== id)
+        return Promise.resolve(id)
+    }
+
     deleteCard(id: string): Promise<string> {
         this.cards = this.cards.filter(it => it.id !== id)
         return Promise.resolve(id)
@@ -141,6 +168,10 @@ export class InMemoryDao implements Dao {
 
     findUser(id: string): Promise<User | void> {
         return this.findEntity(id, this.users)
+    }
+
+    findTemplate(id: string): Promise<Template | void> {
+        return this.findEntity(id, this.templates)
     }
 
     findCard(id: string): Promise<Card | void> {

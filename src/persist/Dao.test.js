@@ -1,12 +1,25 @@
 //@flow
 import type {Dao} from "./Dao"
-import {Card, Deck, newCard, newDeck, newUser, NO_ID, TEST_USER_EMAIL, User} from "./Dao"
+import {
+    Card,
+    Deck,
+    newCard,
+    newDeck,
+    newTemplate,
+    newUser,
+    NO_ID,
+    Template,
+    Templates,
+    TEST_USER_EMAIL,
+    User
+} from "./Dao"
 import {ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../services/APIDomain"
 
 export type PreLoadedIds = {
-    users: Array<string>,
-    decks: Array<string>,
-    cards: Array<string>
+    +users: Array<string>,
+    +decks: Array<string>,
+    +templates: Array<string>,
+    +cards: Array<string>
 }
 
 describe('Placeholder', () => {
@@ -20,6 +33,7 @@ testWithDaoImplementation(createDao: () => Dao,
                           loadCollectionData: () => Promise<PreLoadedIds>,
                           getDBUser: (id: string) => Promise<User | void>,
                           getDBDeck: (id: string) => Promise<Deck | void>,
+                          getDBTemplate: (id: string) => Promise<Template | void>,
                           getDBCard: (id: string) => Promise<Card | void>) {
 
     describe('Dao', () => {
@@ -62,6 +76,39 @@ testWithDaoImplementation(createDao: () => Dao,
             //             done()
             //         })
             // })
+
+            it('should be able to create a template', async () => {
+                const deckId = "1"
+                const entity = newTemplate(deckId, Templates.FRONT_BACK, "Question 1?", "Answer 1?")
+                const entity2 = newTemplate(deckId, Templates.FRONT_BACK, "Question 2?", "Answer 2?")
+                const entities = [entity, entity2]
+
+                const persistedCards = await Promise.all(entities.map(original => dao.saveTemplate(original)))
+                expect(persistedCards.length).toEqual(entities.length)
+
+                entities.forEach(original => expect(original.id).toEqual(NO_ID))
+                persistedCards.forEach(entity => expect(entity.id).not.toEqual(NO_ID))
+
+                const originalByQuestion = new Map(entities.map(i => [i.field1, i]))
+
+                const dbCards = await Promise.all(persistedCards.map(entity => getDBTemplate(entity.id)))
+
+                dbCards.forEach((dbEntity?: Template) => {
+                    if (!dbEntity) {
+                        throw new Error("Unable to find a template in the database!")
+                    }
+
+                    const original = originalByQuestion.get(dbEntity.field1)
+                    if (!original) {
+                        throw new Error(`Unable to find the original template with field1 ${dbEntity.field1}!`)
+                    }
+
+                    expect(dbEntity.deckId).toEqual(original.deckId)
+                    expect(dbEntity.type).toEqual(original.type)
+                    expect(dbEntity.field1).toEqual(original.field1)
+                    expect(dbEntity.field2).toEqual(original.field2)
+                })
+            })
 
             it('should be able to create a card', async () => {
                 const deckId = "1"
@@ -126,6 +173,17 @@ testWithDaoImplementation(createDao: () => Dao,
                 await dao.deleteUser(id)
 
                 const result = await getDBUser(id)
+                expect(result).toBeUndefined()
+            })
+
+            it('should be able to delete a template', async () => {
+
+                const preLoadedIds = await loadCollectionData()
+                const id = preLoadedIds.templates[0]
+
+                await dao.deleteTemplate(id)
+
+                const result = await getDBTemplate(id)
                 expect(result).toBeUndefined()
             })
 
@@ -236,6 +294,29 @@ testWithDaoImplementation(createDao: () => Dao,
                 expect(dbUser.email).toEqual(newEmail)
             })
 
+            it('should be able to update a template', async () => {
+
+                const preLoadedIds = await loadCollectionData()
+                const id = preLoadedIds.templates[2]
+
+                const newDeckId = "newDeckId"
+                const newField1 = "newQuestion?"
+                const newField2 = "newAnswer?"
+
+                await dao.updateTemplate(new Template(id, newDeckId, Templates.FRONT_BACK, newField1, newField2))
+
+                const dbEntity = await getDBTemplate(id)
+
+                if (!dbEntity) {
+                    throw new Error(`Unable to find db template with id ${id}`)
+                }
+
+                expect(dbEntity.deckId).toEqual(newDeckId)
+                expect(dbEntity.type).toEqual(Templates.FRONT_BACK)
+                expect(dbEntity.field1).toEqual(newField1)
+                expect(dbEntity.field2).toEqual(newField2)
+            })
+
             it('should be able to update a card', async () => {
 
                 const preLoadedIds = await loadCollectionData()
@@ -304,6 +385,17 @@ testWithDaoImplementation(createDao: () => Dao,
                 }
             })
 
+            it('should throw exception on updating new template', async () => {
+                expect.assertions(1)
+
+                const entity = newTemplate("2", Templates.FRONT_BACK, "Some Question", "Some Answer")
+                try {
+                    await dao.updateTemplate(entity)
+                } catch (e) {
+                    expect(e).toEqual(new Error("Unable to update non-persisted template!"))
+                }
+            })
+
             it('should throw exception on updating new card', async () => {
                 expect.assertions(1)
 
@@ -338,6 +430,19 @@ testWithDaoImplementation(createDao: () => Dao,
                     await dao.updateDeck(entity)
                 } catch (e) {
                     expect(e).toEqual(new Error("Unable to update non-existent deck!"))
+                }
+            })
+
+            it('should throw exception on updating non-existent template', async () => {
+                expect.assertions(1)
+
+                const id = '9999999'
+
+                const entity = new Template(id, '1', Templates.FRONT_BACK, "Some Question", "Some Answer")
+                try {
+                    await dao.updateTemplate(entity)
+                } catch (e) {
+                    expect(e).toEqual(new Error("Unable to update non-existent template!"))
                 }
             })
 

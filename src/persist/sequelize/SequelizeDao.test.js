@@ -1,7 +1,7 @@
 //@flow
-import {CardEntity, DeckEntity, SequelizeDao, UserEntity} from "./SequelizeDao"
+import {CardEntity, DeckEntity, SequelizeDao, TemplateEntity, UserEntity} from "./SequelizeDao"
 import {Sequelize} from 'sequelize'
-import {Card, Deck, TEST_USER_EMAIL, User} from "../Dao"
+import {Card, Deck, Template, Templates, templateTypeFromDBId, templateTypeToDBId, TEST_USER_EMAIL, User} from "../Dao"
 import type {PreLoadedIds} from "../Dao.test"
 import {testWithDaoImplementation} from "../Dao.test"
 import {testServiceWithDaoImplementation} from "../../services/DataService.test"
@@ -38,6 +38,15 @@ describe('SequelizeDao', () => {
             })))
 
         const idsFromZero = Array.from({length: 16}, (v, k) => k + 1)
+        const persistedTemplates = await Promise.all(idsFromZero.map(id => {
+            return TemplateEntity.create({
+                deckId: id < 5 ? persistedDecks[0].id : id < 9 ?
+                    persistedDecks[1].id : id < 13 ? persistedDecks[2].id : persistedDecks[3].id,
+                type: templateTypeToDBId(Templates.FRONT_BACK),
+                field1: `Question ${id}?`,
+                field2: `Answer ${id}?`
+            })
+        }))
         const persistedCards = await Promise.all(idsFromZero.map(id => {
             return CardEntity.create({
                 question: `Question ${id}?`,
@@ -51,6 +60,7 @@ describe('SequelizeDao', () => {
         return {
             users: [persistedUser.id.toString()],
             decks: persistedDecks.map(it => it.id.toString()),
+            templates: persistedTemplates.map(it => it.id.toString()),
             cards: persistedCards.map(it => it.id.toString())
         }
     }
@@ -65,13 +75,18 @@ describe('SequelizeDao', () => {
             entity.userId.toString(), entity.name) : undefined)
     }
 
+    function getSequelizeTemplate(id: string): Promise<Template | void> {
+        return TemplateEntity.findById(parseInt(id)).then(entity => entity ? new Template(entity.id.toString(),
+            entity.deckId.toString(), templateTypeFromDBId(entity.type), entity.field1, entity.field2) : undefined)
+    }
+
     function getSequelizeCard(id: string): Promise<Card | void> {
         return CardEntity.findById(parseInt(id)).then(entity => entity ? new Card(entity.id.toString(),
             entity.deckId.toString(), entity.question, entity.answer, entity.goodInterval, entity.due) : undefined)
     }
 
     testWithDaoImplementation(createDao, loadCollectionData,
-        getSequelizeUser, getSequelizeDeck, getSequelizeCard)
+        getSequelizeUser, getSequelizeDeck, getSequelizeTemplate, getSequelizeCard)
 
     testServiceWithDaoImplementation(createDao)
 })

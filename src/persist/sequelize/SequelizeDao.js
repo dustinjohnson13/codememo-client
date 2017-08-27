@@ -1,7 +1,10 @@
 //@flow
 import {Sequelize} from 'sequelize'
 import type {Dao} from "../Dao"
-import {Card, CARD_TABLE, Deck, DECK_TABLE, NO_ID, User, USER_TABLE} from "../Dao"
+import {
+    Card, CARD_TABLE, Deck, DECK_TABLE, NO_ID, Template, TEMPLATE_TABLE, templateTypeToDBId, User,
+    USER_TABLE
+} from "../Dao"
 
 const modelDefiner = new Sequelize({
         dialect: 'sqlite',
@@ -23,6 +26,21 @@ export const DeckEntity = modelDefiner.define(DECK_TABLE, {
     name: {
         type: Sequelize.STRING
     },
+})
+
+export const TemplateEntity = modelDefiner.define(TEMPLATE_TABLE, {
+    deckId: {
+        type: Sequelize.INTEGER
+    },
+    type: {
+        type: Sequelize.INTEGER
+    },
+    field1: {
+        type: Sequelize.STRING
+    },
+    field2: {
+        type: Sequelize.STRING
+    }
 })
 
 export const CardEntity = modelDefiner.define(CARD_TABLE, {
@@ -66,6 +84,7 @@ export class SequelizeDao implements Dao {
     init(clearDatabase: boolean): Promise<void> {
         return UserEntity.sync({force: clearDatabase})
             .then(() => DeckEntity.sync({force: clearDatabase}))
+            .then(() => TemplateEntity.sync({force: clearDatabase}))
             .then(() => CardEntity.sync({force: clearDatabase}))
     }
 
@@ -88,6 +107,34 @@ export class SequelizeDao implements Dao {
             .catch(err => {
                 throw new Error("Unable to update non-existent user!")
             })
+    }
+
+    saveTemplate(entity: Template): Promise<Template> {
+        return TemplateEntity.create({
+            deckId: entity.deckId,
+            type: templateTypeToDBId(entity.type),
+            field1: entity.field1,
+            field2: entity.field2
+        })
+    }
+
+    async updateTemplate(template: Template): Promise<Template> {
+        if (template.id === NO_ID) {
+            throw new Error("Unable to update non-persisted template!")
+        }
+
+        try {
+            const entity = await TemplateEntity.findById(template.id)
+            await entity.updateAttributes({
+                deckId: template.deckId,
+                type: templateTypeToDBId(template.type),
+                field1: template.field1,
+                field2: template.field2,
+            })
+        } catch (e) {
+            throw new Error("Unable to update non-existent template!")
+        }
+        return template
     }
 
     saveCard(card: Card): Promise<Card> {
@@ -147,6 +194,14 @@ export class SequelizeDao implements Dao {
 
     deleteUser(id: string): Promise<string> {
         return UserEntity.destroy({
+            where: {
+                id: id
+            }
+        })
+    }
+
+    deleteTemplate(id: string): Promise<string> {
+        return TemplateEntity.destroy({
             where: {
                 id: id
             }

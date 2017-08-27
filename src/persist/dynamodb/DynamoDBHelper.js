@@ -1,6 +1,6 @@
 //@flow
 import freeport from 'freeport'
-import {CARD_TABLE, DECK_TABLE, USER_TABLE} from "../Dao"
+import {CARD_TABLE, DECK_TABLE, TEMPLATE_TABLE, USER_TABLE} from "../Dao"
 import type {PreLoadedIds} from "../Dao.test"
 
 const DynamoDbLocal = require('dynamodb-local')
@@ -139,6 +139,7 @@ export const loadCollectionData = (port: number): Promise<PreLoadedIds> => {
     const toLoad = new Map()
     toLoad.set(USER_TABLE, `${TEST_DATA_DIR}/user.json`)
     toLoad.set(DECK_TABLE, `${TEST_DATA_DIR}/deck.json`)
+    toLoad.set(TEMPLATE_TABLE, `${TEST_DATA_DIR}/template.json`)
     toLoad.set(CARD_TABLE, `${TEST_DATA_DIR}/card.json`)
 
     const docClient = new AWS.DynamoDB.DocumentClient()
@@ -174,6 +175,24 @@ export const loadCollectionData = (port: number): Promise<PreLoadedIds> => {
                     "ff279d7e-8413-11e7-bb31-be2e44b06b34",
                     "ff279e8c-8413-11e7-bb31-be2e44b06b34",
                     "ff27a03a-8413-11e7-bb31-be2e44b06b34",
+                ],
+                templates: [
+                    "7b7a263e-8414-11e7-bb31-be2e44b06b34",
+                    "7b7a2c92-8414-11e7-bb31-be2e44b06b34",
+                    "7b7a2ddc-8414-11e7-bb31-be2e44b06b34",
+                    "7b7a2ef4-8414-11e7-bb31-be2e44b06b34",
+                    "ebe15e3c-8414-11e7-bb31-be2e44b06b34",
+                    "ebe160bc-8414-11e7-bb31-be2e44b06b34",
+                    "ebe16422-8414-11e7-bb31-be2e44b06b34",
+                    "ebe16512-8414-11e7-bb31-be2e44b06b34",
+                    "f2626c9e-8414-11e7-bb31-be2e44b06b34",
+                    "f26275ea-8414-11e7-bb31-be2e44b06b34",
+                    "f2627856-8414-11e7-bb31-be2e44b06b34",
+                    "f2627bda-8414-11e7-bb31-be2e44b06b34",
+                    "018a7bb6-8415-11e7-bb31-be2e44b06b34",
+                    "018a7fda-8415-11e7-bb31-be2e44b06b34",
+                    "018a8278-8415-11e7-bb31-be2e44b06b34",
+                    "018a835e-8415-11e7-bb31-be2e44b06b34",
                 ],
                 cards: [
                     "7c7a263e-8414-11e7-bb31-be2e44b06b34",

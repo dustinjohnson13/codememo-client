@@ -1,13 +1,14 @@
 //@flow
 import type {AnswerType, Clock, DataService} from "./APIDomain"
 import * as api from "./APIDomain"
-import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "./APIDomain"
+import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse, ReviewsResponse} from "./APIDomain"
 import type {Dao} from "../persist/Dao"
 import {
     Card,
     Deck,
     newCard,
     newDeck,
+    newReview,
     newTemplate,
     newUser,
     Template,
@@ -108,15 +109,24 @@ export default class DaoDelegatingDataService implements DataService {
         return new CardDetailResponse(details)
     }
 
+    async fetchReviews(cardId: string): Promise<ReviewsResponse> {
+        const reviews = await this.dao.findReviewsByCardId(cardId)
+        return new ReviewsResponse(reviews)
+    }
+
     async answerCard(id: string, answer: AnswerType): Promise<CardDetail> {
         const card = await this.dao.findCard(id)
         if (card) {
-            const updated = this.businessRules.cardAnswered(this.clock.epochSeconds(), card, answer)
-            const newCard = await this.dao.updateCard(updated)
             const template = await this.dao.findTemplate(card.templateId)
             if (!template) {
                 throw new Error(`Unable to find template for card ${id}`)
             }
+
+            const now = this.clock.epochSeconds()
+            const updated = this.businessRules.cardAnswered(now, card, answer)
+            const newCard = await this.dao.updateCard(updated)
+
+            await this.dao.saveReview(newReview(newCard.id, now, answer))
 
             return this.createCardDetail(template, newCard)
         } else {

@@ -10,10 +10,13 @@ import {
 } from "./DynamoDBHelper"
 import DynamoDBDao from "./DynamoDBDao"
 import {
+    answerTypeFromDBId,
     Card,
     CARD_TABLE,
     Deck,
     DECK_TABLE,
+    Review,
+    REVIEW_TABLE,
     Template,
     TEMPLATE_TABLE,
     templateTypeFromDBId,
@@ -86,13 +89,17 @@ describe('DynamoDBDao', () => {
         return getById(CARD_TABLE, id).then(item => item ? new Card(item.id, item.tId, item.n, item.g, item.d) : undefined)
     }
 
+    function getDynamoDBReview(id: string): Promise<Review | void> {
+        return getById(REVIEW_TABLE, id).then(item => item ? new Review(item.id, item.cId, item.t, answerTypeFromDBId(item.a)) : undefined)
+    }
+
     testWithDaoImplementation(() => dao, loadDynamoDB,
-        getDynamoDBUser, getDynamoDBDeck, getDynamoDBTemplate, getDynamoDBCard)
+        getDynamoDBUser, getDynamoDBDeck, getDynamoDBTemplate, getDynamoDBCard, getDynamoDBReview)
 
     it('should be able to list tables', async () => {
 
         const tables = await dao.listTables()
-        expect(tables).toEqual([CARD_TABLE, DECK_TABLE, TEMPLATE_TABLE, USER_TABLE])
+        expect(tables).toEqual([CARD_TABLE, DECK_TABLE, REVIEW_TABLE, TEMPLATE_TABLE, USER_TABLE])
     })
 
     testServiceWithDaoImplementation(() => dao)

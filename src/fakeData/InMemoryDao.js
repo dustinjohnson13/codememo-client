@@ -1,7 +1,9 @@
 //@flow
 import type {Dao, Entity} from "../persist/Dao"
-import {Card, Deck, newCard, newDeck, NO_ID, Template, Templates, User} from "../persist/Dao"
-import {ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../services/APIDomain"
+import {Card, Deck, newCard, newDeck, newReview, NO_ID, Review, Template, Templates, User} from "../persist/Dao"
+import {Answer, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../services/APIDomain"
+
+export const REVIEW_TIME = 1508331802
 
 export const fakeDecks = (userId: string, count: number, setId: boolean): Array<Deck> => {
     const decks = []
@@ -57,11 +59,23 @@ export const fakeCards = (currentTime: number, deckId: string, totalCount: numbe
     return {templates: templates, cards: cards}
 }
 
+export const fakeReviews = (currentTime: number, cardId: string, count: number, setId: boolean): Array<Review> => {
+    const reviews = []
+    for (let i = 0; i < count; i++) {
+        const time = currentTime - i
+        const answer = Answer.GOOD
+        const review = setId ? new Review(i.toString(), cardId, time, answer) : newReview(cardId, time, answer)
+        reviews.push(review)
+    }
+    return reviews;
+}
+
 export class InMemoryDao implements Dao {
     users: Array<User> = []
     decks: Array<Deck> = []
     templates: Array<Template> = []
     cards: Array<Card> = []
+    reviews: Array<Review> = []
     idCounter: number
 
     constructor() {
@@ -152,6 +166,27 @@ export class InMemoryDao implements Dao {
         return Promise.resolve(deck)
     }
 
+    saveReview(review: Review): Promise<Review> {
+        const creator = id => new Review(id, review.cardId, review.time, review.answer)
+        this.reviews = this.saveEntity(creator, this.reviews)
+        return Promise.resolve(this.reviews[this.reviews.length - 1])
+    }
+
+    updateReview(review: Review): Promise<Review> {
+        const id = review.id
+
+        if (id === NO_ID) {
+            throw new Error("Unable to update non-persisted review!")
+        }
+
+        if (this.reviews.find(it => it.id === id) === undefined) {
+            throw new Error("Unable to update non-existent review!")
+        }
+
+        this.reviews = this.updateEntity(review, this.reviews)
+        return Promise.resolve(review)
+    }
+
     deleteUser(id: string): Promise<string> {
         this.users = this.users.filter(it => it.id !== id)
         return Promise.resolve(id)
@@ -172,6 +207,11 @@ export class InMemoryDao implements Dao {
         return Promise.resolve(id)
     }
 
+    deleteReview(id: string): Promise<string> {
+        this.reviews = this.reviews.filter(it => it.id !== id)
+        return Promise.resolve(id)
+    }
+
     findUser(id: string): Promise<User | void> {
         return this.findEntity(id, this.users)
     }
@@ -186,6 +226,14 @@ export class InMemoryDao implements Dao {
 
     findDeck(id: string): Promise<Deck | void> {
         return this.findEntity(id, this.decks)
+    }
+
+    findReview(id: string): Promise<Review | void> {
+        return this.findEntity(id, this.reviews)
+    }
+
+    findReviewsByCardId(cardId: string): Promise<Array<Review>> {
+        return Promise.resolve(this.reviews.filter(it => it.cardId === cardId))
     }
 
     findDecksByUserId(userId: string): Promise<Array<Deck>> {

@@ -1,12 +1,14 @@
 //@flow
-import {ONE_DAY_IN_SECONDS} from "../services/APIDomain"
+import type {AnswerType} from "../services/APIDomain"
+import {Answer, ONE_DAY_IN_SECONDS} from "../services/APIDomain"
 
 export const USER_TABLE = "user"
 export const CARD_TABLE = "card"
 export const TEMPLATE_TABLE = "template"
 export const DECK_TABLE = "deck"
+export const REVIEW_TABLE = "review"
 export const ALL_TABLES = [
-    USER_TABLE, CARD_TABLE, TEMPLATE_TABLE, DECK_TABLE
+    USER_TABLE, CARD_TABLE, TEMPLATE_TABLE, DECK_TABLE, REVIEW_TABLE
 ]
 
 export const NO_ID = "NONE"
@@ -35,6 +37,36 @@ export const templateTypeFromDBId = (id: number): TemplateType => {
             return Templates.FRONT_BACK
         default:
             throw new Error(`Unrecognized Template DB id: ${id}`)
+    }
+}
+
+export const answerTypeToDBId = (type: AnswerType): number => {
+    switch (type) {
+        case Answer.FAIL:
+            return 1
+        case Answer.HARD:
+            return 2
+        case Answer.GOOD:
+            return 3
+        case Answer.EASY:
+            return 4
+        default:
+            throw new Error(`Unrecognized type: ${type}`)
+    }
+}
+
+export const answerTypeFromDBId = (id: number): AnswerType => {
+    switch (id) {
+        case 1:
+            return Answer.FAIL
+        case 2:
+            return Answer.HARD
+        case 3:
+            return Answer.GOOD
+        case 4:
+            return Answer.EASY
+        default:
+            throw new Error(`Unrecognized Answer DB id: ${id}`)
     }
 }
 
@@ -92,7 +124,21 @@ export class Card {
     }
 }
 
-export type Entity = User | Deck | Template | Card
+export class Review {
+    +id: string
+    +cardId: string
+    +time: number
+    +answer: AnswerType
+
+    constructor(id: string, cardId: string, time: number, answer: AnswerType) {
+        (this: any).id = id;
+        (this: any).cardId = cardId;
+        (this: any).time = time;
+        (this: any).answer = answer;
+    }
+}
+
+export type Entity = User | Deck | Template | Card | Review
 
 export interface Dao {
 
@@ -100,35 +146,45 @@ export interface Dao {
 
     saveUser(user: User): Promise<User>;
 
-    updateUser(user: User): Promise<User>;
-
     saveTemplate(template: Template): Promise<Template>;
-
-    updateTemplate(template: Template): Promise<Template>;
-
-    saveCard(card: Card): Promise<Card>;
-
-    updateCard(card: Card): Promise<Card>;
 
     saveDeck(deck: Deck): Promise<Deck>;
 
+    saveCard(card: Card): Promise<Card>;
+
+    saveReview(review: Review): Promise<Review>;
+
+    updateUser(user: User): Promise<User>;
+
     updateDeck(deck: Deck): Promise<Deck>;
 
+    updateTemplate(template: Template): Promise<Template>;
+
+    updateCard(card: Card): Promise<Card>;
+
+    updateReview(review: Review): Promise<Review>;
+
     deleteUser(id: string): Promise<string>;
+
+    deleteDeck(id: string): Promise<string>;
 
     deleteTemplate(id: string): Promise<string>;
 
     deleteCard(id: string): Promise<string>;
 
-    deleteDeck(id: string): Promise<string>;
+    deleteReview(id: string): Promise<string>;
 
     findUser(id: string): Promise<User | void>;
+
+    findDeck(id: string): Promise<Deck | void>;
 
     findTemplate(id: string): Promise<Template | void>;
 
     findCard(id: string): Promise<Card | void>;
 
-    findDeck(id: string): Promise<Deck | void>;
+    findReview(id: string): Promise<Review | void>;
+
+    findReviewsByCardId(cardId: string): Promise<Array<Review>>;
 
     findDecksByUserId(userId: string): Promise<Array<Deck>>;
 
@@ -146,3 +202,7 @@ export const newTemplate = (deckId: string, type: TemplateType, field1: string, 
 
 export const newCard = (templateId: string, cardNumber: number) =>
     new Card(NO_ID, templateId, cardNumber, ONE_DAY_IN_SECONDS, DUE_IMMEDIATELY)
+
+export const newReview = (cardId: string, time: number, answer: AnswerType): Review => {
+    return new Review(NO_ID, cardId, time, answer)
+}

@@ -23,6 +23,14 @@
     "sqlite3": "^3.1.9",
     "uuid": "^3.1.0"
   },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}",
+      "!node_modules/",
+      "!src/persist/dynamodb/DynamoDBHelper.js",
+      "!src/services/API.js"
+    ]
+  },
   "jest-junit": {
     "suiteName": "CodeMemo Tests",
     "output": "./gradle-build/test-results/junit.xml",

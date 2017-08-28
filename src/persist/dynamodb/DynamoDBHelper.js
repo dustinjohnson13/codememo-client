@@ -1,6 +1,6 @@
 //@flow
 import freeport from 'freeport'
-import {CARD_TABLE, DECK_TABLE, TEMPLATE_TABLE, USER_TABLE} from "../Dao"
+import {CARD_TABLE, DECK_TABLE, REVIEW_TABLE, TEMPLATE_TABLE, USER_TABLE} from "../Dao"
 import type {PreLoadedIds} from "../Dao.test"
 
 const DynamoDbLocal = require('dynamodb-local')
@@ -141,6 +141,7 @@ export const loadCollectionData = (port: number): Promise<PreLoadedIds> => {
     toLoad.set(DECK_TABLE, `${TEST_DATA_DIR}/deck.json`)
     toLoad.set(TEMPLATE_TABLE, `${TEST_DATA_DIR}/template.json`)
     toLoad.set(CARD_TABLE, `${TEST_DATA_DIR}/card.json`)
+    toLoad.set(REVIEW_TABLE, `${TEST_DATA_DIR}/review.json`)
 
     const docClient = new AWS.DynamoDB.DocumentClient()
     const promises = []
@@ -211,6 +212,9 @@ export const loadCollectionData = (port: number): Promise<PreLoadedIds> => {
                     "019a7fda-8415-11e7-bb31-be2e44b06b34",
                     "019a8278-8415-11e7-bb31-be2e44b06b34",
                     "019a835e-8415-11e7-bb31-be2e44b06b34",
+                ],
+                reviews: [
+                    "323a263e-8414-11e7-bb31-be2e44b06b34"
                 ]
             }
         }

@@ -1,4 +1,6 @@
 //@flow
+import {Review} from "../persist/Dao"
+
 export interface Clock {
     epochSeconds(): number;
 }
@@ -105,6 +107,14 @@ export class CollectionResponse {
     }
 }
 
+export class ReviewsResponse {
+    +reviews: Array<Review>
+
+    constructor(reviews: Array<Review>) {
+        (this: any).reviews = reviews;
+    }
+}
+
 export interface DataService {
     // TODO: This should be userId instead of email
     addDeck(email: string, name: string): Promise<CollectionResponse>;
@@ -116,6 +126,8 @@ export interface DataService {
     fetchDeck(id: string): Promise<DeckResponse>;
 
     fetchCards(ids: Array<string>): Promise<CardDetailResponse>;
+
+    fetchReviews(cardId: string): Promise<ReviewsResponse>;
 
     answerCard(id: string, answer: AnswerType): Promise<CardDetail>;
 

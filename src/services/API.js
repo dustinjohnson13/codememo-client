@@ -1,6 +1,6 @@
 //@flow
 import type {AnswerType, Clock, DataService} from "./APIDomain"
-import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse} from "./APIDomain"
+import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse, ReviewsResponse} from "./APIDomain"
 import DynamoDBDao from "../persist/dynamodb/DynamoDBDao"
 import DaoDelegatingDataService from "./DaoDelegatingDataService"
 import {InMemoryDao} from "../fakeData/InMemoryDao"
@@ -63,6 +63,12 @@ class DelegatingDataService implements DataService {
     fetchCards(ids: Array<string>): Promise<CardDetailResponse> {
         return new Promise((resolve, reject) => {
             setTimeout(() => this.delegate.fetchCards(ids).then(resolve), this.timeoutDelay)
+        })
+    }
+
+    fetchReviews(cardId: string): Promise<ReviewsResponse> {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => this.delegate.fetchReviews(cardId).then(resolve), this.timeoutDelay)
         })
     }
 

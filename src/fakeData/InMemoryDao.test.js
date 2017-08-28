@@ -1,9 +1,21 @@
 //@flow
-import {Card, Deck, DUE_IMMEDIATELY, newDeck, newUser, Template, Templates, TEST_USER_EMAIL, User} from "../persist/Dao"
+import {
+    Card,
+    Deck,
+    DUE_IMMEDIATELY,
+    newDeck,
+    newReview,
+    newUser,
+    Review,
+    Template,
+    Templates,
+    TEST_USER_EMAIL,
+    User
+} from "../persist/Dao"
 import type {PreLoadedIds} from "../persist/Dao.test"
 import {testWithDaoImplementation} from "../persist/Dao.test"
-import {InMemoryDao} from "./InMemoryDao"
-import {ONE_DAY_IN_SECONDS} from "../services/APIDomain"
+import {InMemoryDao, REVIEW_TIME} from "./InMemoryDao"
+import {Answer, ONE_DAY_IN_SECONDS} from "../services/APIDomain"
 import {testServiceWithDaoImplementation} from "../services/DataService.test"
 
 describe('InMemoryDao', () => {
@@ -39,12 +51,14 @@ describe('InMemoryDao', () => {
 
             return dao.saveCard(card)
         }))
+        const persistedReview = await dao.saveReview(newReview(persistedCards[0].id, REVIEW_TIME, Answer.GOOD))
 
         return {
             users: [persistedUser.id.toString()],
             decks: persistedDecks.map(it => it.id.toString()),
             templates: persistedTemplates.map(it => it.id.toString()),
-            cards: persistedCards.map(it => it.id.toString())
+            cards: persistedCards.map(it => it.id.toString()),
+            reviews: [persistedReview.id]
         }
     }
 
@@ -64,8 +78,12 @@ describe('InMemoryDao', () => {
         return dao.findCard(id)
     }
 
+    function getSequelizeReview(id: string): Promise<Review | void> {
+        return dao.findReview(id)
+    }
+
     testWithDaoImplementation(createDao, loadCollectionData,
-        getSequelizeUser, getSequelizeDeck, getSequelizeTemplate, getSequelizeCard)
+        getSequelizeUser, getSequelizeDeck, getSequelizeTemplate, getSequelizeCard, getSequelizeReview)
 
     testServiceWithDaoImplementation(createDao)
 })

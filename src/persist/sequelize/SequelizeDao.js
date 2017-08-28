@@ -2,11 +2,15 @@
 import {Sequelize} from 'sequelize'
 import type {Dao} from "../Dao"
 import {
+    answerTypeFromDBId,
+    answerTypeToDBId,
     Card,
     CARD_TABLE,
     Deck,
     DECK_TABLE,
     NO_ID,
+    Review,
+    REVIEW_TABLE,
     Template,
     TEMPLATE_TABLE,
     templateTypeFromDBId,
@@ -67,6 +71,18 @@ export const CardEntity = modelDefiner.define(CARD_TABLE, {
     }
 })
 
+export const ReviewEntity = modelDefiner.define(REVIEW_TABLE, {
+    cardId: {
+        type: Sequelize.INTEGER
+    },
+    time: {
+        type: Sequelize.INTEGER
+    },
+    answer: {
+        type: Sequelize.INTEGER
+    }
+})
+
 const hydrateDeck = (entity: DeckEntity): Deck | void => {
     return entity ? new Deck(entity.id.toString(), entity.userId.toString(), entity.name) : undefined
 }
@@ -83,6 +99,10 @@ const hydrateUser = (entity: UserEntity): User | void => {
     return entity ? new User(entity.id.toString(), entity.email) : undefined
 }
 
+const hydrateReview = (entity: ReviewEntity): Review | void => {
+    return entity ? new Review(entity.id.toString(), entity.cardId.toString(), entity.time, answerTypeFromDBId(entity.answer)) : undefined
+}
+
 export class SequelizeDao implements Dao {
 
     sequelize: Sequelize
@@ -96,6 +116,7 @@ export class SequelizeDao implements Dao {
             .then(() => DeckEntity.sync({force: clearDatabase}))
             .then(() => TemplateEntity.sync({force: clearDatabase}))
             .then(() => CardEntity.sync({force: clearDatabase}))
+            .then(() => ReviewEntity.sync({force: clearDatabase}))
     }
 
     saveUser(user: User): Promise<User> {
@@ -200,6 +221,33 @@ export class SequelizeDao implements Dao {
         return deck
     }
 
+    saveReview(review: Review): Promise<Review> {
+        return ReviewEntity.create({
+            cardId: review.cardId,
+            time: review.time,
+            answer: answerTypeToDBId(review.answer)
+        })
+    }
+
+    async updateReview(review: Review): Promise<Review> {
+        if (review.id === NO_ID) {
+            throw new Error("Unable to update non-persisted review!")
+        }
+
+        try {
+            const entity = await ReviewEntity.findById(review.id)
+            await entity.updateAttributes({
+                cardId: review.cardId,
+                time: review.time,
+                answer: answerTypeToDBId(review.answer)
+            })
+        } catch (e) {
+            throw new Error("Unable to update non-existent review!")
+        }
+
+        return review
+    }
+
     deleteUser(id: string): Promise<string> {
         return UserEntity.destroy({
             where: {
@@ -232,6 +280,14 @@ export class SequelizeDao implements Dao {
         })
     }
 
+    deleteReview(id: string): Promise<string> {
+        return ReviewEntity.destroy({
+            where: {
+                id: id
+            }
+        })
+    }
+
     findUser(id: string): Promise<User | void> {
         return UserEntity.findById(id).then((entity) => hydrateUser(entity))
     }
@@ -248,15 +304,26 @@ export class SequelizeDao implements Dao {
         return DeckEntity.findById(id).then((entity) => hydrateDeck(entity))
     }
 
+    findReview(id: string): Promise<Review | void> {
+        return ReviewEntity.findById(id).then((entity) => hydrateReview(entity))
+    }
+
+    async findReviewsByCardId(cardId: string): Promise<Array<Review>> {
+        const q = ReviewEntity.findAll({
+            where: {
+                cardId: cardId
+            }
+        })
+        return q.then(entities => entities.map(hydrateReview))
+    }
+
     findDecksByUserId(userId: string): Promise<Array<Deck>> {
         const q = DeckEntity.findAll({
             where: {
                 userId: userId
             }
         })
-        return q.then(entities => {
-            return entities.map(hydrateDeck)
-        })
+        return q.then(entities => entities.map(hydrateDeck))
     }
 
     async findCardsByDeckId(deckId: string): Promise<Array<Card>> {

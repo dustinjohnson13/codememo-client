@@ -1,10 +1,13 @@
 //@flow
-import {CardEntity, DeckEntity, SequelizeDao, TemplateEntity, UserEntity} from "./SequelizeDao"
+import {CardEntity, DeckEntity, ReviewEntity, SequelizeDao, TemplateEntity, UserEntity} from "./SequelizeDao"
 import {Sequelize} from 'sequelize'
 import {
+    answerTypeFromDBId,
+    answerTypeToDBId,
     Card,
     Deck,
     DUE_IMMEDIATELY,
+    Review,
     Template,
     Templates,
     templateTypeFromDBId,
@@ -15,7 +18,8 @@ import {
 import type {PreLoadedIds} from "../Dao.test"
 import {testWithDaoImplementation} from "../Dao.test"
 import {testServiceWithDaoImplementation} from "../../services/DataService.test"
-import {ONE_DAY_IN_SECONDS} from "../../services/APIDomain"
+import {Answer, ONE_DAY_IN_SECONDS} from "../../services/APIDomain"
+import {REVIEW_TIME} from "../../fakeData/InMemoryDao"
 
 describe('SequelizeDao', () => {
 
@@ -66,12 +70,18 @@ describe('SequelizeDao', () => {
                 due: id % 4 === 0 ? DUE_IMMEDIATELY : 1508331802
             })
         }))
+        const persistedReview = await ReviewEntity.create({
+            cardId: persistedCards[0].id,
+            time: REVIEW_TIME,
+            answer: answerTypeToDBId(Answer.GOOD)
+        })
 
         return {
             users: [persistedUser.id.toString()],
             decks: persistedDecks.map(it => it.id.toString()),
             templates: persistedTemplates.map(it => it.id.toString()),
-            cards: persistedCards.map(it => it.id.toString())
+            cards: persistedCards.map(it => it.id.toString()),
+            reviews: [persistedReview.id.toString()]
         }
     }
 
@@ -95,8 +105,13 @@ describe('SequelizeDao', () => {
             entity.templateId.toString(), entity.cardNumber, entity.goodInterval, entity.due) : undefined)
     }
 
+    function getSequelizeReview(id: string): Promise<Review | void> {
+        return ReviewEntity.findById(parseInt(id)).then(entity => entity ? new Review(entity.id.toString(),
+            entity.cardId.toString(), entity.time, answerTypeFromDBId(entity.answer)) : undefined)
+    }
+
     testWithDaoImplementation(createDao, loadCollectionData,
-        getSequelizeUser, getSequelizeDeck, getSequelizeTemplate, getSequelizeCard)
+        getSequelizeUser, getSequelizeDeck, getSequelizeTemplate, getSequelizeCard, getSequelizeReview)
 
     testServiceWithDaoImplementation(createDao)
 })

@@ -1,15 +1,32 @@
+import type {Clock} from "./APIDomain"
 //@flow
-import {Answer, CollectionResponse} from "./APIDomain"
+import {Answer, CardDetail, CollectionResponse} from "./APIDomain"
 import DaoDelegatingDataService from "./DaoDelegatingDataService"
 import {Card, Deck, DUE_IMMEDIATELY, NO_ID, TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
 import {FrozenClock} from "./__mocks__/API"
-import {fakeCards} from "../fakeData/InMemoryDao"
+import {fakeCards, fakeReviews, REVIEW_TIME} from "../fakeData/InMemoryDao"
 
 describe('Placeholder', () => {
     it('needs this placeholder', () => {
         expect(true).toBeTruthy()
     })
 })
+
+async function getDueCard(clock: Clock, service: DaoDelegatingDataService): Promise<CardDetail> {
+    const collection = await service.fetchCollection(TEST_USER_EMAIL)
+    const decks = collection.decks
+    const deckId = decks[0].id
+    const deck = await service.fetchDeck(deckId)
+    const response = await service.fetchCards(deck.cards.map(card => card.id))
+    const cardsWithDueTime = response.cards.filter(card => card.due && card.due !== DUE_IMMEDIATELY &&
+        card.due < clock.epochSeconds())
+
+    if (!cardsWithDueTime) {
+        throw new Error("Unable to find cards with due time!")
+    }
+
+    return cardsWithDueTime[0]
+}
 
 export function testServiceWithDaoImplementation(createDao: any) {
     describe('DataService', () => {
@@ -33,12 +50,13 @@ export function testServiceWithDaoImplementation(createDao: any) {
                         const currentTime = clock.epochSeconds()
                         const {templates, cards} = fakeCards(currentTime, deck.id, TOTAL_COUNT,
                             DUE_COUNT, TOTAL_COUNT - GOOD_COUNT - DUE_COUNT, false)
+                        const reviews = fakeReviews(REVIEW_TIME, cards[0].id, 1, false)
 
                         return Promise.all(templates.map(it => dao.saveTemplate(it))).then(templates =>
                             Promise.all(cards.map((card, idx) => {
                                 const cardWithTemplateId = new Card(card.id, templates[idx].id, card.cardNumber, card.goodInterval, card.due)
                                 return dao.saveCard(cardWithTemplateId)
-                            })))
+                            })).then(() => reviews.map(it => dao.saveReview(it))))
                     }))
         })
 
@@ -106,19 +124,8 @@ export function testServiceWithDaoImplementation(createDao: any) {
         })
 
         it('can answer due card, should schedule interval based on answer', async () => {
-            const collection = await service.fetchCollection(TEST_USER_EMAIL)
-            const decks = collection.decks
-            const deckId = decks[0].id
-            const deck = await service.fetchDeck(deckId)
-            const response = await service.fetchCards(deck.cards.map(card => card.id))
-            const cardsWithDueTime = response.cards.filter(card => card.due && card.due !== DUE_IMMEDIATELY &&
-                card.due < clock.epochSeconds())
+            const card = await getDueCard(clock, service)
 
-            if (!cardsWithDueTime) {
-                throw new Error("Unable to find cards with due time!")
-            }
-
-            const card = cardsWithDueTime[0]
             const originalDue = card.due
             const originalGoodInterval = card.goodInterval
 
@@ -129,6 +136,25 @@ export function testServiceWithDaoImplementation(createDao: any) {
             expect(originalDue).toBeGreaterThan(0)
             expect(newDue).toBeGreaterThan(originalDue)
             expect(newGoodInterval).toBeGreaterThan(originalGoodInterval)
+        })
+
+        it('can answer due card, should add new review', async () => {
+            const card = await getDueCard(clock, service)
+            const answer = Answer.HARD
+            const currentReviews = await service.fetchReviews(card.id)
+
+            await service.answerCard(card.id, answer)
+
+            const newReviews = await service.fetchReviews(card.id)
+            const reviews = newReviews.reviews
+
+            expect(reviews.length).toEqual(currentReviews.reviews.length + 1)
+
+            const review = reviews[reviews.length - 1]
+
+            expect(review.cardId).toEqual(card.id)
+            expect(review.answer).toEqual(answer)
+            expect(review.time).toEqual(clock.epochSeconds())
         })
     })
 }

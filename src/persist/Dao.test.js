@@ -5,21 +5,25 @@ import {
     Deck,
     newCard,
     newDeck,
+    newReview,
     newTemplate,
     newUser,
     NO_ID,
+    Review,
     Template,
     Templates,
     TEST_USER_EMAIL,
     User
 } from "./Dao"
-import {ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../services/APIDomain"
+import {Answer, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../services/APIDomain"
+import {REVIEW_TIME} from "../fakeData/InMemoryDao"
 
 export type PreLoadedIds = {
     +users: Array<string>,
     +decks: Array<string>,
     +templates: Array<string>,
-    +cards: Array<string>
+    +cards: Array<string>,
+    +reviews: Array<string>
 }
 
 describe('Placeholder', () => {
@@ -34,7 +38,8 @@ testWithDaoImplementation(createDao: () => Dao,
                           getDBUser: (id: string) => Promise<User | void>,
                           getDBDeck: (id: string) => Promise<Deck | void>,
                           getDBTemplate: (id: string) => Promise<Template | void>,
-                          getDBCard: (id: string) => Promise<Card | void>) {
+                          getDBCard: (id: string) => Promise<Card | void>,
+                          getDBReview: (id: string) => Promise<Review | void>) {
 
     describe('Dao', () => {
 
@@ -208,6 +213,17 @@ testWithDaoImplementation(createDao: () => Dao,
                 expect(result).toBeUndefined()
             })
 
+            it('should be able to delete a review', async () => {
+
+                const preLoadedIds = await loadCollectionData()
+                const id = preLoadedIds.reviews[0]
+
+                await dao.deleteReview(id)
+
+                const result = await getDBReview(id)
+                expect(result).toBeUndefined()
+            })
+
             it('should be able to query for a user', async () => {
 
                 const preLoadedIds = await loadCollectionData()
@@ -268,6 +284,21 @@ testWithDaoImplementation(createDao: () => Dao,
                 expect(result.id).toEqual(id)
                 expect(result.userId).toEqual(preLoadedIds.users[0])
                 expect(result.name).toEqual("Deck3")
+            })
+
+            it('should be able to query for a review', async () => {
+                const preLoadedIds = await loadCollectionData()
+                const id = preLoadedIds.reviews[0]
+                const result = await dao.findReview(id)
+
+                if (!result) {
+                    throw new Error(`Unable to find review with id ${id}`)
+                }
+
+                expect(result.id).toEqual(id)
+                expect(result.cardId).toEqual(preLoadedIds.cards[0])
+                expect(result.time).toEqual(REVIEW_TIME)
+                expect(result.answer).toEqual(Answer.GOOD)
             })
 
             it('should return undefined querying for non-existent user', async () => {
@@ -377,6 +408,28 @@ testWithDaoImplementation(createDao: () => Dao,
                 expect(dbDeck.name).toEqual(newName)
             })
 
+            it('should be able to update a review', async () => {
+
+                const preLoadedIds = await loadCollectionData()
+                const id = preLoadedIds.reviews[0]
+
+                const newCardId = "99999"
+                const newTime = 7777777
+                const newAnswer = Answer.EASY
+
+                await dao.updateReview(new Review(id, newCardId, newTime, newAnswer))
+
+                const dbReview = await getDBReview(id)
+
+                if (!dbReview) {
+                    throw new Error(`Unable to find db review with id ${id}`)
+                }
+
+                expect(dbReview.cardId).toEqual(newCardId)
+                expect(dbReview.time).toEqual(newTime)
+                expect(dbReview.answer).toEqual(newAnswer)
+            })
+
             it('should throw exception on updating new user', async () => {
                 expect.assertions(1)
 
@@ -418,6 +471,17 @@ testWithDaoImplementation(createDao: () => Dao,
                     await dao.updateCard(entity)
                 } catch (e) {
                     expect(e).toEqual(new Error("Unable to update non-persisted card!"))
+                }
+            })
+
+            it('should throw exception on updating new review', async () => {
+                expect.assertions(1)
+
+                const entity = newReview("2", 99999, Answer.EASY)
+                try {
+                    await dao.updateReview(entity)
+                } catch (e) {
+                    expect(e).toEqual(new Error("Unable to update non-persisted review!"))
                 }
             })
 
@@ -470,6 +534,19 @@ testWithDaoImplementation(createDao: () => Dao,
                     await dao.updateCard(entity)
                 } catch (e) {
                     expect(e).toEqual(new Error("Unable to update non-existent card!"))
+                }
+            })
+
+            it('should throw exception on updating non-existent review', async () => {
+                expect.assertions(1)
+
+                const id = '9999999'
+
+                const entity = new Review(id, '1', 99999, Answer.HARD)
+                try {
+                    await dao.updateReview(entity)
+                } catch (e) {
+                    expect(e).toEqual(new Error("Unable to update non-existent review!"))
                 }
             })
 

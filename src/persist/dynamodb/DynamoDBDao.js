@@ -3,11 +3,15 @@ import IndexDefinition from "./IndexDefinition"
 import type {Dao} from "../Dao"
 import {
     ALL_TABLES,
+    answerTypeFromDBId,
+    answerTypeToDBId,
     Card,
     CARD_TABLE,
     Deck,
     DECK_TABLE,
     NO_ID,
+    Review,
+    REVIEW_TABLE,
     Template,
     TEMPLATE_TABLE,
     templateTypeFromDBId,
@@ -34,11 +38,14 @@ const FIELD1_COLUMN = "f1"
 const FIELD2_COLUMN = "f2"
 const TYPE_COLUMN = "t"
 const CARD_NUMBER_COLUMN = "n"
+const TIME_COLUMN = "t"
+const ANSWER_COLUMN = "a"
 
 const EMAIL_INDEX = "email"
 const DECK_ID_INDEX = "dId"
 const TEMPLATE_ID_INDEX = "tId"
 const USER_ID_INDEX = "uId"
+const CARD_ID_INDEX = "cId"
 
 const hydrateUser = (item): User | void => {
     return item ? new User(item[ID_COLUMN], item[EMAIL_INDEX]) : undefined
@@ -56,6 +63,10 @@ const hydrateTemplate = (item): Template | void => {
 const hydrateCard = (item): Card | void => {
     return item ? new Card(item[ID_COLUMN], item[TEMPLATE_ID_INDEX], item[CARD_NUMBER_COLUMN],
         item[GOOD_INTERVAL_COLUMN], item[DUE_COLUMN]) : undefined
+}
+
+const hydrateReview = (item): Review | void => {
+    return item ? new Review(item[ID_COLUMN], item[CARD_ID_INDEX], item[TIME_COLUMN], answerTypeFromDBId(item[ANSWER_COLUMN])) : undefined
 }
 
 export default class DynamoDBDao implements Dao {
@@ -103,7 +114,8 @@ export default class DynamoDBDao implements Dao {
             this.createTable(USER_TABLE, [new IndexDefinition(EMAIL_INDEX, DYNAMODB_STRING)]),
             this.createTable(DECK_TABLE, [new IndexDefinition(USER_ID_INDEX, DYNAMODB_STRING)]),
             this.createTable(TEMPLATE_TABLE, [new IndexDefinition(DECK_ID_INDEX, DYNAMODB_STRING)]),
-            this.createTable(CARD_TABLE, [new IndexDefinition(TEMPLATE_ID_INDEX, DYNAMODB_STRING)])
+            this.createTable(CARD_TABLE, [new IndexDefinition(TEMPLATE_ID_INDEX, DYNAMODB_STRING)]),
+            this.createTable(REVIEW_TABLE, [new IndexDefinition(CARD_ID_INDEX, DYNAMODB_STRING)])
         ])
     }
 
@@ -164,6 +176,18 @@ export default class DynamoDBDao implements Dao {
         return new Deck(id, deck.userId, deck.name)
     }
 
+    async saveReview(review: Review): Promise<Review> {
+        const id = uuid.v1()
+        const fields: Object = {
+            [CARD_ID_INDEX]: review.cardId,
+            [TIME_COLUMN]: review.time,
+            [ANSWER_COLUMN]: answerTypeToDBId(review.answer)
+        }
+
+        await this.insert(REVIEW_TABLE, {[ID_COLUMN]: id}, fields)
+        return new Review(id, review.cardId, review.time, review.answer)
+    }
+
     deleteUser(id: string): Promise<string> {
         return this.deleteEntity(USER_TABLE, {[ID_COLUMN]: id}).then(() => id)
     }
@@ -180,6 +204,10 @@ export default class DynamoDBDao implements Dao {
         return this.deleteEntity(DECK_TABLE, {[ID_COLUMN]: id}).then(() => id)
     }
 
+    deleteReview(id: string): Promise<string> {
+        return this.deleteEntity(REVIEW_TABLE, {[ID_COLUMN]: id}).then(() => id)
+    }
+
     findUser(id: string): Promise<User | void> {
         return this.findOne(USER_TABLE, {[ID_COLUMN]: id}).then(data => hydrateUser(data.Item))
     }
@@ -194,6 +222,10 @@ export default class DynamoDBDao implements Dao {
 
     findDeck(id: string): Promise<Deck | void> {
         return this.findOne(DECK_TABLE, {[ID_COLUMN]: id}).then(data => hydrateDeck(data.Item))
+    }
+
+    findReview(id: string): Promise<Review | void> {
+        return this.findOne(REVIEW_TABLE, {[ID_COLUMN]: id}).then(data => hydrateReview(data.Item))
     }
 
     updateUser(user: User): Promise<User> {
@@ -265,6 +297,24 @@ export default class DynamoDBDao implements Dao {
         return this.update(DECK_TABLE, {[ID_COLUMN]: id}, [updates]).then(() => deck)
             .catch(err => {
                 throw new Error("Unable to update non-existent deck!")
+            })
+    }
+
+    updateReview(review: Review): Promise<Review> {
+        const id = review.id
+
+        if (id === NO_ID) {
+            throw new Error("Unable to update non-persisted review!")
+        }
+
+        const updates = new Map()
+        updates.set(CARD_ID_INDEX, review.cardId)
+        updates.set(TIME_COLUMN, review.time)
+        updates.set(ANSWER_COLUMN, answerTypeToDBId(review.answer))
+
+        return this.update(REVIEW_TABLE, {[ID_COLUMN]: id}, [updates]).then(() => review)
+            .catch(err => {
+                throw new Error("Unable to update non-existent review!")
             })
     }
 
@@ -461,7 +511,6 @@ export default class DynamoDBDao implements Dao {
 
             docClient.query(params, (err, data) => {
                 if (err) {
-                    console.log(params)
                     console.log("Unable to query. Error:", JSON.stringify(err, null, 2))
                     reject(err)
                 } else {
@@ -469,6 +518,11 @@ export default class DynamoDBDao implements Dao {
                 }
             })
         })
+    }
+
+    async findReviewsByCardId(cardId: string): Promise<Array<Review>> {
+        const items = await this.findByIndexQuery(REVIEW_TABLE, CARD_ID_INDEX, cardId)
+        return items.map(hydrateReview)
     }
 
     async findDecksByUserId(userId: string): Promise<Array<Deck>> {

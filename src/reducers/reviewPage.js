@@ -124,10 +124,10 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
                 question: doneReviewing ? '' : numDueCards > 0 ? dueCardsMinusReviewed[0].question : newCardsMinusReviewed[0].question,
                 answer: doneReviewing ? '' : numDueCards > 0 ? dueCardsMinusReviewed[0].answer : newCardsMinusReviewed[0].answer,
                 cardId: doneReviewing ? '' : numDueCards > 0 ? dueCardsMinusReviewed[0].id : newCardsMinusReviewed[0].id,
-                failInterval: doneReviewing ? '' : userFriendlyInterval(dueCardsMinusReviewed[0].failInterval),
-                hardInterval: doneReviewing ? '' : userFriendlyInterval(dueCardsMinusReviewed[0].hardInterval),
-                goodInterval: doneReviewing ? '' : userFriendlyInterval(dueCardsMinusReviewed[0].goodInterval),
-                easyInterval: doneReviewing ? '' : userFriendlyInterval(dueCardsMinusReviewed[0].easyInterval),
+                failInterval: doneReviewing ? '' : numDueCards > 0 ? userFriendlyInterval(dueCardsMinusReviewed[0].failInterval) : userFriendlyInterval(newCardsMinusReviewed[0].failInterval),
+                hardInterval: doneReviewing ? '' : numDueCards > 0 ? userFriendlyInterval(dueCardsMinusReviewed[0].hardInterval) : userFriendlyInterval(newCardsMinusReviewed[0].failInterval),
+                goodInterval: doneReviewing ? '' : numDueCards > 0 ? userFriendlyInterval(dueCardsMinusReviewed[0].goodInterval) : userFriendlyInterval(newCardsMinusReviewed[0].failInterval),
+                easyInterval: doneReviewing ? '' : numDueCards > 0 ? userFriendlyInterval(dueCardsMinusReviewed[0].easyInterval) : userFriendlyInterval(newCardsMinusReviewed[0].failInterval),
                 showingAnswer: false
             })
         default:

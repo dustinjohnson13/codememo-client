@@ -51,14 +51,14 @@ export default class DaoDelegatingDataService implements DataService {
                 decks.map(deck => this.dao.findCardsByDeckId(deck.id)))
 
             return this.businessRules.decksToAPICollectionResponse(
-                this.clock.epochSeconds(), decks, cardsForDecks)
+                this.clock.epochMilliseconds(), decks, cardsForDecks)
         } else {
             throw new Error(`No user found with email ${email}`)
         }
     }
 
     async fetchDeck(id: string): Promise<api.DeckResponse> {
-        const now = this.clock.epochSeconds()
+        const now = this.clock.epochMilliseconds()
         const deck = await this.dao.findDeck(id)
 
         if (deck) {
@@ -122,7 +122,7 @@ export default class DaoDelegatingDataService implements DataService {
                 throw new Error(`Unable to find template for card ${id}`)
             }
 
-            const now = this.clock.epochSeconds()
+            const now = this.clock.epochMilliseconds()
             const updated = this.businessRules.cardAnswered(now, card, answer)
             const newCard = await this.dao.updateCard(updated)
 

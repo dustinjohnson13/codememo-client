@@ -2,7 +2,7 @@
 import {Review} from "../persist/Dao"
 
 export interface Clock {
-    epochSeconds(): number;
+    epochMilliseconds(): number;
 }
 
 export const HALF_DAY_IN_SECONDS = 43200

@@ -4,9 +4,9 @@ import DaoDelegatingDataService from "../DaoDelegatingDataService"
 import type {Clock} from "../APIDomain"
 
 export class FrozenClock implements Clock {
-    epochSeconds(): number {
+    epochMilliseconds(): number {
         // 2016, January 1
-        return 1451606400
+        return 1451606400000
     }
 }
 

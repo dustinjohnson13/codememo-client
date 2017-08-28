@@ -19,7 +19,7 @@ async function getDueCard(clock: Clock, service: DaoDelegatingDataService): Prom
     const deck = await service.fetchDeck(deckId)
     const response = await service.fetchCards(deck.cards.map(card => card.id))
     const cardsWithDueTime = response.cards.filter(card => card.due && card.due !== DUE_IMMEDIATELY &&
-        card.due < clock.epochSeconds())
+        card.due < clock.epochMilliseconds())
 
     if (!cardsWithDueTime) {
         throw new Error("Unable to find cards with due time!")
@@ -47,7 +47,7 @@ export function testServiceWithDaoImplementation(createDao: any) {
                 dao.findUserByEmail(TEST_USER_EMAIL)
                     .then(user => dao.saveDeck(new Deck(NO_ID, user.id, TEST_DECK_NAME)))
                     .then(deck => {
-                        const currentTime = clock.epochSeconds()
+                        const currentTime = clock.epochMilliseconds()
                         const {templates, cards} = fakeCards(currentTime, deck.id, TOTAL_COUNT,
                             DUE_COUNT, TOTAL_COUNT - GOOD_COUNT - DUE_COUNT, false)
                         const reviews = fakeReviews(REVIEW_TIME, cards[0].id, 1, false)
@@ -154,7 +154,7 @@ export function testServiceWithDaoImplementation(createDao: any) {
 
             expect(review.cardId).toEqual(card.id)
             expect(review.answer).toEqual(answer)
-            expect(review.time).toEqual(clock.epochSeconds())
+            expect(review.time).toEqual(clock.epochMilliseconds())
         })
     })
 }

@@ -6,7 +6,7 @@ import DaoDelegatingDataService from "./DaoDelegatingDataService"
 import {InMemoryDao} from "../fakeData/InMemoryDao"
 
 export class SystemClock implements Clock {
-    epochSeconds(): number {
+    epochMilliseconds(): number {
         return new Date().getTime()
     }
 }

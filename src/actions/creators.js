@@ -148,11 +148,13 @@ export const fetchCardsSuccess = (response: CardDetailResponse): FetchCardsSucce
     }
 }
 
-export const answerCardRequest = (id: string, deckId: string, answer: AnswerType): AnswerCardRequestAction => {
+export const answerCardRequest = (id: string, deckId: string, startTime: number, endTime: number, answer: AnswerType): AnswerCardRequestAction => {
     return {
         type: ANSWER_CARD_REQUEST,
         id: id,
         deckId: deckId,
+        startTime: startTime,
+        endTime: endTime,
         answer: answer
     }
 }
@@ -216,7 +218,7 @@ export function* addCard(action: AddCardRequestAction): Generator<CardDetail, vo
 }
 
 export function* answerCard(action: AnswerCardRequestAction): Generator<CardDetail, void, CardDetail> {
-    const card = yield call(API.answerCard, action.id, action.answer)
+    const card = yield call(API.answerCard, action.id, action.startTime, action.endTime, action.answer)
     yield put(answerCardSuccess(card, action.deckId))
 }
 

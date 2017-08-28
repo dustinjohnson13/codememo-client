@@ -5,6 +5,7 @@ import {mapDispatchToProps, mapStateToProps} from "./ReviewCardContainer"
 import {reviewState} from "../fakeData/reviewState"
 import type {Action} from "../actions/actionTypes"
 import {defaultState} from "../fakeData/storeFake"
+import {SystemClock} from "../services/__mocks__/API"
 
 jest.mock('../services/API') // Set mock API for module importing
 
@@ -29,7 +30,8 @@ describe('<ReviewCardContainer/>', () => {
             cardId: 'deck-1-card-30',
             deckId: 'deck-1',
             showingAnswer: expectedShowingAnswer,
-            question: expectedQuestion
+            question: expectedQuestion,
+            clock: new SystemClock()
         }
 
         const props = mapStateToProps(state, {})

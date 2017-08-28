@@ -15,7 +15,7 @@ import {
 import type {PreLoadedIds} from "../persist/Dao.test"
 import {testWithDaoImplementation} from "../persist/Dao.test"
 import {InMemoryDao, REVIEW_END_TIME} from "./InMemoryDao"
-import {Answer, ONE_DAY_IN_SECONDS} from "../services/APIDomain"
+import {Answer, ONE_DAY_IN_SECONDS, ONE_MINUTE_IN_SECONDS} from "../services/APIDomain"
 import {testServiceWithDaoImplementation} from "../services/DataService.test"
 
 describe('InMemoryDao', () => {
@@ -51,7 +51,7 @@ describe('InMemoryDao', () => {
 
             return dao.saveCard(card)
         }))
-        const startTime = REVIEW_END_TIME - 60
+        const startTime = REVIEW_END_TIME - ONE_MINUTE_IN_SECONDS
         const persistedReview = await dao.saveReview(newReview(persistedCards[0].id, startTime, REVIEW_END_TIME, Answer.GOOD))
 
         return {

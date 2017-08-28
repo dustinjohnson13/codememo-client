@@ -22,7 +22,7 @@ import {
     DeckResponse,
     FOUR_DAYS_IN_SECONDS,
     HALF_DAY_IN_SECONDS,
-    ONE_DAY_IN_SECONDS,
+    ONE_DAY_IN_SECONDS, ONE_MINUTE_IN_SECONDS,
     TWO_DAYS_IN_SECONDS
 } from "../services/APIDomain"
 import {Page} from "./pages"
@@ -56,11 +56,14 @@ describe('creators', () => {
 
     it('sends the card answer to the API and returns the new card detail', () => {
 
+        const startTime = 123456789
+        const endTime = startTime + ONE_MINUTE_IN_SECONDS
+
         const deckId = 'deck-1'
-        const action = answerCardRequest('deck-1-card-0', deckId, 'GOOD')
+        const action = answerCardRequest('deck-1-card-0', deckId, startTime, endTime, 'GOOD')
 
         const gen = answerCard(action)
-        expect(gen.next().value).toEqual(call(API.answerCard, action.id, action.answer))
+        expect(gen.next().value).toEqual(call(API.answerCard, action.id, startTime, endTime, action.answer))
 
         const newCard = new CardDetail(action.id, 'question', 'answer', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS,
             TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, 9000)

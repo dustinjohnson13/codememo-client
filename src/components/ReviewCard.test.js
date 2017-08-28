@@ -7,6 +7,7 @@ import jsdom from 'jsdom'
 import {mount} from 'enzyme'
 import {initialState} from "../reducers/reviewPage"
 import type {ReviewState} from "../actions/actionTypes"
+import {FrozenClock} from "../services/__mocks__/API"
 
 const doc = jsdom.jsdom('<!doctype html><html><body></body></html>')
 global.document = doc
@@ -30,7 +31,7 @@ describe('<ReviewCard />', () => {
             <Provider store={store}>
                 <ReviewCard question='What is the capital of Peru?' showingAnswer={showingAnswer}
                             showAnswer={showAnswer} answer="Lima" answerCard={answer} cardId='card-1'
-                            deckId='deck-1'/>
+                            deckId='deck-1' clock={new FrozenClock()}/>
             </Provider>
         )
 

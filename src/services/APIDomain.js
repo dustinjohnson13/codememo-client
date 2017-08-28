@@ -5,6 +5,7 @@ export interface Clock {
     epochMilliseconds(): number;
 }
 
+export const ONE_MINUTE_IN_SECONDS = 60
 export const HALF_DAY_IN_SECONDS = 43200
 export const ONE_DAY_IN_SECONDS = HALF_DAY_IN_SECONDS * 2
 export const TWO_DAYS_IN_SECONDS = ONE_DAY_IN_SECONDS * 2

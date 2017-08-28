@@ -3,6 +3,7 @@ import {connect} from 'react-redux'
 import {showAnswer} from '../actions/creators'
 import type {CombinedState, Dispatch} from "../actions/actionTypes"
 import ReviewCard from "../components/ReviewCard"
+import {SystemClock} from "../services/API"
 
 type OwnProps = {}
 
@@ -14,7 +15,8 @@ export const mapStateToProps = (state: CombinedState, ownProps: OwnProps) => {
         answer: props.answer,
         cardId: props.cardId,
         deckId: props.deckId,
-        showingAnswer: props.showingAnswer
+        showingAnswer: props.showingAnswer,
+        clock: new SystemClock()
     }
 }
 

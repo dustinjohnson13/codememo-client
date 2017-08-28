@@ -16,7 +16,7 @@ import {
     User
 } from "./Dao"
 import {Answer, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../services/APIDomain"
-import {REVIEW_TIME} from "../fakeData/InMemoryDao"
+import {REVIEW_END_TIME} from "../fakeData/InMemoryDao"
 
 export type PreLoadedIds = {
     +users: Array<string>,
@@ -297,7 +297,8 @@ testWithDaoImplementation(createDao: () => Dao,
 
                 expect(result.id).toEqual(id)
                 expect(result.cardId).toEqual(preLoadedIds.cards[0])
-                expect(result.time).toEqual(REVIEW_TIME)
+                expect(result.startTime).toEqual(REVIEW_END_TIME - 60)
+                expect(result.endTime).toEqual(REVIEW_END_TIME)
                 expect(result.answer).toEqual(Answer.GOOD)
             })
 
@@ -414,10 +415,11 @@ testWithDaoImplementation(createDao: () => Dao,
                 const id = preLoadedIds.reviews[0]
 
                 const newCardId = "99999"
-                const newTime = 7777777
+                const newStartTime = 6666666
+                const newEndTime = 7777777
                 const newAnswer = Answer.EASY
 
-                await dao.updateReview(new Review(id, newCardId, newTime, newAnswer))
+                await dao.updateReview(new Review(id, newCardId, newStartTime, newEndTime, newAnswer))
 
                 const dbReview = await getDBReview(id)
 
@@ -426,7 +428,8 @@ testWithDaoImplementation(createDao: () => Dao,
                 }
 
                 expect(dbReview.cardId).toEqual(newCardId)
-                expect(dbReview.time).toEqual(newTime)
+                expect(dbReview.startTime).toEqual(newStartTime)
+                expect(dbReview.endTime).toEqual(newEndTime)
                 expect(dbReview.answer).toEqual(newAnswer)
             })
 
@@ -477,7 +480,7 @@ testWithDaoImplementation(createDao: () => Dao,
             it('should throw exception on updating new review', async () => {
                 expect.assertions(1)
 
-                const entity = newReview("2", 99999, Answer.EASY)
+                const entity = newReview("2", 88888, 99999, Answer.EASY)
                 try {
                     await dao.updateReview(entity)
                 } catch (e) {
@@ -542,7 +545,7 @@ testWithDaoImplementation(createDao: () => Dao,
 
                 const id = '9999999'
 
-                const entity = new Review(id, '1', 99999, Answer.HARD)
+                const entity = new Review(id, '1', 88888, 99999, Answer.HARD)
                 try {
                     await dao.updateReview(entity)
                 } catch (e) {

@@ -130,13 +130,15 @@ export class Card extends Entity {
 
 export class Review extends Entity {
     +cardId: string
-    +time: number
+    +startTime: number
+    +endTime: number
     +answer: AnswerType
 
-    constructor(id: string, cardId: string, time: number, answer: AnswerType) {
+    constructor(id: string, cardId: string, startTime: number, endTime: number, answer: AnswerType) {
         super(id);
         (this: any).cardId = cardId;
-        (this: any).time = time;
+        (this: any).startTime = startTime;
+        (this: any).endTime = endTime;
         (this: any).answer = answer;
     }
 }
@@ -204,6 +206,6 @@ export const newTemplate = (deckId: string, type: TemplateType, field1: string, 
 export const newCard = (templateId: string, cardNumber: number) =>
     new Card(NO_ID, templateId, cardNumber, ONE_DAY_IN_SECONDS, DUE_IMMEDIATELY)
 
-export const newReview = (cardId: string, time: number, answer: AnswerType): Review => {
-    return new Review(NO_ID, cardId, time, answer)
+export const newReview = (cardId: string, startTime: number, endTime: number, answer: AnswerType): Review => {
+    return new Review(NO_ID, cardId, startTime, endTime, answer)
 }

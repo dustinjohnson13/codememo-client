@@ -90,7 +90,7 @@ describe('DynamoDBDao', () => {
     }
 
     function getDynamoDBReview(id: string): Promise<Review | void> {
-        return getById(REVIEW_TABLE, id).then(item => item ? new Review(item.id, item.cId, item.t, answerTypeFromDBId(item.a)) : undefined)
+        return getById(REVIEW_TABLE, id).then(item => item ? new Review(item.id, item.cId, item.st, item.et, answerTypeFromDBId(item.a)) : undefined)
     }
 
     testWithDaoImplementation(() => dao, loadDynamoDB,

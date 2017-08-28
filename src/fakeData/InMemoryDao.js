@@ -3,7 +3,7 @@ import type {Dao, Entity} from "../persist/Dao"
 import {Card, Deck, newCard, newDeck, newReview, NO_ID, Review, Template, Templates, User} from "../persist/Dao"
 import {Answer, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../services/APIDomain"
 
-export const REVIEW_TIME = 1508331802
+export const REVIEW_END_TIME = 1508331802
 
 export const fakeDecks = (userId: string, count: number, setId: boolean): Array<Deck> => {
     const decks = []
@@ -62,9 +62,10 @@ export const fakeCards = (currentTime: number, deckId: string, totalCount: numbe
 export const fakeReviews = (currentTime: number, cardId: string, count: number, setId: boolean): Array<Review> => {
     const reviews = []
     for (let i = 0; i < count; i++) {
-        const time = currentTime - i
+        const endTime = currentTime - i
+        const startTime = endTime - 60
         const answer = Answer.GOOD
-        const review = setId ? new Review(i.toString(), cardId, time, answer) : newReview(cardId, time, answer)
+        const review = setId ? new Review(i.toString(), cardId, startTime, endTime, answer) : newReview(cardId, startTime, endTime, answer)
         reviews.push(review)
     }
     return reviews;
@@ -167,7 +168,7 @@ export class InMemoryDao implements Dao {
     }
 
     saveReview(review: Review): Promise<Review> {
-        const creator = id => new Review(id, review.cardId, review.time, review.answer)
+        const creator = id => new Review(id, review.cardId, review.startTime, review.endTime, review.answer)
         this.reviews = this.saveEntity(creator, this.reviews)
         return Promise.resolve(this.reviews[this.reviews.length - 1])
     }

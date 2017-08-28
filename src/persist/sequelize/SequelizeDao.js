@@ -75,7 +75,10 @@ export const ReviewEntity = modelDefiner.define(REVIEW_TABLE, {
     cardId: {
         type: Sequelize.INTEGER
     },
-    time: {
+    startTime: {
+        type: Sequelize.INTEGER
+    },
+    endTime: {
         type: Sequelize.INTEGER
     },
     answer: {
@@ -100,7 +103,7 @@ const hydrateUser = (entity: UserEntity): User | void => {
 }
 
 const hydrateReview = (entity: ReviewEntity): Review | void => {
-    return entity ? new Review(entity.id.toString(), entity.cardId.toString(), entity.time, answerTypeFromDBId(entity.answer)) : undefined
+    return entity ? new Review(entity.id.toString(), entity.cardId.toString(), entity.startTime, entity.endTime, answerTypeFromDBId(entity.answer)) : undefined
 }
 
 export class SequelizeDao implements Dao {
@@ -199,7 +202,8 @@ export class SequelizeDao implements Dao {
     saveReview(review: Review): Promise<Review> {
         return ReviewEntity.create({
             cardId: review.cardId,
-            time: review.time,
+            startTime: review.startTime,
+            endTime: review.endTime,
             answer: answerTypeToDBId(review.answer)
         })
     }
@@ -213,7 +217,8 @@ export class SequelizeDao implements Dao {
             const entity = await ReviewEntity.findById(review.id)
             await entity.updateAttributes({
                 cardId: review.cardId,
-                time: review.time,
+                startTime: review.startTime,
+                endTime: review.endTime,
                 answer: answerTypeToDBId(review.answer)
             })
         } catch (e) {

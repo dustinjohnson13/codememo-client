@@ -4,27 +4,45 @@ import {Answer, CardStatus, HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN
 import BusinessRules from "./BusinessRules"
 import {Card, Deck, DUE_IMMEDIATELY} from "../persist/Dao"
 import {fakeCards, fakeDecks} from "../fakeData/InMemoryDao"
+import {FrozenClock} from "./__mocks__/API"
 
 describe('BusinessRules', () => {
 
+    const clock = new FrozenClock()
     const businessRules = new BusinessRules()
+
+    it('should throw error on answer card: start time after end time', () => {
+        expect.assertions(1)
+
+        const startTime = clock.epochSeconds()
+        const endTime = startTime - 90
+        const original = new Card('1', 'templateId', 1, TWO_DAYS_IN_SECONDS, 2000)
+
+        try {
+            businessRules.cardAnswered(startTime, endTime, original, Answer.GOOD)
+        } catch (e) {
+            expect(e).toEqual(new Error("Start time must be less than or equal to end time!"))
+        }
+    })
 
     it('should set next due time on answer card: due card', () => {
 
-        const currentTime = 1
+        const endTime = clock.epochSeconds()
+        const startTime = endTime - 90
         const currentGoodInterval = TWO_DAYS_IN_SECONDS
 
         const expectedNewDue = { // The cards have a current goodInterval of two days
-            [Answer.FAIL]: currentTime + HALF_DAY_IN_SECONDS,
-            [Answer.HARD]: currentTime + ONE_DAY_IN_SECONDS,
-            [Answer.GOOD]: currentTime + TWO_DAYS_IN_SECONDS,
-            [Answer.EASY]: currentTime + (TWO_DAYS_IN_SECONDS * 2)
+            [Answer.FAIL]: endTime + HALF_DAY_IN_SECONDS,
+            [Answer.HARD]: endTime + ONE_DAY_IN_SECONDS,
+            [Answer.GOOD]: endTime + TWO_DAYS_IN_SECONDS,
+            [Answer.EASY]: endTime + (TWO_DAYS_IN_SECONDS * 2)
         }
 
         const original = new Card('1', 'templateId', 1, currentGoodInterval, 2000)
 
         const actuals = [Answer.FAIL, Answer.HARD, Answer.GOOD, Answer.EASY].map(it => {
-            return {answer: it, newCard: businessRules.cardAnswered(currentTime, original, it)}
+            const {updatedCard, review} = businessRules.cardAnswered(startTime, endTime, original, it)
+            return {answer: it, newCard: updatedCard}
         })
 
         for (let answerAndActual of actuals) {
@@ -37,7 +55,8 @@ describe('BusinessRules', () => {
 
     it('should set next good interval on answer card: due card', () => {
 
-        const currentTime = 1
+        const endTime = clock.epochSeconds()
+        const startTime = endTime - 90
         const currentGoodInterval = TWO_DAYS_IN_SECONDS
 
         const expectedNewGoodInterval = {
@@ -50,7 +69,8 @@ describe('BusinessRules', () => {
         const original = new Card('1', 'templateId', 1, currentGoodInterval, 2000)
 
         const actuals = [Answer.FAIL, Answer.HARD, Answer.GOOD, Answer.EASY].map(it => {
-            return {answer: it, newCard: businessRules.cardAnswered(currentTime, original, it)}
+            const {updatedCard, review} = businessRules.cardAnswered(startTime, endTime, original, it)
+            return {answer: it, newCard: updatedCard}
         })
 
         for (let answerAndActual of actuals) {

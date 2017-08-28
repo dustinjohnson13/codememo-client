@@ -38,7 +38,8 @@ const FIELD1_COLUMN = "f1"
 const FIELD2_COLUMN = "f2"
 const TYPE_COLUMN = "t"
 const CARD_NUMBER_COLUMN = "n"
-const TIME_COLUMN = "t"
+const START_TIME_COLUMN = "st"
+const END_TIME_COLUMN = "et"
 const ANSWER_COLUMN = "a"
 
 const EMAIL_INDEX = "email"
@@ -66,7 +67,7 @@ const hydrateCard = (item): Card | void => {
 }
 
 const hydrateReview = (item): Review | void => {
-    return item ? new Review(item[ID_COLUMN], item[CARD_ID_INDEX], item[TIME_COLUMN], answerTypeFromDBId(item[ANSWER_COLUMN])) : undefined
+    return item ? new Review(item[ID_COLUMN], item[CARD_ID_INDEX], item[START_TIME_COLUMN], item[END_TIME_COLUMN], answerTypeFromDBId(item[ANSWER_COLUMN])) : undefined
 }
 
 export default class DynamoDBDao implements Dao {
@@ -180,12 +181,13 @@ export default class DynamoDBDao implements Dao {
         const id = uuid.v1()
         const fields: Object = {
             [CARD_ID_INDEX]: review.cardId,
-            [TIME_COLUMN]: review.time,
+            [START_TIME_COLUMN]: review.startTime,
+            [END_TIME_COLUMN]: review.endTime,
             [ANSWER_COLUMN]: answerTypeToDBId(review.answer)
         }
 
         await this.insert(REVIEW_TABLE, {[ID_COLUMN]: id}, fields)
-        return new Review(id, review.cardId, review.time, review.answer)
+        return new Review(id, review.cardId, review.startTime, review.endTime, review.answer)
     }
 
     deleteUser(id: string): Promise<string> {
@@ -276,7 +278,8 @@ export default class DynamoDBDao implements Dao {
 
         const updates = new Map()
         updates.set(CARD_ID_INDEX, review.cardId)
-        updates.set(TIME_COLUMN, review.time)
+        updates.set(START_TIME_COLUMN, review.startTime)
+        updates.set(END_TIME_COLUMN, review.endTime)
         updates.set(ANSWER_COLUMN, answerTypeToDBId(review.answer))
 
         return this.updateEntity(id, review, REVIEW_TABLE, updates);

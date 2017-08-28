@@ -129,7 +129,7 @@ export interface DataService {
 
     fetchReviews(cardId: string): Promise<ReviewsResponse>;
 
-    answerCard(id: string, answer: AnswerType): Promise<CardDetail>;
+    answerCard(id: string, startTime: number, endTime: number, answer: AnswerType): Promise<CardDetail>;
 
     addCard(deckId: string, question: string, answer: string): Promise<CardDetail>;
 }

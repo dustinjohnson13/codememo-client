@@ -1,10 +1,10 @@
-import type {Clock} from "./APIDomain"
 //@flow
+import type {Clock} from "./APIDomain"
 import {Answer, CardDetail, CollectionResponse} from "./APIDomain"
 import DaoDelegatingDataService from "./DaoDelegatingDataService"
-import {Card, Deck, DUE_IMMEDIATELY, NO_ID, TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
+import {Card, Deck, DUE_IMMEDIATELY, NO_ID, Review, TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
 import {FrozenClock} from "./__mocks__/API"
-import {fakeCards, fakeReviews, REVIEW_TIME} from "../fakeData/InMemoryDao"
+import {fakeCards, fakeReviews, REVIEW_END_TIME} from "../fakeData/InMemoryDao"
 
 describe('Placeholder', () => {
     it('needs this placeholder', () => {
@@ -50,7 +50,7 @@ export function testServiceWithDaoImplementation(createDao: any) {
                         const currentTime = clock.epochMilliseconds()
                         const {templates, cards} = fakeCards(currentTime, deck.id, TOTAL_COUNT,
                             DUE_COUNT, TOTAL_COUNT - GOOD_COUNT - DUE_COUNT, false)
-                        const reviews = fakeReviews(REVIEW_TIME, cards[0].id, 1, false)
+                        const reviews = fakeReviews(REVIEW_END_TIME, cards[0].id, 1, false)
 
                         return Promise.all(templates.map(it => dao.saveTemplate(it))).then(templates =>
                             Promise.all(cards.map((card, idx) => {
@@ -129,7 +129,7 @@ export function testServiceWithDaoImplementation(createDao: any) {
             const originalDue = card.due
             const originalGoodInterval = card.goodInterval
 
-            const answeredCard = await service.answerCard(card.id, Answer.GOOD)
+            const answeredCard = await service.answerCard(card.id, clock.epochMilliseconds() - 60, clock.epochMilliseconds(), Answer.GOOD)
             const newDue = answeredCard.due
             const newGoodInterval = answeredCard.goodInterval
 
@@ -143,7 +143,10 @@ export function testServiceWithDaoImplementation(createDao: any) {
             const answer = Answer.HARD
             const currentReviews = await service.fetchReviews(card.id)
 
-            await service.answerCard(card.id, answer)
+            const endTime = clock.epochMilliseconds()
+            const startTime = endTime - 60
+
+            await service.answerCard(card.id, startTime, endTime, answer)
 
             const newReviews = await service.fetchReviews(card.id)
             const reviews = newReviews.reviews
@@ -154,7 +157,8 @@ export function testServiceWithDaoImplementation(createDao: any) {
 
             expect(review.cardId).toEqual(card.id)
             expect(review.answer).toEqual(answer)
-            expect(review.time).toEqual(clock.epochMilliseconds())
+            expect(review.startTime).toEqual(startTime)
+            expect(review.endTime).toEqual(endTime)
         })
     })
 }

@@ -114,7 +114,7 @@ export default class DaoDelegatingDataService implements DataService {
         return new ReviewsResponse(reviews)
     }
 
-    async answerCard(id: string, answer: AnswerType): Promise<CardDetail> {
+    async answerCard(id: string, startTime: number, endTime: number, answer: AnswerType): Promise<CardDetail> {
         const card = await this.dao.findCard(id)
         if (card) {
             const template = await this.dao.findTemplate(card.templateId)
@@ -123,15 +123,15 @@ export default class DaoDelegatingDataService implements DataService {
             }
 
             const now = this.clock.epochMilliseconds()
-            const updated = this.businessRules.cardAnswered(now, card, answer)
-            const newCard = await this.dao.updateCard(updated)
+            const {updatedCard, review} = this.businessRules.cardAnswered(startTime, endTime, card, answer)
+            const newCard = await this.dao.updateCard(updatedCard)
 
-            await this.dao.saveReview(newReview(newCard.id, now, answer))
+            await this.dao.saveReview(review)
 
             return this.createCardDetail(template, newCard)
         } else {
             // TODO: Need to send back an error response
-            throw new Error(`Card with id ${id} doens't exist.`)
+            throw new Error(`Card with id ${id} doesn't exist.`)
         }
     }
 

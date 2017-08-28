@@ -19,7 +19,7 @@ import type {PreLoadedIds} from "../Dao.test"
 import {testWithDaoImplementation} from "../Dao.test"
 import {testServiceWithDaoImplementation} from "../../services/DataService.test"
 import {Answer, ONE_DAY_IN_SECONDS} from "../../services/APIDomain"
-import {REVIEW_TIME} from "../../fakeData/InMemoryDao"
+import {REVIEW_END_TIME} from "../../fakeData/InMemoryDao"
 
 describe('SequelizeDao', () => {
 
@@ -72,7 +72,8 @@ describe('SequelizeDao', () => {
         }))
         const persistedReview = await ReviewEntity.create({
             cardId: persistedCards[0].id,
-            time: REVIEW_TIME,
+            startTime: REVIEW_END_TIME - 60,
+            endTime: REVIEW_END_TIME,
             answer: answerTypeToDBId(Answer.GOOD)
         })
 
@@ -107,7 +108,7 @@ describe('SequelizeDao', () => {
 
     function getSequelizeReview(id: string): Promise<Review | void> {
         return ReviewEntity.findById(parseInt(id)).then(entity => entity ? new Review(entity.id.toString(),
-            entity.cardId.toString(), entity.time, answerTypeFromDBId(entity.answer)) : undefined)
+            entity.cardId.toString(), entity.startTime, entity.endTime, answerTypeFromDBId(entity.answer)) : undefined)
     }
 
     testWithDaoImplementation(createDao, loadCollectionData,

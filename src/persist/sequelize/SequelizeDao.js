@@ -1,5 +1,5 @@
 //@flow
-import {Sequelize} from 'sequelize'
+import {Model, Sequelize} from 'sequelize'
 import type {Dao} from "../Dao"
 import {
     answerTypeFromDBId,
@@ -126,18 +126,9 @@ export class SequelizeDao implements Dao {
     }
 
     updateUser(user: User): Promise<User> {
-        if (user.id === NO_ID) {
-            throw new Error("Unable to update non-persisted user!")
-        }
-
-        return UserEntity.findById(user.id).then(entity => {
-            entity.updateAttributes({
-                email: user.email
-            })
-        }).then(() => user)
-            .catch(err => {
-                throw new Error("Unable to update non-existent user!")
-            })
+        return this.updateEntity(user.id, USER_TABLE, user, UserEntity, {
+            email: user.email
+        })
     }
 
     saveTemplate(entity: Template): Promise<Template> {
@@ -150,22 +141,12 @@ export class SequelizeDao implements Dao {
     }
 
     async updateTemplate(template: Template): Promise<Template> {
-        if (template.id === NO_ID) {
-            throw new Error("Unable to update non-persisted template!")
-        }
-
-        try {
-            const entity = await TemplateEntity.findById(template.id)
-            await entity.updateAttributes({
-                deckId: template.deckId,
-                type: templateTypeToDBId(template.type),
-                field1: template.field1,
-                field2: template.field2,
-            })
-        } catch (e) {
-            throw new Error("Unable to update non-existent template!")
-        }
-        return template
+        return this.updateEntity(template.id, TEMPLATE_TABLE, template, TemplateEntity, {
+            deckId: template.deckId,
+            type: templateTypeToDBId(template.type),
+            field1: template.field1,
+            field2: template.field2,
+        })
     }
 
     saveCard(card: Card): Promise<Card> {
@@ -178,22 +159,12 @@ export class SequelizeDao implements Dao {
     }
 
     async updateCard(card: Card): Promise<Card> {
-        if (card.id === NO_ID) {
-            throw new Error("Unable to update non-persisted card!")
-        }
-
-        try {
-            const entity = await CardEntity.findById(card.id)
-            await entity.updateAttributes({
-                templateId: card.templateId,
-                cardNumber: card.cardNumber,
-                goodInterval: card.goodInterval,
-                due: card.due
-            })
-        } catch (e) {
-            throw new Error("Unable to update non-existent card!")
-        }
-        return card
+        return this.updateEntity(card.id, CARD_TABLE, card, CardEntity, {
+            templateId: card.templateId,
+            cardNumber: card.cardNumber,
+            goodInterval: card.goodInterval,
+            due: card.due
+        })
     }
 
     saveDeck(deck: Deck): Promise<Deck> {
@@ -204,21 +175,25 @@ export class SequelizeDao implements Dao {
     }
 
     async updateDeck(deck: Deck): Promise<Deck> {
-        if (deck.id === NO_ID) {
-            throw new Error("Unable to update non-persisted deck!")
+        return this.updateEntity(deck.id, DECK_TABLE, deck, DeckEntity, {
+            userId: deck.userId,
+            name: deck.name
+        })
+    }
+
+    async updateEntity<T>(id: string, type: string, entity: T, model: Model, updates: { [string]: string | number }): Promise<T> {
+        if (id === NO_ID) {
+            throw new Error(`Unable to update non-persisted ${type}!`)
         }
 
         try {
-            const entity = await DeckEntity.findById(deck.id)
-            await entity.updateAttributes({
-                userId: deck.userId,
-                name: deck.name
-            })
+            const entity = await model.findById(id)
+            await entity.updateAttributes(updates)
         } catch (e) {
-            throw new Error("Unable to update non-existent deck!")
+            throw new Error(`Unable to update non-existent ${type}!`)
         }
 
-        return deck
+        return entity
     }
 
     saveReview(review: Review): Promise<Review> {
@@ -249,39 +224,27 @@ export class SequelizeDao implements Dao {
     }
 
     deleteUser(id: string): Promise<string> {
-        return UserEntity.destroy({
-            where: {
-                id: id
-            }
-        })
+        return this.deleteEntity(id, UserEntity)
     }
 
     deleteTemplate(id: string): Promise<string> {
-        return TemplateEntity.destroy({
-            where: {
-                id: id
-            }
-        })
+        return this.deleteEntity(id, TemplateEntity)
     }
 
     deleteCard(id: string): Promise<string> {
-        return CardEntity.destroy({
-            where: {
-                id: id
-            }
-        })
+        return this.deleteEntity(id, CardEntity)
     }
 
     deleteDeck(id: string): Promise<string> {
-        return DeckEntity.destroy({
-            where: {
-                id: id
-            }
-        })
+        return this.deleteEntity(id, DeckEntity)
     }
 
     deleteReview(id: string): Promise<string> {
-        return ReviewEntity.destroy({
+        return this.deleteEntity(id, ReviewEntity)
+    }
+
+    deleteEntity(id: string, model: Model): Promise<string> {
+        return model.destroy({
             where: {
                 id: id
             }

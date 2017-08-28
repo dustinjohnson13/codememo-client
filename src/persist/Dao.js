@@ -70,37 +70,42 @@ export const answerTypeFromDBId = (id: number): AnswerType => {
     }
 }
 
-export class User {
+export class Entity {
     +id: string
+
+    constructor(id: string) {
+        (this: any).id = id;
+    }
+}
+
+export class User extends Entity {
     +email: string
 
     constructor(id: string, email: string) {
-        (this: any).id = id;
+        super(id);
         (this: any).email = email;
     }
 }
 
-export class Deck {
-    +id: string
+export class Deck extends Entity {
     +userId: string
     +name: string
 
     constructor(id: string, userId: string, name: string) {
-        (this: any).id = id;
+        super(id);
         (this: any).userId = userId;
         (this: any).name = name;
     }
 }
 
-export class Template {
-    +id: string
+export class Template extends Entity {
     +deckId: string
     +type: TemplateType
     +field1: string
     +field2: string
 
     constructor(id: string, deckId: string, type: TemplateType, field1: string, field2: string) {
-        (this: any).id = id;
+        super(id);
         (this: any).deckId = deckId;
         (this: any).type = type;
         (this: any).field1 = field1;
@@ -108,15 +113,14 @@ export class Template {
     }
 }
 
-export class Card {
-    +id: string
+export class Card extends Entity {
     +templateId: string
     +cardNumber: number
     +goodInterval: number
     +due: number
 
     constructor(id: string, templateId: string, cardNumber: number, goodInterval: number, due: number) {
-        (this: any).id = id;
+        super(id);
         (this: any).templateId = templateId;
         (this: any).cardNumber = cardNumber;
         (this: any).goodInterval = goodInterval;
@@ -124,21 +128,18 @@ export class Card {
     }
 }
 
-export class Review {
-    +id: string
+export class Review extends Entity {
     +cardId: string
     +time: number
     +answer: AnswerType
 
     constructor(id: string, cardId: string, time: number, answer: AnswerType) {
-        (this: any).id = id;
+        super(id);
         (this: any).cardId = cardId;
         (this: any).time = time;
         (this: any).answer = answer;
     }
 }
-
-export type Entity = User | Deck | Template | Card | Review
 
 export interface Dao {
 

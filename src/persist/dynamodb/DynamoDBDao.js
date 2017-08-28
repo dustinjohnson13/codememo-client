@@ -231,26 +231,14 @@ export default class DynamoDBDao implements Dao {
     updateUser(user: User): Promise<User> {
         const id = user.id
 
-        if (id === NO_ID) {
-            throw new Error("Unable to update non-persisted user!")
-        }
-
         const updates = new Map()
         updates.set(EMAIL_INDEX, user.email)
 
-        return this.update(USER_TABLE, {[ID_COLUMN]: id}, [updates])
-            .then(() => user)
-            .catch(err => {
-                throw new Error("Unable to update non-existent user!")
-            })
+        return this.updateEntity(id, user, USER_TABLE, updates);
     }
 
     updateTemplate(template: Template): Promise<Template> {
         const id = template.id
-
-        if (id === NO_ID) {
-            throw new Error("Unable to update non-persisted template!")
-        }
 
         const updates = new Map()
         updates.set(DECK_ID_INDEX, template.deckId)
@@ -258,18 +246,11 @@ export default class DynamoDBDao implements Dao {
         updates.set(FIELD1_COLUMN, template.field1)
         updates.set(FIELD2_COLUMN, template.field2)
 
-        return this.update(TEMPLATE_TABLE, {[ID_COLUMN]: id}, [updates]).then(() => template)
-            .catch(err => {
-                throw new Error("Unable to update non-existent template!")
-            })
+        return this.updateEntity(id, template, TEMPLATE_TABLE, updates);
     }
 
     updateCard(card: Card): Promise<Card> {
         const id = card.id
-
-        if (id === NO_ID) {
-            throw new Error("Unable to update non-persisted card!")
-        }
 
         const updates = new Map()
         updates.set(TEMPLATE_ID_INDEX, card.templateId)
@@ -277,45 +258,28 @@ export default class DynamoDBDao implements Dao {
         updates.set(GOOD_INTERVAL_COLUMN, card.goodInterval)
         updates.set(DUE_COLUMN, card.due)
 
-        return this.update(CARD_TABLE, {[ID_COLUMN]: id}, [updates]).then(() => card)
-            .catch(err => {
-                throw new Error("Unable to update non-existent card!")
-            })
+        return this.updateEntity(id, card, CARD_TABLE, updates);
     }
 
     updateDeck(deck: Deck): Promise<Deck> {
         const id = deck.id
 
-        if (id === NO_ID) {
-            throw new Error("Unable to update non-persisted deck!")
-        }
-
         const updates = new Map()
         updates.set(USER_ID_COLUMN, deck.userId)
         updates.set(NAME_COLUMN, deck.name)
 
-        return this.update(DECK_TABLE, {[ID_COLUMN]: id}, [updates]).then(() => deck)
-            .catch(err => {
-                throw new Error("Unable to update non-existent deck!")
-            })
+        return this.updateEntity(id, deck, DECK_TABLE, updates);
     }
 
     updateReview(review: Review): Promise<Review> {
         const id = review.id
-
-        if (id === NO_ID) {
-            throw new Error("Unable to update non-persisted review!")
-        }
 
         const updates = new Map()
         updates.set(CARD_ID_INDEX, review.cardId)
         updates.set(TIME_COLUMN, review.time)
         updates.set(ANSWER_COLUMN, answerTypeToDBId(review.answer))
 
-        return this.update(REVIEW_TABLE, {[ID_COLUMN]: id}, [updates]).then(() => review)
-            .catch(err => {
-                throw new Error("Unable to update non-existent review!")
-            })
+        return this.updateEntity(id, review, REVIEW_TABLE, updates);
     }
 
     createTable(name: string, indices: Array<IndexDefinition>): Promise<void> {
@@ -421,6 +385,17 @@ export default class DynamoDBDao implements Dao {
                 }
             })
         })
+    }
+
+    updateEntity<Entity>(id: string, entity: Entity, table: string, updates: Map<string, any>): Promise<Entity> {
+        if (id === NO_ID) {
+            throw new Error(`Unable to update non-persisted ${table}!`)
+        }
+
+        return this.update(table, {[ID_COLUMN]: id}, [updates]).then(() => entity)
+            .catch(err => {
+                throw new Error(`Unable to update non-existent ${table}!`)
+            })
     }
 
     update(table: string, key: { [string]: string }, fields: [Map<string, *>]): Promise<any> {

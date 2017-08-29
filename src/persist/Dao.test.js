@@ -15,7 +15,7 @@ import {
     TEST_USER_EMAIL,
     User
 } from "./Dao"
-import {Answer, ONE_DAY_IN_SECONDS, ONE_MINUTE_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../services/APIDomain"
+import {Answer, MILLIS_PER_MINUTE, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS} from "../services/APIDomain"
 import {REVIEW_END_TIME} from "../fakeData/InMemoryDao"
 
 export type PreLoadedIds = {
@@ -268,7 +268,7 @@ testWithDaoImplementation(createDao: () => Dao,
                 expect(result.id).toEqual(id)
                 expect(result.templateId).toEqual(preLoadedIds.templates[2])
                 expect(result.cardNumber).toEqual(1)
-                expect(result.goodInterval).toEqual(ONE_DAY_IN_SECONDS)
+                expect(result.goodInterval).toEqual(MINUTES_PER_DAY)
                 expect(result.due).toEqual(1508331802)
             })
 
@@ -297,7 +297,7 @@ testWithDaoImplementation(createDao: () => Dao,
 
                 expect(result.id).toEqual(id)
                 expect(result.cardId).toEqual(preLoadedIds.cards[0])
-                expect(result.startTime).toEqual(REVIEW_END_TIME - ONE_MINUTE_IN_SECONDS)
+                expect(result.startTime).toEqual(REVIEW_END_TIME - MILLIS_PER_MINUTE)
                 expect(result.endTime).toEqual(REVIEW_END_TIME)
                 expect(result.answer).toEqual(Answer.GOOD)
             })
@@ -372,10 +372,10 @@ testWithDaoImplementation(createDao: () => Dao,
 
                 const newTemplateId = "newDeckId"
                 const newCardNumber = 2
-                const newGoodInterval = TWO_DAYS_IN_SECONDS
+                const newGoodInterval = MINUTES_PER_TWO_DAYS
                 const newDue = 12
 
-                await dao.updateCard(new Card(id, newTemplateId, newCardNumber, TWO_DAYS_IN_SECONDS, newDue))
+                await dao.updateCard(new Card(id, newTemplateId, newCardNumber, newGoodInterval, newDue))
 
                 const dbCard = await getDBCard(id)
 
@@ -532,7 +532,7 @@ testWithDaoImplementation(createDao: () => Dao,
 
                 const id = '9999999'
 
-                const entity = new Card(id, '1', 1, ONE_DAY_IN_SECONDS, 2000)
+                const entity = new Card(id, '1', 1, MINUTES_PER_DAY, 2000)
                 try {
                     await dao.updateCard(entity)
                 } catch (e) {

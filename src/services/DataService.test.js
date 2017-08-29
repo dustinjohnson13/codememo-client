@@ -1,8 +1,8 @@
 //@flow
 import type {Clock} from "./APIDomain"
-import {Answer, CardDetail, CollectionResponse, ONE_MINUTE_IN_SECONDS} from "./APIDomain"
+import {Answer, CardDetail, CollectionResponse, MILLIS_PER_MINUTE} from "./APIDomain"
 import DaoDelegatingDataService from "./DaoDelegatingDataService"
-import {Card, Deck, DUE_IMMEDIATELY, NO_ID, Review, TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
+import {Card, Deck, DUE_IMMEDIATELY, NO_ID, TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
 import {FrozenClock} from "./__mocks__/API"
 import {fakeCards, fakeReviews, REVIEW_END_TIME} from "../fakeData/InMemoryDao"
 
@@ -129,7 +129,7 @@ export function testServiceWithDaoImplementation(createDao: any) {
             const originalDue = card.due
             const originalGoodInterval = card.goodInterval
 
-            const answeredCard = await service.answerCard(card.id, clock.epochMilliseconds() - ONE_MINUTE_IN_SECONDS, clock.epochMilliseconds(), Answer.GOOD)
+            const answeredCard = await service.answerCard(card.id, clock.epochMilliseconds() - MILLIS_PER_MINUTE, clock.epochMilliseconds(), Answer.GOOD)
             const newDue = answeredCard.due
             const newGoodInterval = answeredCard.goodInterval
 
@@ -144,7 +144,7 @@ export function testServiceWithDaoImplementation(createDao: any) {
             const currentReviews = await service.fetchReviews(card.id)
 
             const endTime = clock.epochMilliseconds()
-            const startTime = endTime - ONE_MINUTE_IN_SECONDS
+            const startTime = endTime - MILLIS_PER_MINUTE
 
             await service.answerCard(card.id, startTime, endTime, answer)
 

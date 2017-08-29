@@ -1,6 +1,6 @@
 //@flow
 import type {AnswerType} from "../services/APIDomain"
-import {Answer, ONE_DAY_IN_SECONDS} from "../services/APIDomain"
+import {Answer, MINUTES_PER_DAY} from "../services/APIDomain"
 
 export const USER_TABLE = "user"
 export const CARD_TABLE = "card"
@@ -204,7 +204,7 @@ export const newTemplate = (deckId: string, type: TemplateType, field1: string, 
     new Template(NO_ID, deckId, type, field1, field2)
 
 export const newCard = (templateId: string, cardNumber: number) =>
-    new Card(NO_ID, templateId, cardNumber, ONE_DAY_IN_SECONDS, DUE_IMMEDIATELY)
+    new Card(NO_ID, templateId, cardNumber, MINUTES_PER_DAY, DUE_IMMEDIATELY)
 
 export const newReview = (cardId: string, startTime: number, endTime: number, answer: AnswerType): Review => {
     return new Review(NO_ID, cardId, startTime, endTime, answer)

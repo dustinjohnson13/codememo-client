@@ -18,7 +18,7 @@ import {
 import type {PreLoadedIds} from "../Dao.test"
 import {testWithDaoImplementation} from "../Dao.test"
 import {testServiceWithDaoImplementation} from "../../services/DataService.test"
-import {Answer, ONE_DAY_IN_SECONDS, ONE_MINUTE_IN_SECONDS} from "../../services/APIDomain"
+import {Answer, MILLIS_PER_MINUTE, MINUTES_PER_DAY} from "../../services/APIDomain"
 import {REVIEW_END_TIME} from "../../fakeData/InMemoryDao"
 
 describe('SequelizeDao', () => {
@@ -66,13 +66,13 @@ describe('SequelizeDao', () => {
             return CardEntity.create({
                 templateId: persistedTemplates[idx].id,
                 cardNumber: 1,
-                goodInterval: ONE_DAY_IN_SECONDS,
+                goodInterval: MINUTES_PER_DAY,
                 due: id % 4 === 0 ? DUE_IMMEDIATELY : 1508331802
             })
         }))
         const persistedReview = await ReviewEntity.create({
             cardId: persistedCards[0].id,
-            startTime: REVIEW_END_TIME - ONE_MINUTE_IN_SECONDS,
+            startTime: REVIEW_END_TIME - MILLIS_PER_MINUTE,
             endTime: REVIEW_END_TIME,
             answer: answerTypeToDBId(Answer.GOOD)
         })

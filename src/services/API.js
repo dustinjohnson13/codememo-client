@@ -76,7 +76,7 @@ class DelegatingDataService implements DataService {
         })
     }
 
-    answerCard(id: string, startTime: number, endTime:number, answer: AnswerType): Promise<CardDetail> {
+    answerCard(id: string, startTime: number, endTime: number, answer: AnswerType): Promise<CardDetail> {
         return new Promise((resolve, reject) => {
             setTimeout(() => this.delegate.answerCard(id, startTime, endTime, answer).then(resolve), this.timeoutDelay)
         })

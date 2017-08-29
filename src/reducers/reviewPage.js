@@ -6,9 +6,10 @@ import {
     FETCH_CARDS_SUCCESS,
     FETCH_DECK_SUCCESS,
     HIDE_ANSWER,
-    SHOW_ANSWER, START_TIMER
+    SHOW_ANSWER,
+    START_TIMER
 } from '../actions/actionTypes'
-import {ONE_DAY_IN_SECONDS} from "../services/APIDomain"
+import {MINUTES_PER_DAY, MINUTES_PER_HOUR} from "../services/APIDomain"
 import {DUE_IMMEDIATELY} from "../persist/Dao"
 
 export const initialState = {
@@ -141,12 +142,11 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
     }
 }
 
-const userFriendlyInterval = (intervalSeconds: number): string => {
-    let daysOrHours = intervalSeconds / ONE_DAY_IN_SECONDS
+const userFriendlyInterval = (intervalMinutes: number): string => {
+    let daysOrHours = intervalMinutes / MINUTES_PER_DAY
     let unit = 'd'
     if (daysOrHours < 1) {
-        const secondsPerHour = 3600
-        daysOrHours = intervalSeconds / secondsPerHour
+        daysOrHours = intervalMinutes / MINUTES_PER_HOUR
         unit = 'h'
     }
     return Math.round(daysOrHours) + unit

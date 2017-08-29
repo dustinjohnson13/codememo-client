@@ -15,7 +15,7 @@ import {
 import type {PreLoadedIds} from "../persist/Dao.test"
 import {testWithDaoImplementation} from "../persist/Dao.test"
 import {InMemoryDao, REVIEW_END_TIME} from "./InMemoryDao"
-import {Answer, ONE_DAY_IN_SECONDS, ONE_MINUTE_IN_SECONDS} from "../services/APIDomain"
+import {Answer, MILLIS_PER_MINUTE, MINUTES_PER_DAY} from "../services/APIDomain"
 import {testServiceWithDaoImplementation} from "../services/DataService.test"
 
 describe('InMemoryDao', () => {
@@ -47,11 +47,11 @@ describe('InMemoryDao', () => {
                 persistedDecks[1].id : id < 13 ? persistedDecks[2].id : persistedDecks[3].id).toString()
             const due = id % 4 === 0 ? DUE_IMMEDIATELY : 1508331802
 
-            const card = new Card(id.toString(), persistedTemplates[idx].id, 1, ONE_DAY_IN_SECONDS, due)
+            const card = new Card(id.toString(), persistedTemplates[idx].id, 1, MINUTES_PER_DAY, due)
 
             return dao.saveCard(card)
         }))
-        const startTime = REVIEW_END_TIME - ONE_MINUTE_IN_SECONDS
+        const startTime = REVIEW_END_TIME - MILLIS_PER_MINUTE
         const persistedReview = await dao.saveReview(newReview(persistedCards[0].id, startTime, REVIEW_END_TIME, Answer.GOOD))
 
         return {

@@ -19,7 +19,8 @@ import type {
     LoginRequestAction,
     LoginSuccessAction,
     ReviewDeckRequestAction,
-    ShowAnswerAction, StartTimerAction
+    ShowAnswerAction,
+    StartTimerAction
 } from "./actionTypes"
 import {
     ADD_CARD_REQUEST,
@@ -40,7 +41,8 @@ import {
     LOGIN_REQUEST,
     LOGIN_SUCCESS,
     REVIEW_DECK_REQUEST,
-    SHOW_ANSWER, START_TIMER
+    SHOW_ANSWER,
+    START_TIMER
 } from "./actionTypes"
 import type {PageType} from "./pages"
 import {Page} from './pages'

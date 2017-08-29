@@ -1,7 +1,7 @@
 //@flow
 import type {Dao, Entity} from "../persist/Dao"
 import {Card, Deck, newCard, newDeck, newReview, NO_ID, Review, Template, Templates, User} from "../persist/Dao"
-import {Answer, ONE_DAY_IN_SECONDS, ONE_MINUTE_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../services/APIDomain"
+import {Answer, MILLIS_PER_DAY, MILLIS_PER_MINUTE, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS} from "../services/APIDomain"
 
 export const REVIEW_END_TIME = 1508331802
 
@@ -39,9 +39,9 @@ export const fakeCards = (currentTime: number, deckId: string, totalCount: numbe
             const goodCard = i < goodCount
 
             const id = setId ? i.toString() : NO_ID
-            const goodInterval = goodCard ? TWO_DAYS_IN_SECONDS : ONE_DAY_IN_SECONDS
-            const dueTime = goodCard ? currentTime + (ONE_DAY_IN_SECONDS * multiplier) :
-                currentTime - (ONE_DAY_IN_SECONDS * multiplier)
+            const goodInterval = goodCard ? MINUTES_PER_TWO_DAYS : MINUTES_PER_DAY
+            const dueTime = goodCard ? currentTime + (MILLIS_PER_DAY * multiplier) :
+                currentTime - (MILLIS_PER_DAY * multiplier)
 
             const card = new Card(id, template.id, 1, goodInterval, dueTime)
             cards.push(card)
@@ -63,7 +63,7 @@ export const fakeReviews = (currentTime: number, cardId: string, count: number, 
     const reviews = []
     for (let i = 0; i < count; i++) {
         const endTime = currentTime - i
-        const startTime = endTime - ONE_MINUTE_IN_SECONDS
+        const startTime = endTime - MILLIS_PER_MINUTE
         const answer = Answer.GOOD
         const review = setId ? new Review(i.toString(), cardId, startTime, endTime, answer) : newReview(cardId, startTime, endTime, answer)
         reviews.push(review)

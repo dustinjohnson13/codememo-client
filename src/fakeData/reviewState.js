@@ -1,10 +1,10 @@
 //@flow
 import {
     CardDetail,
-    FOUR_DAYS_IN_SECONDS,
-    HALF_DAY_IN_SECONDS,
-    ONE_DAY_IN_SECONDS,
-    TWO_DAYS_IN_SECONDS
+    MINUTES_PER_DAY,
+    MINUTES_PER_FOUR_DAYS,
+    MINUTES_PER_HALF_DAY,
+    MINUTES_PER_TWO_DAYS
 } from "../services/APIDomain"
 import {DUE_IMMEDIATELY} from "../persist/Dao"
 import type {ReviewState} from "../actions/actionTypes"
@@ -15,12 +15,12 @@ export const reviewState: ReviewState = {
     answer: '', question: '', showingAnswer: false, startTime: -1,
     dueCards: [
         new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30',
-            HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, -299999),
-        new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', HALF_DAY_IN_SECONDS,
-            ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, -309999)
+            MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, -299999),
+        new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', MINUTES_PER_HALF_DAY,
+            MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, -309999)
     ],
     newCards: [
-        new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', HALF_DAY_IN_SECONDS,
-            ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, DUE_IMMEDIATELY)
+        new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', MINUTES_PER_HALF_DAY,
+            MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, DUE_IMMEDIATELY)
     ]
 }

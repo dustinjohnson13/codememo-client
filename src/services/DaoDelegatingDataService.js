@@ -28,7 +28,7 @@ export default class DaoDelegatingDataService implements DataService {
         this.businessRules = new BusinessRules()
     }
 
-    currentTimeMillis() : number {
+    currentTimeMillis(): number {
         return this.clock.epochMilliseconds()
     }
 

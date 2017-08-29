@@ -1,5 +1,16 @@
 //@flow
-import {Answer, CardStatus, HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "./APIDomain"
+import {
+    Answer,
+    CardStatus,
+    MILLIS_PER_DAY,
+    MILLIS_PER_HALF_DAY,
+    MILLIS_PER_MINUTE,
+    MILLIS_PER_TWO_DAYS,
+    MINUTES_PER_DAY,
+    MINUTES_PER_FOUR_DAYS,
+    MINUTES_PER_HALF_DAY,
+    MINUTES_PER_TWO_DAYS
+} from "./APIDomain"
 
 import BusinessRules from "./BusinessRules"
 import {Card, Deck, DUE_IMMEDIATELY} from "../persist/Dao"
@@ -16,7 +27,7 @@ describe('BusinessRules', () => {
 
         const startTime = clock.epochMilliseconds()
         const endTime = startTime - 90
-        const original = new Card('1', 'templateId', 1, TWO_DAYS_IN_SECONDS, 2000)
+        const original = new Card('1', 'templateId', 1, MINUTES_PER_TWO_DAYS, 2000)
 
         try {
             businessRules.cardAnswered(startTime, endTime, original, Answer.GOOD)
@@ -29,8 +40,8 @@ describe('BusinessRules', () => {
         expect.assertions(1)
 
         const endTime = clock.epochMilliseconds()
-        const startTime = endTime - (1000 * 60 * 3 + 1)
-        const original = new Card('1', 'templateId', 1, TWO_DAYS_IN_SECONDS, 2000)
+        const startTime = endTime - (MILLIS_PER_MINUTE * 3 + 1)
+        const original = new Card('1', 'templateId', 1, MINUTES_PER_TWO_DAYS, 2000)
 
         const {review} = businessRules.cardAnswered(startTime, endTime, original, Answer.GOOD)
         expect(review.startTime).toEqual(review.endTime)
@@ -39,14 +50,14 @@ describe('BusinessRules', () => {
     it('should set next due time on answer card: due card', () => {
 
         const endTime = clock.epochMilliseconds()
-        const startTime = endTime - (1000 * 60 * 3) // Three minutes exactly
-        const currentGoodInterval = TWO_DAYS_IN_SECONDS
+        const startTime = endTime - MILLIS_PER_MINUTE * 3
+        const currentGoodInterval = MINUTES_PER_TWO_DAYS
 
         const expectedNewDue = { // The cards have a current goodInterval of two days
-            [Answer.FAIL]: endTime + HALF_DAY_IN_SECONDS,
-            [Answer.HARD]: endTime + ONE_DAY_IN_SECONDS,
-            [Answer.GOOD]: endTime + TWO_DAYS_IN_SECONDS,
-            [Answer.EASY]: endTime + (TWO_DAYS_IN_SECONDS * 2)
+            [Answer.FAIL]: endTime + MILLIS_PER_HALF_DAY,
+            [Answer.HARD]: endTime + MILLIS_PER_DAY,
+            [Answer.GOOD]: endTime + MILLIS_PER_TWO_DAYS,
+            [Answer.EASY]: endTime + (MILLIS_PER_TWO_DAYS * 2)
         }
 
         const original = new Card('1', 'templateId', 1, currentGoodInterval, 2000)
@@ -71,13 +82,13 @@ describe('BusinessRules', () => {
 
         const endTime = clock.epochMilliseconds()
         const startTime = endTime - 90
-        const currentGoodInterval = TWO_DAYS_IN_SECONDS
+        const currentGoodInterval = MINUTES_PER_TWO_DAYS
 
         const expectedNewGoodInterval = {
-            [Answer.FAIL]: ONE_DAY_IN_SECONDS,
-            [Answer.HARD]: TWO_DAYS_IN_SECONDS,
-            [Answer.GOOD]: (TWO_DAYS_IN_SECONDS * 2),
-            [Answer.EASY]: (TWO_DAYS_IN_SECONDS * 4)
+            [Answer.FAIL]: MINUTES_PER_DAY,
+            [Answer.HARD]: MINUTES_PER_TWO_DAYS,
+            [Answer.GOOD]: (MINUTES_PER_TWO_DAYS * 2),
+            [Answer.EASY]: (MINUTES_PER_TWO_DAYS * 4)
         }
 
         const original = new Card('1', 'templateId', 1, currentGoodInterval, 2000)
@@ -95,13 +106,13 @@ describe('BusinessRules', () => {
         }
     })
 
-    it('should return a multiple of two for card good interval for all current intervals', () => {
+    it('should return a multiple of two for card good interval in minutes for all current intervals', () => {
 
-        const currentGoodInterval = TWO_DAYS_IN_SECONDS
+        const currentGoodInterval = MINUTES_PER_TWO_DAYS
         const card = new Card('1', 'templateId', 1, currentGoodInterval, 2000)
 
         const expectedIntervals = [
-            HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, TWO_DAYS_IN_SECONDS * 2
+            MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS
         ]
 
         const actual = businessRules.currentAnswerIntervals(card)
@@ -112,10 +123,10 @@ describe('BusinessRules', () => {
     it('should map cards to api cards based on due time', () => {
         const currentTime = 2000
 
-        const brandNew = new Card('1', 'templateId', 1, ONE_DAY_IN_SECONDS, DUE_IMMEDIATELY)
-        const dueEarlier = new Card('2', 'templateId', 1, ONE_DAY_IN_SECONDS, currentTime - 100)
-        const dueNow = new Card('3', 'templateId', 1, ONE_DAY_IN_SECONDS, currentTime)
-        const ok = new Card('4', 'templateId', 1, ONE_DAY_IN_SECONDS, currentTime + 1);
+        const brandNew = new Card('1', 'templateId', 1, MINUTES_PER_DAY, DUE_IMMEDIATELY)
+        const dueEarlier = new Card('2', 'templateId', 1, MINUTES_PER_DAY, currentTime - 100)
+        const dueNow = new Card('3', 'templateId', 1, MINUTES_PER_DAY, currentTime)
+        const ok = new Card('4', 'templateId', 1, MINUTES_PER_DAY, currentTime + 1);
 
         [brandNew, dueEarlier, dueNow, ok].forEach((card, idx) => {
             const apiCard = businessRules.cardToAPICard(currentTime, card)

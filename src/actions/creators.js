@@ -19,7 +19,7 @@ import type {
     LoginRequestAction,
     LoginSuccessAction,
     ReviewDeckRequestAction,
-    ShowAnswerAction
+    ShowAnswerAction, StartTimerAction
 } from "./actionTypes"
 import {
     ADD_CARD_REQUEST,
@@ -40,7 +40,7 @@ import {
     LOGIN_REQUEST,
     LOGIN_SUCCESS,
     REVIEW_DECK_REQUEST,
-    SHOW_ANSWER
+    SHOW_ANSWER, START_TIMER
 } from "./actionTypes"
 import type {PageType} from "./pages"
 import {Page} from './pages'
@@ -182,6 +182,13 @@ export const addCardSuccess = (response: CardDetail, deckId: string): AddCardSuc
     }
 }
 
+export const startTimer = (): StartTimerAction => {
+    return {
+        type: START_TIMER,
+        time: API.currentTimeMillis()
+    }
+}
+
 // TODO: Remove requirement to support both CollectionResponse and CollectionState as input
 export function* loadCollectionPage(): Generator<LoadCollectionPageAction, void, any> {
     const collection = yield select(selectors.collection)
@@ -215,9 +222,15 @@ export function* addCard(action: AddCardRequestAction): Generator<CardDetail, vo
     yield put(addCardSuccess(card, action.id))
 }
 
-export function* answerCard(action: AnswerCardRequestAction): Generator<CardDetail, void, CardDetail> {
-    const card = yield call(API.answerCard, action.id, action.answer)
+export function* answerCard(action: AnswerCardRequestAction): Generator<CardDetail, void, any> {
+    const reviewState = yield select(selectors.review)
+
+    const startTime = reviewState.startTime
+    const endTime = API.currentTimeMillis()
+
+    const card = yield call(API.answerCard, action.id, startTime, endTime, action.answer)
     yield put(answerCardSuccess(card, action.deckId))
+    yield put(startTimer())
 }
 
 //TODO: Split up to not need to support both DeckResponse and an array of ids as input
@@ -233,6 +246,7 @@ export function* reviewDeck(action: ReviewDeckRequestAction): Generator<DeckResp
     }
 
     yield put(loadPage(Page.REVIEW))
+    yield put(startTimer())
 }
 
 export function* fetchCollection(action: FetchCollectionRequestAction): Generator<FetchCollectionRequestAction, any, CollectionResponse> {

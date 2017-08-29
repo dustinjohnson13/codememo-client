@@ -12,7 +12,7 @@ import {
     loadCollectionPage,
     loadPage,
     reviewDeck,
-    reviewDeckRequest
+    reviewDeckRequest, startTimer
 } from "./creators"
 import {call, put, select} from 'redux-saga/effects'
 import {
@@ -22,7 +22,7 @@ import {
     DeckResponse,
     FOUR_DAYS_IN_SECONDS,
     HALF_DAY_IN_SECONDS,
-    ONE_DAY_IN_SECONDS,
+    ONE_DAY_IN_SECONDS, ONE_MINUTE_IN_SECONDS,
     TWO_DAYS_IN_SECONDS
 } from "../services/APIDomain"
 import {Page} from "./pages"
@@ -32,6 +32,8 @@ import API from '../services/API'
 import {collectionState} from "../fakeData/collectionState"
 import {initialState} from "../reducers/collectionPage"
 import {DUE_IMMEDIATELY} from "../persist/Dao"
+import {FrozenClock} from "../services/__mocks__/API"
+import {reviewState} from "../fakeData/reviewState"
 
 jest.mock('../services/API') // Set mock API for module importing
 
@@ -58,13 +60,18 @@ describe('creators', () => {
 
         const deckId = 'deck-1'
         const action = answerCardRequest('deck-1-card-0', deckId, 'GOOD')
+        const startTime = API.currentTimeMillis() - ONE_MINUTE_IN_SECONDS
 
         const gen = answerCard(action)
-        expect(gen.next().value).toEqual(call(API.answerCard, action.id, action.answer))
+
+        expect(gen.next().value).toEqual(select(selectors.review))
+        expect(gen.next({...reviewState, startTime: startTime}).value)
+            .toEqual(call(API.answerCard, action.id, startTime, API.currentTimeMillis(), action.answer))
 
         const newCard = new CardDetail(action.id, 'question', 'answer', HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS,
             TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, 9000)
         expect(gen.next(newCard).value).toEqual(put(answerCardSuccess(newCard, deckId)))
+        expect(gen.next(newCard).value).toEqual(put(startTimer()))
     })
 
     it('loads collection page automatically when collection available', () => {
@@ -102,6 +109,7 @@ describe('creators', () => {
             .toEqual(put(getDeck1DueCards))
 
         expect(gen.next().value).toEqual(put(loadPage(Page.REVIEW)))
+        expect(gen.next().value).toEqual(put(startTimer()))
     })
 
     it('sends no cards fetch response when review deck requested for zero card deck', () => {

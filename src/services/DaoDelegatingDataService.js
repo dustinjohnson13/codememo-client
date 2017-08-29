@@ -8,7 +8,6 @@ import {
     Deck,
     newCard,
     newDeck,
-    newReview,
     newTemplate,
     newUser,
     Template,
@@ -27,6 +26,10 @@ export default class DaoDelegatingDataService implements DataService {
         this.dao = dao
         this.clock = clock
         this.businessRules = new BusinessRules()
+    }
+
+    currentTimeMillis() : number {
+        return this.clock.epochMilliseconds()
     }
 
     async init(clearDatabase: boolean): Promise<void> {
@@ -122,7 +125,6 @@ export default class DaoDelegatingDataService implements DataService {
                 throw new Error(`Unable to find template for card ${id}`)
             }
 
-            const now = this.clock.epochMilliseconds()
             const {updatedCard, review} = this.businessRules.cardAnswered(startTime, endTime, card, answer)
             const newCard = await this.dao.updateCard(updatedCard)
 

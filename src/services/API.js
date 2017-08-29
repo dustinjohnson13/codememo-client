@@ -38,6 +38,10 @@ class DelegatingDataService implements DataService {
         (this: any).addCard = this.addCard.bind(this)
     }
 
+    currentTimeMillis(): number {
+        return this.delegate.currentTimeMillis()
+    }
+
     init(clearDatabase: boolean): Promise<void> {
         return this.delegate.init(clearDatabase);
     }

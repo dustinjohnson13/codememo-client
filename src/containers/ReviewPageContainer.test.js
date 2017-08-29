@@ -1,12 +1,21 @@
 //@flow
 import React from 'react'
-import {addCardRequest, collectionPage} from "../actions/creators"
+import {addCardRequest, collectionPage, startTimer} from "../actions/creators"
 import {mapDispatchToProps, mapStateToProps} from "./ReviewPageContainer"
 import {defaultState} from "../fakeData/storeFake"
 
 jest.mock('../services/API') // Set mock API for module importing
 
 describe('<ReviewPageContainer/>', () => {
+
+    let dispatchedActions = []
+    const dispatcher = (action) => {
+        dispatchedActions.push(action)
+    }
+
+    beforeEach(function () {
+        dispatchedActions = []
+    });
 
     it('maps deck attributes from state', () => {
         const expectedState = {
@@ -23,15 +32,20 @@ describe('<ReviewPageContainer/>', () => {
     })
 
     it('maps back to the appropriate action', () => {
-        const dispatchedActions = []
-        const dispatcher = (action) => {
-            dispatchedActions.push(action)
-        }
 
         const props = mapDispatchToProps(dispatcher, {})
         props.back()
 
         expect(dispatchedActions).toEqual([collectionPage()])
+    })
+
+    it('maps restartTimer to the appropriate action', () => {
+
+
+        const props = mapDispatchToProps(dispatcher, {})
+        props.restartTimer()
+
+        expect(dispatchedActions).toEqual([startTimer()])
     })
 
     it('maps add card', () => {
@@ -42,14 +56,9 @@ describe('<ReviewPageContainer/>', () => {
 
         const expectedActions = [addCardRequest(deckId, question, answer)]
 
-        const actions = []
-        const invoke = (action) => {
-            actions.push(action)
-        }
-
-        const {addCard} = mapDispatchToProps(invoke, {})
+        const {addCard} = mapDispatchToProps(dispatcher, {})
         addCard(deckId, question, answer)
 
-        expect(actions).toEqual(expectedActions)
+        expect(dispatchedActions).toEqual(expectedActions)
     })
 })

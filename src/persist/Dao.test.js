@@ -15,7 +15,7 @@ import {
     TEST_USER_EMAIL,
     User
 } from "./Dao"
-import {Answer, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../services/APIDomain"
+import {Answer, ONE_DAY_IN_SECONDS, ONE_MINUTE_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../services/APIDomain"
 import {REVIEW_END_TIME} from "../fakeData/InMemoryDao"
 
 export type PreLoadedIds = {
@@ -297,7 +297,7 @@ testWithDaoImplementation(createDao: () => Dao,
 
                 expect(result.id).toEqual(id)
                 expect(result.cardId).toEqual(preLoadedIds.cards[0])
-                expect(result.startTime).toEqual(REVIEW_END_TIME - 60)
+                expect(result.startTime).toEqual(REVIEW_END_TIME - ONE_MINUTE_IN_SECONDS)
                 expect(result.endTime).toEqual(REVIEW_END_TIME)
                 expect(result.answer).toEqual(Answer.GOOD)
             })

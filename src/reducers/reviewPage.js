@@ -6,7 +6,7 @@ import {
     FETCH_CARDS_SUCCESS,
     FETCH_DECK_SUCCESS,
     HIDE_ANSWER,
-    SHOW_ANSWER
+    SHOW_ANSWER, START_TIMER
 } from '../actions/actionTypes'
 import {ONE_DAY_IN_SECONDS} from "../services/APIDomain"
 import {DUE_IMMEDIATELY} from "../persist/Dao"
@@ -25,7 +25,8 @@ export const initialState = {
     hardInterval: '',
     goodInterval: '',
     easyInterval: '',
-    showingAnswer: false
+    showingAnswer: false,
+    startTime: -1
 }
 
 export const getViewState = (state: ReviewState): ReviewState => state
@@ -129,6 +130,11 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
                 goodInterval: doneReviewing ? '' : numDueCards > 0 ? userFriendlyInterval(dueCardsMinusReviewed[0].goodInterval) : userFriendlyInterval(newCardsMinusReviewed[0].failInterval),
                 easyInterval: doneReviewing ? '' : numDueCards > 0 ? userFriendlyInterval(dueCardsMinusReviewed[0].easyInterval) : userFriendlyInterval(newCardsMinusReviewed[0].failInterval),
                 showingAnswer: false
+            })
+        case START_TIMER:
+            return getViewState({
+                ...state,
+                startTime: action.time
             })
         default:
             return state

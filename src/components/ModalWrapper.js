@@ -4,6 +4,7 @@ import {Button, Modal, ModalBody, ModalFooter, ModalHeader} from 'reactstrap'
 
 type Props = {
     +confirmAction: () => void,
+    +closedCallback: () => void,
     +children?: React.Node,
     +closeOnConfirmation: boolean,
     +toggleText: string,
@@ -34,9 +35,15 @@ class ModalWrapper extends React.Component<Props, State> {
     }
 
     toggle() {
+        const open = !this.state.modal
+
         this.setState({
-            modal: !this.state.modal
+            modal: open
         })
+
+        if (!open) {
+            this.props.closedCallback()
+        }
     }
 
     render() {

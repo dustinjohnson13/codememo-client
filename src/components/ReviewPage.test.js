@@ -13,26 +13,32 @@ global.window = doc.defaultView
 describe('<ReviewPage />', () => {
 
     let component
-    let requestedBack = false
+    let requested = []
     const back = () => {
-        requestedBack = true
+        requested.push("back")
+    }
+    const restartTimer = () => {
+        requested.push("restartTimer")
     }
     const showAnswer = () => {
+        requested.push("showAnswer")
+    }
+    const answerCard = () => {
+        requested.push("answerCard")
+    }
+    const addCard = () => {
+        requested.push("addCard")
     }
 
     beforeEach(() => {
-        requestedBack = false
+        requested = []
 
-        const answer = () => {
-        }
-        const add = () => {
-        }
         const store = storeFake()
         const wrapper = mount(
             <Provider store={store}>
                 <ReviewPage deckName={'SomeDeck'} totalCount={30} dueCount={20} newCount={10} back={back}
-                            id='deck1' question='q1' answer='a1' answerCard={answer} addCard={add}
-                            showAnswer={showAnswer}/>
+                            id='deck1' question='q1' answer='a1' answerCard={answerCard} addCard={addCard}
+                            showAnswer={showAnswer} restartTimer={restartTimer}/>
             </Provider>
         )
 
@@ -44,9 +50,8 @@ describe('<ReviewPage />', () => {
     })
 
     it('should be able to go back', () => {
-        expect(requestedBack).toEqual(false)
         const backBtn = component.find('.back').simulate('click')
-        expect(requestedBack).toEqual(true)
+        expect(requested).toEqual(["back"])
     })
 
     it('shows the card counts', () => {

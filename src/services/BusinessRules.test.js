@@ -14,7 +14,7 @@ describe('BusinessRules', () => {
     it('should throw error on answer card: start time after end time', () => {
         expect.assertions(1)
 
-        const startTime = clock.epochSeconds()
+        const startTime = clock.epochMilliseconds()
         const endTime = startTime - 90
         const original = new Card('1', 'templateId', 1, TWO_DAYS_IN_SECONDS, 2000)
 
@@ -25,10 +25,21 @@ describe('BusinessRules', () => {
         }
     })
 
+    it('should use same start and end time when the duration between them is greater than three minutes', () => {
+        expect.assertions(1)
+
+        const endTime = clock.epochMilliseconds()
+        const startTime = endTime - (1000 * 60 * 3 + 1)
+        const original = new Card('1', 'templateId', 1, TWO_DAYS_IN_SECONDS, 2000)
+
+        const {review} = businessRules.cardAnswered(startTime, endTime, original, Answer.GOOD)
+        expect(review.startTime).toEqual(review.endTime)
+    })
+
     it('should set next due time on answer card: due card', () => {
 
-        const endTime = clock.epochSeconds()
-        const startTime = endTime - 90
+        const endTime = clock.epochMilliseconds()
+        const startTime = endTime - (1000 * 60 * 3) // Three minutes exactly
         const currentGoodInterval = TWO_DAYS_IN_SECONDS
 
         const expectedNewDue = { // The cards have a current goodInterval of two days
@@ -42,20 +53,23 @@ describe('BusinessRules', () => {
 
         const actuals = [Answer.FAIL, Answer.HARD, Answer.GOOD, Answer.EASY].map(it => {
             const {updatedCard, review} = businessRules.cardAnswered(startTime, endTime, original, it)
-            return {answer: it, newCard: updatedCard}
+            return {answer: it, newCard: updatedCard, review: review}
         })
 
         for (let answerAndActual of actuals) {
             const expectedDueTime = expectedNewDue[answerAndActual.answer]
             const newCard = answerAndActual.newCard
+            const review = answerAndActual.review
 
             expect(newCard.due).toEqual(expectedDueTime)
+            expect(review.startTime).toEqual(startTime)
+            expect(review.endTime).toEqual(endTime)
         }
     })
 
     it('should set next good interval on answer card: due card', () => {
 
-        const endTime = clock.epochSeconds()
+        const endTime = clock.epochMilliseconds()
         const startTime = endTime - 90
         const currentGoodInterval = TWO_DAYS_IN_SECONDS
 

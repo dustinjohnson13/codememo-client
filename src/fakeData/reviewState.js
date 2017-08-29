@@ -12,7 +12,7 @@ import type {ReviewState} from "../actions/actionTypes"
 export const reviewState: ReviewState = {
     deckName: 'Deck1', deckId: 'deck-1', cardId: 'deck-1-card-30', totalCount: 6,
     failInterval: '10m', hardInterval: '1d', goodInterval: '3d', easyInterval: '5d',
-    answer: '', question: '', showingAnswer: false,
+    answer: '', question: '', showingAnswer: false, startTime: -1,
     dueCards: [
         new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30',
             HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS, FOUR_DAYS_IN_SECONDS, -299999),

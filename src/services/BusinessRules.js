@@ -4,6 +4,8 @@ import * as api from "./APIDomain"
 import {Answer, CardStatus, HALF_DAY_IN_SECONDS, ONE_DAY_IN_SECONDS} from "./APIDomain"
 import {Card, Deck, DUE_IMMEDIATELY, newReview, Review} from "../persist/Dao"
 
+const MAX_ALLOWED_REVIEW_DURATION_MILLIS = 1000 * 60 * 3
+
 export default class BusinessRules {
 
     cardAnswered(startTime: number, endTime: number, original: Card, answer: AnswerType): {updatedCard: Card, review: Review} {
@@ -34,8 +36,9 @@ export default class BusinessRules {
             default:
         }
 
+        const startTimeToUse = (endTime - startTime) > MAX_ALLOWED_REVIEW_DURATION_MILLIS ? endTime : startTime
         const updatedCard = new Card(original.id, original.templateId, original.cardNumber, newGoodInterval, newDue)
-        const review = newReview(updatedCard.id, startTime, endTime, answer)
+        const review = newReview(updatedCard.id, startTimeToUse, endTime, answer)
 
         return {updatedCard, review}
     }

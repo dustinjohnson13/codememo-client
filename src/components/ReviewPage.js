@@ -13,7 +13,8 @@ type Props = {
     +newCount: number,
     +back: () => void,
     +addCard: (deckId: string, question: string, answer: string) => void,
-    +showAnswer: () => void
+    +showAnswer: () => void,
+    +restartTimer: () => void
 }
 
 class ReviewPage extends Component<Props, void> {
@@ -25,7 +26,7 @@ class ReviewPage extends Component<Props, void> {
             <div>
                 <div className="menu">
                     <a className="back" onClick={this.props.back}>&lt;&nbsp;Back</a>
-                    <AddCardModal deckId={this.props.id} addCard={this.props.addCard}/>
+                    <AddCardModal deckId={this.props.id} addCard={this.props.addCard} restartTimer={this.props.restartTimer}/>
                     <Button>Edit</Button><Button>Find</Button>
                     <a className="tools">Tools</a>
                 </div>

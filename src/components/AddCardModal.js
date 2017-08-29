@@ -6,7 +6,8 @@ import ModalWrapper from "./ModalWrapper"
 
 type Props = {
     +deckId: string,
-    +addCard: (deckId: string, question: string, answer: string) => void
+    +addCard: (deckId: string, question: string, answer: string) => void,
+    +restartTimer: () => void
 }
 
 type State = {
@@ -41,7 +42,7 @@ class AddCardModal extends React.Component<Props, State> {
         return (
             <span>
                 <ModalWrapper title="New Card" toggleText="Add" closeOnConfirmation={false}
-                              confirmAction={this.addCard}>
+                              confirmAction={this.addCard} closedCallback={this.props.restartTimer}>
                     <InputGroup className="question-group">
                         <Input type="textarea" placeholder="question" value={this.state.question}
                                onChange={this.handleQuestionChange}/>

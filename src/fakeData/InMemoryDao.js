@@ -1,7 +1,7 @@
 //@flow
 import type {Dao, Entity} from "../persist/Dao"
 import {Card, Deck, newCard, newDeck, newReview, NO_ID, Review, Template, Templates, User} from "../persist/Dao"
-import {Answer, ONE_DAY_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../services/APIDomain"
+import {Answer, ONE_DAY_IN_SECONDS, ONE_MINUTE_IN_SECONDS, TWO_DAYS_IN_SECONDS} from "../services/APIDomain"
 
 export const REVIEW_END_TIME = 1508331802
 
@@ -63,7 +63,7 @@ export const fakeReviews = (currentTime: number, cardId: string, count: number, 
     const reviews = []
     for (let i = 0; i < count; i++) {
         const endTime = currentTime - i
-        const startTime = endTime - 60
+        const startTime = endTime - ONE_MINUTE_IN_SECONDS
         const answer = Answer.GOOD
         const review = setId ? new Review(i.toString(), cardId, startTime, endTime, answer) : newReview(cardId, startTime, endTime, answer)
         reviews.push(review)

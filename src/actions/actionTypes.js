@@ -22,6 +22,7 @@ export const FETCH_CARDS_REQUEST = 'FETCH_CARDS_REQUEST'
 export const FETCH_CARDS_SUCCESS = 'FETCH_CARDS_SUCCESS'
 export const HIDE_ANSWER = 'HIDE_ANSWER'
 export const SHOW_ANSWER = 'SHOW_ANSWER'
+export const START_TIMER = 'START_TIMER'
 
 export type ReviewDeckRequestAction = { type: 'REVIEW_DECK_REQUEST', id: string }
 export type LoginRequestAction = { type: 'LOGIN_REQUEST', email: string, password: string }
@@ -42,9 +43,11 @@ export type AddCardRequestAction = { type: 'ADD_CARD_REQUEST', id: string, quest
 export type AddCardSuccessAction = { type: 'ADD_CARD_SUCCESS', card: CardDetail, deckId: string }
 export type AddDeckRequestAction = { type: 'ADD_DECK_REQUEST', name: string }
 export type AddDeckSuccessAction = { type: 'ADD_DECK_SUCCESS', collection: CollectionResponse }
+export type StartTimerAction = { type: 'START_TIMER', time: number }
 
 export type Action =
     ShowAnswerAction
+    | StartTimerAction
     | ReviewDeckRequestAction
     | LoginSuccessAction
     | LoginRequestAction
@@ -70,24 +73,25 @@ export type AppState = {
 }
 
 export type CollectionState = {
-    +decks: Array<string>;
-    +decksById: { [string]: Deck };
+    +decks: Array<string>,
+    +decksById: { [string]: Deck }
 }
 
 export type ReviewState = {
-    +dueCards: Array<CardDetail>;
-    +newCards: Array<CardDetail>;
-    +deckName: string;
-    +deckId: string;
-    +cardId: string;
-    +totalCount: number;
-    +question: string;
-    +answer: string;
-    +failInterval: string;
-    +hardInterval: string;
-    +goodInterval: string;
-    +easyInterval: string;
-    +showingAnswer: boolean;
+    +dueCards: Array<CardDetail>,
+    +newCards: Array<CardDetail>,
+    +deckName: string,
+    +deckId: string,
+    +cardId: string,
+    +totalCount: number,
+    +question: string,
+    +answer: string,
+    +failInterval: string,
+    +hardInterval: string,
+    +goodInterval: string,
+    +easyInterval: string,
+    +showingAnswer: boolean,
+    +startTime: number
 }
 
 export type CombinedState = {

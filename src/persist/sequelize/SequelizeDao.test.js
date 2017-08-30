@@ -7,6 +7,9 @@ import {
     Card,
     Deck,
     DUE_IMMEDIATELY,
+    Format,
+    formatTypeFromDBId,
+    formatTypeToDBId,
     Review,
     Template,
     Templates,
@@ -58,6 +61,7 @@ describe('SequelizeDao', () => {
                 deckId: id < 5 ? persistedDecks[0].id : id < 9 ?
                     persistedDecks[1].id : id < 13 ? persistedDecks[2].id : persistedDecks[3].id,
                 type: templateTypeToDBId(Templates.FRONT_BACK),
+                format: formatTypeToDBId(Format.PLAIN),
                 field1: `Question ${id}?`,
                 field2: `Answer ${id}?`
             })
@@ -98,7 +102,7 @@ describe('SequelizeDao', () => {
 
     function getSequelizeTemplate(id: string): Promise<Template | void> {
         return TemplateEntity.findById(parseInt(id)).then(entity => entity ? new Template(entity.id.toString(),
-            entity.deckId.toString(), templateTypeFromDBId(entity.type), entity.field1, entity.field2) : undefined)
+            entity.deckId.toString(), templateTypeFromDBId(entity.type), formatTypeFromDBId(entity.format), entity.field1, entity.field2) : undefined)
     }
 
     function getSequelizeCard(id: string): Promise<Card | void> {

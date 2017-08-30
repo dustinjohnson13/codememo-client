@@ -9,6 +9,8 @@ import {
     CARD_TABLE,
     Deck,
     DECK_TABLE,
+    formatTypeFromDBId,
+    formatTypeToDBId,
     NO_ID,
     Review,
     REVIEW_TABLE,
@@ -34,6 +36,7 @@ const NAME_COLUMN = "n"
 const USER_ID_COLUMN = "uId"
 const GOOD_INTERVAL_COLUMN = "g"
 const DUE_COLUMN = "d"
+const FORMAT_COLUMN = "f"
 const FIELD1_COLUMN = "f1"
 const FIELD2_COLUMN = "f2"
 const TYPE_COLUMN = "t"
@@ -58,7 +61,7 @@ const hydrateDeck = (item): Deck | void => {
 
 const hydrateTemplate = (item): Template | void => {
     return item ? new Template(item[ID_COLUMN], item[DECK_ID_INDEX], templateTypeFromDBId(item[TYPE_COLUMN]),
-        item[FIELD1_COLUMN], item[FIELD2_COLUMN]) : undefined
+        formatTypeFromDBId(item[FORMAT_COLUMN]), item[FIELD1_COLUMN], item[FIELD2_COLUMN]) : undefined
 }
 
 const hydrateCard = (item): Card | void => {
@@ -148,12 +151,13 @@ export default class DynamoDBDao implements Dao {
         const fields: Object = {
             [DECK_ID_INDEX]: template.deckId,
             [TYPE_COLUMN]: templateTypeToDBId(template.type),
+            [FORMAT_COLUMN]: formatTypeToDBId(template.format),
             [FIELD1_COLUMN]: template.field1,
             [FIELD2_COLUMN]: template.field2
         }
 
         await this.insert(TEMPLATE_TABLE, {[ID_COLUMN]: id}, fields)
-        return new Template(id, template.deckId, template.type, template.field1, template.field2)
+        return new Template(id, template.deckId, template.type, template.format, template.field1, template.field2)
     }
 
     async saveCard(card: Card): Promise<Card> {
@@ -245,6 +249,7 @@ export default class DynamoDBDao implements Dao {
         const updates = new Map()
         updates.set(DECK_ID_INDEX, template.deckId)
         updates.set(TYPE_COLUMN, templateTypeToDBId(template.type))
+        updates.set(FORMAT_COLUMN, formatTypeToDBId(template.format))
         updates.set(FIELD1_COLUMN, template.field1)
         updates.set(FIELD2_COLUMN, template.field2)
 

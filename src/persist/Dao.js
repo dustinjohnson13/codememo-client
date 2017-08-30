@@ -40,6 +40,35 @@ export const templateTypeFromDBId = (id: number): TemplateType => {
     }
 }
 
+export const Format = {
+    PLAIN: 'PLAIN',
+    HTML: 'HTML'
+}
+
+export type FormatType = $Keys<typeof Format>;
+
+export const formatTypeToDBId = (type: FormatType): number => {
+    switch (type) {
+        case Format.PLAIN:
+            return 1
+        case Format.HTML:
+            return 2
+        default:
+            throw new Error(`Unrecognized type: ${type}`)
+    }
+}
+
+export const formatTypeFromDBId = (id: number): FormatType => {
+    switch (id) {
+        case 1:
+            return Format.PLAIN
+        case 2:
+            return Format.HTML
+        default:
+            throw new Error(`Unrecognized Format DB id: ${id}`)
+    }
+}
+
 export const answerTypeToDBId = (type: AnswerType): number => {
     switch (type) {
         case Answer.FAIL:
@@ -101,13 +130,15 @@ export class Deck extends Entity {
 export class Template extends Entity {
     +deckId: string
     +type: TemplateType
+    +format: FormatType
     +field1: string
     +field2: string
 
-    constructor(id: string, deckId: string, type: TemplateType, field1: string, field2: string) {
+    constructor(id: string, deckId: string, type: TemplateType, format: FormatType, field1: string, field2: string) {
         super(id);
         (this: any).deckId = deckId;
         (this: any).type = type;
+        (this: any).format = format;
         (this: any).field1 = field1;
         (this: any).field2 = field2;
     }
@@ -200,8 +231,8 @@ export const newUser = (email: string) => new User(NO_ID, email)
 
 export const newDeck = (userId: string, name: string) => new Deck(NO_ID, userId, name)
 
-export const newTemplate = (deckId: string, type: TemplateType, field1: string, field2: string) =>
-    new Template(NO_ID, deckId, type, field1, field2)
+export const newTemplate = (deckId: string, type: TemplateType, format: FormatType, field1: string, field2: string) =>
+    new Template(NO_ID, deckId, type, format, field1, field2)
 
 export const newCard = (templateId: string, cardNumber: number) =>
     new Card(NO_ID, templateId, cardNumber, MINUTES_PER_DAY, DUE_IMMEDIATELY)

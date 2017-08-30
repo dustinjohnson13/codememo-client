@@ -3,6 +3,7 @@ import {
     Card,
     Deck,
     DUE_IMMEDIATELY,
+    Format,
     newDeck,
     newReview,
     newUser,
@@ -38,7 +39,7 @@ describe('InMemoryDao', () => {
             const deckId = (id < 5 ? persistedDecks[0].id : id < 9 ?
                 persistedDecks[1].id : id < 13 ? persistedDecks[2].id : persistedDecks[3].id).toString()
 
-            const entity = new Template(id.toString(), deckId, Templates.FRONT_BACK, `Question ${id}?`, `Answer ${id}?`)
+            const entity = new Template(id.toString(), deckId, Templates.FRONT_BACK, Format.PLAIN, `Question ${id}?`, `Answer ${id}?`)
 
             return dao.saveTemplate(entity)
         }))

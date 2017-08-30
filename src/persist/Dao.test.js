@@ -3,6 +3,7 @@ import type {Dao} from "./Dao"
 import {
     Card,
     Deck,
+    Format,
     newCard,
     newDeck,
     newReview,
@@ -84,8 +85,8 @@ testWithDaoImplementation(createDao: () => Dao,
 
             it('should be able to create a template', async () => {
                 const deckId = "1"
-                const entity = newTemplate(deckId, Templates.FRONT_BACK, "Question 1?", "Answer 1?")
-                const entity2 = newTemplate(deckId, Templates.FRONT_BACK, "Question 2?", "Answer 2?")
+                const entity = newTemplate(deckId, Templates.FRONT_BACK, Format.PLAIN, "Question 1?", "Answer 1?")
+                const entity2 = newTemplate(deckId, Templates.FRONT_BACK, Format.HTML, "Question 2?", "Answer 2?")
                 const entities = [entity, entity2]
 
                 const persistedCards = await Promise.all(entities.map(original => dao.saveTemplate(original)))
@@ -112,6 +113,9 @@ testWithDaoImplementation(createDao: () => Dao,
                     expect(dbEntity.type).toEqual(original.type)
                     expect(dbEntity.field1).toEqual(original.field1)
                     expect(dbEntity.field2).toEqual(original.field2)
+
+                    const expectedFormat = (dbEntity.field1.indexOf('2?') === -1) ? Format.PLAIN : Format.HTML
+                    expect(dbEntity.format).toEqual(expectedFormat)
                 })
             })
 
@@ -251,6 +255,7 @@ testWithDaoImplementation(createDao: () => Dao,
                 expect(result.id).toEqual(id)
                 expect(result.deckId).toEqual(preLoadedIds.decks[0])
                 expect(result.type).toEqual(Templates.FRONT_BACK)
+                expect(result.format).toEqual(Format.PLAIN)
                 expect(result.field1).toEqual("Question 3?")
                 expect(result.field2).toEqual("Answer 3?")
             })
@@ -348,10 +353,11 @@ testWithDaoImplementation(createDao: () => Dao,
                 const id = preLoadedIds.templates[2]
 
                 const newDeckId = "newDeckId"
+                const newFormat = Format.HTML
                 const newField1 = "newQuestion?"
                 const newField2 = "newAnswer?"
 
-                await dao.updateTemplate(new Template(id, newDeckId, Templates.FRONT_BACK, newField1, newField2))
+                await dao.updateTemplate(new Template(id, newDeckId, Templates.FRONT_BACK, newFormat, newField1, newField2))
 
                 const dbEntity = await getDBTemplate(id)
 
@@ -361,6 +367,7 @@ testWithDaoImplementation(createDao: () => Dao,
 
                 expect(dbEntity.deckId).toEqual(newDeckId)
                 expect(dbEntity.type).toEqual(Templates.FRONT_BACK)
+                expect(dbEntity.format).toEqual(newFormat)
                 expect(dbEntity.field1).toEqual(newField1)
                 expect(dbEntity.field2).toEqual(newField2)
             })
@@ -458,7 +465,7 @@ testWithDaoImplementation(createDao: () => Dao,
             it('should throw exception on updating new template', async () => {
                 expect.assertions(1)
 
-                const entity = newTemplate("2", Templates.FRONT_BACK, "Some Question", "Some Answer")
+                const entity = newTemplate("2", Templates.FRONT_BACK, Format.PLAIN, "Some Question", "Some Answer")
                 try {
                     await dao.updateTemplate(entity)
                 } catch (e) {
@@ -519,7 +526,7 @@ testWithDaoImplementation(createDao: () => Dao,
 
                 const id = '9999999'
 
-                const entity = new Template(id, '1', Templates.FRONT_BACK, "Some Question", "Some Answer")
+                const entity = new Template(id, '1', Templates.FRONT_BACK, Format.PLAIN, "Some Question", "Some Answer")
                 try {
                     await dao.updateTemplate(entity)
                 } catch (e) {

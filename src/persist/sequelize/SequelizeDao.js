@@ -8,6 +8,8 @@ import {
     CARD_TABLE,
     Deck,
     DECK_TABLE,
+    formatTypeFromDBId,
+    formatTypeToDBId,
     NO_ID,
     Review,
     REVIEW_TABLE,
@@ -46,6 +48,9 @@ export const TemplateEntity = modelDefiner.define(TEMPLATE_TABLE, {
         type: Sequelize.INTEGER
     },
     type: {
+        type: Sequelize.INTEGER
+    },
+    format: {
         type: Sequelize.INTEGER
     },
     field1: {
@@ -91,7 +96,8 @@ const hydrateDeck = (entity: DeckEntity): Deck | void => {
 }
 
 const hydrateTemplate = (entity: TemplateEntity): Template | void => {
-    return entity ? new Template(entity.id.toString(), entity.deckId.toString(), templateTypeFromDBId(entity.type), entity.field1, entity.field2) : undefined
+    return entity ? new Template(entity.id.toString(), entity.deckId.toString(), templateTypeFromDBId(entity.type),
+        formatTypeFromDBId(entity.format), entity.field1, entity.field2) : undefined
 }
 
 const hydrateCard = (entity: CardEntity): Card | void => {
@@ -138,6 +144,7 @@ export class SequelizeDao implements Dao {
         return TemplateEntity.create({
             deckId: entity.deckId,
             type: templateTypeToDBId(entity.type),
+            format: formatTypeToDBId(entity.format),
             field1: entity.field1,
             field2: entity.field2
         })
@@ -147,6 +154,7 @@ export class SequelizeDao implements Dao {
         return this.updateEntity(template.id, TEMPLATE_TABLE, template, TemplateEntity, {
             deckId: template.deckId,
             type: templateTypeToDBId(template.type),
+            format: formatTypeToDBId(template.format),
             field1: template.field1,
             field2: template.field2,
         })

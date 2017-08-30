@@ -15,6 +15,7 @@ import {
     CARD_TABLE,
     Deck,
     DECK_TABLE,
+    formatTypeFromDBId,
     Review,
     REVIEW_TABLE,
     Template,
@@ -82,7 +83,7 @@ describe('DynamoDBDao', () => {
 
     function getDynamoDBTemplate(id: string): Promise<Template | void> {
         return getById(TEMPLATE_TABLE, id).then(item => item ?
-            new Template(item.id, item.dId, templateTypeFromDBId(item.t), item.f1, item.f2) : undefined)
+            new Template(item.id, item.dId, templateTypeFromDBId(item.t), formatTypeFromDBId(item.f), item.f1, item.f2) : undefined)
     }
 
     function getDynamoDBCard(id: string): Promise<Card | void> {

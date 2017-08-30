@@ -6,6 +6,7 @@ import type {Dao} from "../persist/Dao"
 import {
     Card,
     Deck,
+    Format,
     newCard,
     newDeck,
     newTemplate,
@@ -89,7 +90,7 @@ export default class DaoDelegatingDataService implements DataService {
     async addCard(deckId: string, question: string, answer: string): Promise<CardDetail> {
         const deck = await this.dao.findDeck(deckId)
         if (deck) {
-            const template = await this.dao.saveTemplate(newTemplate(deck.id, Templates.FRONT_BACK, question, answer))
+            const template = await this.dao.saveTemplate(newTemplate(deck.id, Templates.FRONT_BACK, Format.PLAIN, question, answer))
             const card = await this.dao.saveCard(newCard(template.id, 1))
             return this.createCardDetail(template, card)
         } else {

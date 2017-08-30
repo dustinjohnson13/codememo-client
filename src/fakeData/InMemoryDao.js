@@ -1,6 +1,6 @@
 //@flow
 import type {Dao, Entity} from "../persist/Dao"
-import {Card, Deck, newCard, newDeck, newReview, NO_ID, Review, Template, Templates, User} from "../persist/Dao"
+import {Card, Deck, Format, newCard, newDeck, newReview, NO_ID, Review, Template, Templates, User} from "../persist/Dao"
 import {Answer, MILLIS_PER_DAY, MILLIS_PER_MINUTE, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS} from "../services/APIDomain"
 
 export const REVIEW_END_TIME = 1508331802
@@ -31,7 +31,7 @@ export const fakeCards = (currentTime: number, deckId: string, totalCount: numbe
         const answer = `Answer Number ${i}`
 
         const templateId = setId ? (i * 100).toString() : NO_ID
-        const template = new Template(templateId, deckId, Templates.FRONT_BACK, question, answer)
+        const template = new Template(templateId, deckId, Templates.FRONT_BACK, Format.PLAIN, question, answer)
         templates.push(template)
 
         if (i < goodCount + dueCount) {
@@ -105,7 +105,7 @@ export class InMemoryDao implements Dao {
     }
 
     saveTemplate(template: Template): Promise<Template> {
-        const creator = id => new Template(id, template.deckId, template.type, template.field1, template.field2)
+        const creator = id => new Template(id, template.deckId, template.type, template.format, template.field1, template.field2)
         this.templates = this.saveEntity(creator, this.templates)
         return Promise.resolve(this.templates[this.templates.length - 1])
     }

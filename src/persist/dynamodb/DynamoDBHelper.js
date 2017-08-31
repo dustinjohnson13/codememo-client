@@ -3,7 +3,7 @@ import freeport from 'freeport'
 import {CARD_TABLE, DECK_TABLE, REVIEW_TABLE, TEMPLATE_TABLE, USER_TABLE} from "../Dao"
 import type {PreLoadedIds} from "../Dao.test"
 
-const DynamoDbLocal = require('dynamodb-local')
+const localDynamo = require('local-dynamo')
 const AWS = require("aws-sdk")
 const fs = require('fs')
 
@@ -15,6 +15,8 @@ export const REGION = "us-east-1"
 export const ACCESS_KEY_ID = 'noAccessKeyId'
 export const SECRET_ACCESS_KEY = 'noSecretAccessKey'
 export const SAMPLE_DATA_TABLE_NAME = "Movies"
+
+let process
 
 export const startAndLoadData = (useSamples: boolean): Promise<number> => {
     return allocatePort()
@@ -28,7 +30,7 @@ export const startAndLoadData = (useSamples: boolean): Promise<number> => {
         })
 }
 
-export const stop = (port: number) => DynamoDbLocal.stop(port)
+export const stop = (port: number) => process.kill()
 
 const allocatePort = () => {
     return new Promise((resolve, reject) => {
@@ -49,7 +51,8 @@ const startDynamoDB = (port: number) => {
     //     downloadUrl: './dynamodb-local-1.11.86.tar.gz'
     // });
 
-    return DynamoDbLocal.launch(port, null, []).then(() => port)
+    process = localDynamo.launch(null, port)
+    return port
 }
 
 const prepareAWSConfig = (port: number) => {

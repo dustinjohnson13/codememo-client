@@ -10,6 +10,7 @@ import {
     MINUTES_PER_HALF_DAY,
     MINUTES_PER_TWO_DAYS
 } from "../services/APIDomain"
+import {Format} from "../persist/Dao"
 
 describe('collectionPage', () => {
 
@@ -62,7 +63,7 @@ describe('collectionPage', () => {
             }
         }
 
-        const action = addCardSuccess(new CardDetail('some-card', 'some question', 'some answer',
+        const action = addCardSuccess(new CardDetail('some-card', 'some question', 'some answer', Format.PLAIN,
             MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, 9999999), 'deck2')
         const actualState = collectionPage(initialState, action)
 
@@ -79,7 +80,8 @@ describe('collectionPage', () => {
             }
         }
 
-        const card = new CardDetail('some-card', 'some question', 'some answer', MINUTES_PER_HALF_DAY, MINUTES_PER_DAY,
+        const card = new CardDetail('some-card', 'some question', 'some answer', Format.PLAIN,
+            MINUTES_PER_HALF_DAY, MINUTES_PER_DAY,
             MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, 9999999)
         const actualState = collectionPage(twoDecksWithDueAndNewCardsState, answerCardSuccess(card, 'deck2'))
 
@@ -97,7 +99,8 @@ describe('collectionPage', () => {
             decksById: {'deck1': new Deck('deck1', 'Deck1', 80, 0, 22), 'deck2': new Deck('deck2', 'Deck2', 80, 27, 23)}
         }
 
-        const actualState = collectionPage(previousState, answerCardSuccess(new CardDetail('some-card', 'some question', 'some answer', MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, 9999999), 'deck1'))
+        const actualState = collectionPage(previousState, answerCardSuccess(new CardDetail('some-card', 'some question', 'some answer',
+            Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, 9999999), 'deck1'))
 
         expect(actualState).toEqual(expectedState)
     })
@@ -106,7 +109,8 @@ describe('collectionPage', () => {
         const previousState = twoDecksWithDueAndNewCardsState
         const expectedState = twoDecksWithDueAndNewCardsState
 
-        const actualState = collectionPage(previousState, answerCardSuccess(new CardDetail('some-card', 'some question', 'some answer', MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, 9999999), 'unknown-deck'))
+        const actualState = collectionPage(previousState, answerCardSuccess(new CardDetail('some-card', 'some question', 'some answer',
+            Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, 9999999), 'unknown-deck'))
 
         expect(actualState).toEqual(expectedState)
     })
@@ -118,7 +122,8 @@ describe('collectionPage', () => {
         }
         const expectedState = previousState
 
-        const actualState = collectionPage(previousState, answerCardSuccess(new CardDetail('some-card', 'some question', 'some answer', MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, 9999999), 'deck1'))
+        const actualState = collectionPage(previousState, answerCardSuccess(new CardDetail('some-card', 'some question', 'some answer',
+            Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, 9999999), 'deck1'))
 
         expect(actualState).toEqual(expectedState)
     })

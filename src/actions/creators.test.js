@@ -33,7 +33,7 @@ import {deckId, deckName, getDeck1DueCards, gotDeck1} from "./creators.test.acti
 import API from '../services/API'
 import {collectionState} from "../fakeData/collectionState"
 import {initialState} from "../reducers/collectionPage"
-import {DUE_IMMEDIATELY} from "../persist/Dao"
+import {DUE_IMMEDIATELY, Format} from "../persist/Dao"
 import {reviewState} from "../fakeData/reviewState"
 
 jest.mock('../services/API') // Set mock API for module importing
@@ -51,7 +51,7 @@ describe('creators', () => {
         const gen = addCard(action)
         expect(gen.next().value).toEqual(call(API.addCard, action.id, action.question, action.answer))
 
-        const newCard = new CardDetail('deck-1-card-0', 'Some Question', 'Some Answer', MINUTES_PER_HALF_DAY,
+        const newCard = new CardDetail('deck-1-card-0', 'Some Question', 'Some Answer', Format.PLAIN, MINUTES_PER_HALF_DAY,
             MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, DUE_IMMEDIATELY)
 
         expect(gen.next(newCard).value).toEqual(put(addCardSuccess(newCard, 'deck-1')))
@@ -69,7 +69,7 @@ describe('creators', () => {
         expect(gen.next({...reviewState, startTime: startTime}).value)
             .toEqual(call(API.answerCard, action.id, startTime, API.currentTimeMillis(), action.answer))
 
-        const newCard = new CardDetail(action.id, 'question', 'answer', MINUTES_PER_HALF_DAY, MINUTES_PER_DAY,
+        const newCard = new CardDetail(action.id, 'question', 'answer', Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY,
             MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, 9000)
         expect(gen.next(newCard).value).toEqual(put(answerCardSuccess(newCard, deckId)))
         expect(gen.next(newCard).value).toEqual(put(startTimer()))

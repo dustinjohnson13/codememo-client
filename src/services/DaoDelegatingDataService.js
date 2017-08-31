@@ -144,7 +144,7 @@ export default class DaoDelegatingDataService implements DataService {
         const hardInterval = intervals[1]
         const goodInterval = intervals[2]
         const easyInterval = intervals[3]
-        return new CardDetail(card.id, template.field1, template.field2,
+        return new CardDetail(card.id, template.field1, template.field2, Format.PLAIN,
             failInterval, hardInterval, goodInterval, easyInterval, card.due)
     }
 }

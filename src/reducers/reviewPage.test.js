@@ -19,7 +19,7 @@ import {
     MINUTES_PER_HALF_DAY,
     MINUTES_PER_TWO_DAYS
 } from "../services/APIDomain"
-import {DUE_IMMEDIATELY} from "../persist/Dao"
+import {DUE_IMMEDIATELY, Format} from "../persist/Dao"
 
 describe('reviewPage', () => {
 
@@ -31,7 +31,7 @@ describe('reviewPage', () => {
         new Card('5', CardStatus.OK), new Card('6', CardStatus.OK)]
     const deck = new DeckResponse(expectedDeckID, expectedDeckName, cards)
 
-    const addCardResponse = new CardDetail('deck-1-card-99', 'Some Question', 'Some Answer', MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, DUE_IMMEDIATELY)
+    const addCardResponse = new CardDetail('deck-1-card-99', 'Some Question', 'Some Answer', Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, DUE_IMMEDIATELY)
 
     it('adds new card on add card success', () => {
 
@@ -41,11 +41,11 @@ describe('reviewPage', () => {
             ...initialState,
             totalCount: 5,
             dueCards: [
-                new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, -299999),
-                new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, -309999)
+                new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, -299999),
+                new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, -309999)
             ],
             newCards: [
-                new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, DUE_IMMEDIATELY)
+                new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, DUE_IMMEDIATELY)
             ]
         }
 
@@ -146,21 +146,22 @@ describe('reviewPage', () => {
 
     it('adds question, answer, answer intervals, and cards for review on fetch cards success', () => {
 
-        const cardDetails = [new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, -299999),
-            new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, -309999),
-            new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, DUE_IMMEDIATELY)]
+        const cardDetails = [new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, -299999),
+            new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, -309999),
+            new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, DUE_IMMEDIATELY)]
         const cardsResponse = new CardDetailResponse(cardDetails)
 
         const previousState = {...initialState}
         const expectedState = {
             ...previousState,
             dueCards: [
-                new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, -299999),
-                new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, -309999)
+                new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, -299999),
+                new CardDetail('deck-1-card-31', 'Question Number 31?', 'Answer Number 31', Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, -309999)
             ],
             newCards: [
-                new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, DUE_IMMEDIATELY)
+                new CardDetail('deck-1-card-32', 'Question Number 32?', 'Answer Number 32', Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, DUE_IMMEDIATELY)
             ],
+            format: Format.PLAIN,
             answer: "Answer Number 30",
             question: "Question Number 30?",
             cardId: 'deck-1-card-30',
@@ -180,6 +181,7 @@ describe('reviewPage', () => {
 
         const previousState = {
             ...initialState,
+            format: Format.PLAIN,
             answer: "Answer Number 30",
             question: "Question Number 30?",
             cardId: 'deck-1-card-30',
@@ -188,19 +190,19 @@ describe('reviewPage', () => {
                 'deck-1-card-30',
                 'Question Number 30?',
                 'Answer Number 30',
-                MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS,
+                Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS,
                 -299999
             ), new CardDetail('deck-1-card-31',
                 'Question Number 31?',
                 'Answer Number 31',
-                MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS,
+                Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS,
                 -309999
             )],
             newCards: [
                 new CardDetail('deck-1-card-32',
                     'Question Number 32?',
                     'Answer Number 32',
-                    MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS,
+                    Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS,
                     DUE_IMMEDIATELY)
             ],
             showingAnswer: true
@@ -222,7 +224,7 @@ describe('reviewPage', () => {
             showingAnswer: false
         }
 
-        const action = answerCardSuccess(new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, 86400), 'deck-1')
+        const action = answerCardSuccess(new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, 86400), 'deck-1')
         const actualState = reviewPage(previousState, action)
 
         expect(actualState).toEqual(expectedState)

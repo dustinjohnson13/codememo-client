@@ -7,6 +7,9 @@ import {
     fetchDeckSuccess,
     reviewDeckRequest
 } from "./creators"
+
+import {Format} from "../persist/Dao"
+
 import {
     Card,
     CardDetail,
@@ -139,70 +142,70 @@ export const gotDeck1DueCards = fetchCardsSuccess(new CardDetailResponse([
     new CardDetail('deck-1-card-30',
         'Question Number 30?',
         'Answer Number 30',
-        MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS,
+        Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS,
         MINUTES_PER_FOUR_DAYS,
         -299999
     ),
     new CardDetail('deck-1-card-31',
         'Question Number 31?',
         'Answer Number 31',
-        MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS,
+        Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS,
         MINUTES_PER_FOUR_DAYS,
         -309999
     ),
     new CardDetail('deck-1-card-32',
         'Question Number 32?',
         'Answer Number 32',
-        MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS,
+        Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS,
         MINUTES_PER_FOUR_DAYS,
         -319999
     ),
     new CardDetail('deck-1-card-33',
         'Question Number 33?',
         'Answer Number 33',
-        MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS,
+        Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS,
         MINUTES_PER_FOUR_DAYS,
         -329999
     ),
     new CardDetail('deck-1-card-34',
         'Question Number 34?',
         'Answer Number 34',
-        MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS,
+        Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS,
         MINUTES_PER_FOUR_DAYS,
         -339999
     ),
     new CardDetail('deck-1-card-35',
         'Question Number 35?',
         'Answer Number 35',
-        MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS,
+        Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS,
         MINUTES_PER_FOUR_DAYS,
         -349999
     ),
     new CardDetail('deck-1-card-36',
         'Question Number 36?',
         'Answer Number 36',
-        MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS,
+        Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS,
         MINUTES_PER_FOUR_DAYS,
         -359999
     ),
     new CardDetail('deck-1-card-37',
         'Question Number 37?',
         'Answer Number 37',
-        MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS,
+        Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS,
         MINUTES_PER_FOUR_DAYS,
         -369999
     ),
     new CardDetail('deck-1-card-38',
         'Question Number 38?',
         'Answer Number 38',
-        MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS,
+        Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS,
         MINUTES_PER_FOUR_DAYS,
         -379999
     ),
     new CardDetail('deck-1-card-39',
         'Question Number 39?',
         'Answer Number 39',
-        MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS,
+        Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS,
         MINUTES_PER_FOUR_DAYS,
         -389999
     )]))

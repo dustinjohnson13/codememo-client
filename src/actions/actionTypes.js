@@ -2,6 +2,7 @@
 import type {AnswerType} from "../services/APIDomain"
 import {CardDetail, CollectionResponse, Deck, DeckResponse} from "../services/APIDomain"
 import type {PageType} from "./pages"
+import type {FormatType} from "../persist/Dao"
 
 export const REVIEW_DECK_REQUEST = 'REVIEW_DECK_REQUEST'
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
@@ -86,6 +87,7 @@ export type ReviewState = {
     +totalCount: number,
     +question: string,
     +answer: string,
+    +format: FormatType,
     +failInterval: string,
     +hardInterval: string,
     +goodInterval: string,

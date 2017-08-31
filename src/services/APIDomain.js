@@ -1,4 +1,5 @@
 //@flow
+import type {FormatType} from "../persist/Dao"
 import {Review} from "../persist/Dao"
 
 export interface Clock {
@@ -73,18 +74,20 @@ export class CardDetail {
     +id: string
     +question: string
     +answer: string
+    +format: FormatType
     +failInterval: number
     +hardInterval: number
     +goodInterval: number
     +easyInterval: number
     +due: number
 
-    constructor(id: string, question: string, answer: string,
+    constructor(id: string, question: string, answer: string, format: FormatType,
                 failInterval: number, hardInterval: number,
                 goodInterval: number, easyInterval: number, due: number) {
         (this: any).id = id;
         (this: any).question = question;
         (this: any).answer = answer;
+        (this: any).format = format;
         (this: any).failInterval = failInterval;
         (this: any).hardInterval = hardInterval;
         (this: any).goodInterval = goodInterval;

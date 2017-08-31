@@ -27,11 +27,16 @@ export const fakeCards = (currentTime: number, deckId: string, totalCount: numbe
     const templates = []
     const cards = []
     for (let i = 0; i < totalCount; i++) {
-        const question = `Question Number ${i}?`
+        const plain = i % 2 === 0
+        const format = plain ? Format.PLAIN : Format.HTML
+        const prefix = plain ? "" : "<div><b>"
+        const suffix = plain ? "" : "</b></div>"
+
+        const question = `${prefix}Question Number ${i}?${suffix}`
         const answer = `Answer Number ${i}`
 
         const templateId = setId ? (i * 100).toString() : NO_ID
-        const template = new Template(templateId, deckId, Templates.FRONT_BACK, Format.PLAIN, question, answer)
+        const template = new Template(templateId, deckId, Templates.FRONT_BACK, format, question, answer)
         templates.push(template)
 
         if (i < goodCount + dueCount) {

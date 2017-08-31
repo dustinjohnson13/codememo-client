@@ -10,7 +10,7 @@ import {
     START_TIMER
 } from '../actions/actionTypes'
 import {MINUTES_PER_DAY, MINUTES_PER_HOUR} from "../services/APIDomain"
-import {DUE_IMMEDIATELY} from "../persist/Dao"
+import {DUE_IMMEDIATELY, Format} from "../persist/Dao"
 
 export const initialState = {
     dueCards: [],
@@ -22,6 +22,7 @@ export const initialState = {
     totalCount: 0,
     question: '',
     answer: '',
+    format: Format.HTML,
     failInterval: '',
     hardInterval: '',
     goodInterval: '',
@@ -60,6 +61,7 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
             const cardsForReview = cards
             let question = ''
             let answer = ''
+            let format = state.format
             let cardId = ''
             let failInterval = ''
             let hardInterval = ''
@@ -69,6 +71,7 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
                 const forReview = cardsForReview[0]
                 question = forReview.question
                 answer = forReview.answer
+                format = forReview.format
                 cardId = forReview.id
                 failInterval = userFriendlyInterval(forReview.failInterval)
                 hardInterval = userFriendlyInterval(forReview.hardInterval)
@@ -82,6 +85,7 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
                 newCards: cards.filter(card => card.due === DUE_IMMEDIATELY),
                 question: question,
                 answer: answer,
+                format: format,
                 cardId: cardId,
                 failInterval: failInterval,
                 hardInterval: hardInterval,
@@ -98,6 +102,7 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
             const hardIntervalAfterAddCard = reviewNewCard ? userFriendlyInterval(addedCard.hardInterval) : state.hardInterval
             const goodIntervalAfterAddCard = reviewNewCard ? userFriendlyInterval(addedCard.goodInterval) : state.goodInterval
             const easyIntervalAfterAddCard = reviewNewCard ? userFriendlyInterval(addedCard.easyInterval) : state.easyInterval
+            const formatAfterAddCard = reviewNewCard ? addedCard.format : state.format
 
             return getViewState({
                 ...state,
@@ -105,6 +110,7 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
                 newCards: [...state.newCards, addedCard],
                 question: questionAfterAddCard,
                 answer: answerAfterAddCard,
+                format: formatAfterAddCard,
                 cardId: cardIdAfterAddCard,
                 failInterval: failIntervalAfterAddCard,
                 hardInterval: hardIntervalAfterAddCard,
@@ -125,6 +131,7 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
                 newCards: newCardsMinusReviewed,
                 question: doneReviewing ? '' : numDueCards > 0 ? dueCardsMinusReviewed[0].question : newCardsMinusReviewed[0].question,
                 answer: doneReviewing ? '' : numDueCards > 0 ? dueCardsMinusReviewed[0].answer : newCardsMinusReviewed[0].answer,
+                format: doneReviewing ? state.format : numDueCards > 0 ? dueCardsMinusReviewed[0].format : newCardsMinusReviewed[0].format,
                 cardId: doneReviewing ? '' : numDueCards > 0 ? dueCardsMinusReviewed[0].id : newCardsMinusReviewed[0].id,
                 failInterval: doneReviewing ? '' : numDueCards > 0 ? userFriendlyInterval(dueCardsMinusReviewed[0].failInterval) : userFriendlyInterval(newCardsMinusReviewed[0].failInterval),
                 hardInterval: doneReviewing ? '' : numDueCards > 0 ? userFriendlyInterval(dueCardsMinusReviewed[0].hardInterval) : userFriendlyInterval(newCardsMinusReviewed[0].failInterval),

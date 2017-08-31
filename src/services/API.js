@@ -3,7 +3,8 @@ import type {AnswerType, Clock, DataService} from "./APIDomain"
 import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse, ReviewsResponse} from "./APIDomain"
 import DynamoDBDao from "../persist/dynamodb/DynamoDBDao"
 import DaoDelegatingDataService from "./DaoDelegatingDataService"
-import {InMemoryDao} from "../fakeData/InMemoryDao"
+import {fakeCards, fakeReviews, InMemoryDao, REVIEW_END_TIME} from "../fakeData/InMemoryDao"
+import {Card, newDeck, TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
 
 export class SystemClock implements Clock {
     epochMilliseconds(): number {
@@ -42,8 +43,25 @@ class DelegatingDataService implements DataService {
         return this.delegate.currentTimeMillis()
     }
 
-    init(clearDatabase: boolean): Promise<void> {
-        return this.delegate.init(clearDatabase);
+    async init(clearDatabase: boolean): Promise<void> {
+        await this.delegate.init(clearDatabase);
+
+        await dao.findUserByEmail(TEST_USER_EMAIL)
+        //$FlowFixMe
+            .then(user => dao.saveDeck(newDeck(user.id, TEST_DECK_NAME)))
+            .then(deck => {
+                const currentTime = clock.epochMilliseconds()
+                const {templates, cards} = fakeCards(currentTime, deck.id, 80,
+                    27, 23, false)
+                const reviews = fakeReviews(REVIEW_END_TIME, cards[0].id, 1, false)
+
+                return Promise.all(templates.map(it => dao.saveTemplate(it))).then(templates =>
+                    Promise.all(cards.map((card, idx) => {
+                        const cardWithTemplateId = new Card(card.id, templates[idx].id, card.cardNumber, card.goodInterval, card.due)
+                        return dao.saveCard(cardWithTemplateId)
+                    })).then(() => reviews.map(it => dao.saveReview(it))))
+            })
+
     }
 
     addDeck(email: string, name: string): Promise<CollectionResponse> {

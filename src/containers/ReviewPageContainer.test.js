@@ -3,6 +3,7 @@ import React from 'react'
 import {addCardRequest, collectionPage, startTimer} from "../actions/creators"
 import {mapDispatchToProps, mapStateToProps} from "./ReviewPageContainer"
 import {defaultState} from "../fakeData/storeFake"
+import {Format} from "../persist/Dao"
 
 jest.mock('../services/API') // Set mock API for module importing
 
@@ -51,13 +52,14 @@ describe('<ReviewPageContainer/>', () => {
     it('maps add card', () => {
 
         const deckId = 'deck-1'
+        const format = Format.HTML
         const question = 'Some Question'
         const answer = 'Some Answer'
 
-        const expectedActions = [addCardRequest(deckId, question, answer)]
+        const expectedActions = [addCardRequest(deckId, format, question, answer)]
 
         const {addCard} = mapDispatchToProps(dispatcher, {})
-        addCard(deckId, question, answer)
+        addCard(deckId, format, question, answer)
 
         expect(dispatchedActions).toEqual(expectedActions)
     })

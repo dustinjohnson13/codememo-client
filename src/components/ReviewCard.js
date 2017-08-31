@@ -20,12 +20,17 @@ class ReviewCard extends Component<Props, void> {
 
     render() {
 
-        const questionSection = this.props.format === Format.PLAIN ? this.props.question :
+        const plain = this.props.format === Format.PLAIN
+
+        const questionSection = plain ? this.props.question :
             <div dangerouslySetInnerHTML={{__html: this.props.question}}/>
+
+        const answerDisplay = plain ? this.props.answer :
+            <div dangerouslySetInnerHTML={{__html: this.props.answer}}/>
 
         const answerSection = this.props.showingAnswer ?
             <div>
-                <div className="review-answer">{this.props.answer}</div>
+                <div className="review-answer">{answerDisplay}</div>
                 <AnswerCardContainer id={this.props.cardId} deckId={this.props.deckId}/>
             </div>
             : <Button color="warning" className="show-answer" onClick={this.props.showAnswer}>Show Answer</Button>

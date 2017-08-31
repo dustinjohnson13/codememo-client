@@ -2,11 +2,10 @@
 import type {AnswerType, Clock, DataService} from "./APIDomain"
 import * as api from "./APIDomain"
 import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse, ReviewsResponse} from "./APIDomain"
-import type {Dao} from "../persist/Dao"
+import type {Dao, FormatType} from "../persist/Dao"
 import {
     Card,
     Deck,
-    Format,
     newCard,
     newDeck,
     newTemplate,
@@ -87,10 +86,10 @@ export default class DaoDelegatingDataService implements DataService {
         }
     }
 
-    async addCard(deckId: string, question: string, answer: string): Promise<CardDetail> {
+    async addCard(deckId: string, format: FormatType, question: string, answer: string): Promise<CardDetail> {
         const deck = await this.dao.findDeck(deckId)
         if (deck) {
-            const template = await this.dao.saveTemplate(newTemplate(deck.id, Templates.FRONT_BACK, Format.PLAIN, question, answer))
+            const template = await this.dao.saveTemplate(newTemplate(deck.id, Templates.FRONT_BACK, format, question, answer))
             const card = await this.dao.saveCard(newCard(template.id, 1))
             return this.createCardDetail(template, card)
         } else {
@@ -144,7 +143,7 @@ export default class DaoDelegatingDataService implements DataService {
         const hardInterval = intervals[1]
         const goodInterval = intervals[2]
         const easyInterval = intervals[3]
-        return new CardDetail(card.id, template.field1, template.field2, Format.PLAIN,
+        return new CardDetail(card.id, template.field1, template.field2, template.format,
             failInterval, hardInterval, goodInterval, easyInterval, card.due)
     }
 }

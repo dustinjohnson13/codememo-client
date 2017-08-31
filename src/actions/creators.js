@@ -51,6 +51,7 @@ import {CardDetail, CardDetailResponse, CardStatus, CollectionResponse, DeckResp
 import API from '../services/API'
 import {call, put, select, takeEvery} from 'redux-saga/effects'
 import * as selectors from './selectors'
+import type {FormatType} from "../persist/Dao"
 import {TEST_USER_EMAIL} from "../persist/Dao"
 import AWS from "aws-sdk"
 
@@ -167,10 +168,11 @@ export const answerCardSuccess = (response: CardDetail, deckId: string): AnswerC
     }
 }
 
-export const addCardRequest = (id: string, question: string, answer: string): AddCardRequestAction => {
+export const addCardRequest = (id: string, format: FormatType, question: string, answer: string): AddCardRequestAction => {
     return {
         type: ADD_CARD_REQUEST,
         id: id,
+        format: format,
         answer: answer,
         question: question
     }
@@ -220,7 +222,7 @@ export function* addDeck(action: AddDeckRequestAction): Generator<AddDeckRequest
 }
 
 export function* addCard(action: AddCardRequestAction): Generator<CardDetail, void, CardDetail> {
-    const card = yield call(API.addCard, action.id, action.question, action.answer)
+    const card = yield call(API.addCard, action.id, action.format, action.question, action.answer)
     yield put(addCardSuccess(card, action.id))
 }
 

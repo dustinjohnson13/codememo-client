@@ -5,6 +5,7 @@ import {mapDispatchToProps, mapStateToProps} from "./ReviewCardContainer"
 import {reviewState} from "../fakeData/reviewState"
 import type {Action} from "../actions/actionTypes"
 import {defaultState} from "../fakeData/storeFake"
+import {Format} from "../persist/Dao"
 
 jest.mock('../services/API') // Set mock API for module importing
 
@@ -25,6 +26,7 @@ describe('<ReviewCardContainer/>', () => {
         }
 
         const expectedProps = {
+            format: Format.PLAIN,
             answer: expectedAnswer,
             cardId: 'deck-1-card-30',
             deckId: 'deck-1',

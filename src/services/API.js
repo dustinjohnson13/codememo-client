@@ -4,6 +4,7 @@ import {CardDetail, CardDetailResponse, CollectionResponse, DeckResponse, Review
 import DynamoDBDao from "../persist/dynamodb/DynamoDBDao"
 import DaoDelegatingDataService from "./DaoDelegatingDataService"
 import {fakeCards, fakeReviews, InMemoryDao, REVIEW_END_TIME} from "../fakeData/InMemoryDao"
+import type {FormatType} from "../persist/Dao"
 import {Card, newDeck, TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
 
 export class SystemClock implements Clock {
@@ -100,9 +101,9 @@ class DelegatingDataService implements DataService {
         })
     }
 
-    addCard(deckId: string, question: string, answer: string): Promise<CardDetail> {
+    addCard(deckId: string, format: FormatType, question: string, answer: string): Promise<CardDetail> {
         return new Promise((resolve, reject) => {
-            setTimeout(() => this.delegate.addCard(deckId, question, answer).then(resolve), this.timeoutDelay)
+            setTimeout(() => this.delegate.addCard(deckId, format, question, answer).then(resolve), this.timeoutDelay)
         })
     }
 }

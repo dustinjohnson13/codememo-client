@@ -4,6 +4,7 @@ import {Button} from 'reactstrap'
 import '../styles/ReviewPage.css'
 import ReviewCardContainer from "../containers/ReviewCardContainer"
 import AddCardModal from "./AddCardModal"
+import type {FormatType} from "../persist/Dao"
 
 type Props = {
     +id: string,
@@ -12,7 +13,7 @@ type Props = {
     +dueCount: number,
     +newCount: number,
     +back: () => void,
-    +addCard: (deckId: string, question: string, answer: string) => void,
+    +addCard: (deckId: string, format: FormatType, question: string, answer: string) => void,
     +showAnswer: () => void,
     +restartTimer: () => void
 }

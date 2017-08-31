@@ -3,6 +3,7 @@ import {connect} from 'react-redux'
 import {addCardRequest, collectionPage, startTimer} from '../actions/creators'
 import ReviewPage from '../components/ReviewPage'
 import type {CombinedState, Dispatch} from "../actions/actionTypes"
+import type {FormatType} from "../persist/Dao"
 
 type OwnProps = {}
 
@@ -23,8 +24,8 @@ export const mapDispatchToProps = (dispatch: Dispatch, ownProps: OwnProps) => {
         back: () => {
             dispatch(collectionPage())
         },
-        addCard: (deckId: string, question: string, answer: string) => {
-            dispatch(addCardRequest(deckId, question, answer))
+        addCard: (deckId: string, format: FormatType, question: string, answer: string) => {
+            dispatch(addCardRequest(deckId, format, question, answer))
         },
         restartTimer: () => dispatch(startTimer())
     }

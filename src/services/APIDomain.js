@@ -153,5 +153,5 @@ export interface DataService {
 
     answerCard(id: string, startTime: number, endTime: number, answer: AnswerType): Promise<CardDetail>;
 
-    addCard(deckId: string, question: string, answer: string): Promise<CardDetail>;
+    addCard(deckId: string, format: FormatType, question: string, answer: string): Promise<CardDetail>;
 }

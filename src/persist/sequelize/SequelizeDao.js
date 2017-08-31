@@ -131,7 +131,7 @@ export class SequelizeDao implements Dao {
     saveUser(user: User): Promise<User> {
         return UserEntity.create({
             email: user.email
-        })
+        }).then(hydrateUser)
     }
 
     updateUser(user: User): Promise<User> {
@@ -147,7 +147,7 @@ export class SequelizeDao implements Dao {
             format: formatTypeToDBId(entity.format),
             field1: entity.field1,
             field2: entity.field2
-        })
+        }).then(hydrateTemplate)
     }
 
     async updateTemplate(template: Template): Promise<Template> {
@@ -166,7 +166,7 @@ export class SequelizeDao implements Dao {
             cardNumber: card.cardNumber,
             goodInterval: card.goodInterval,
             due: card.due
-        })
+        }).then(hydrateCard)
     }
 
     async updateCard(card: Card): Promise<Card> {
@@ -182,7 +182,7 @@ export class SequelizeDao implements Dao {
         return DeckEntity.create({
             name: deck.name,
             userId: deck.userId
-        })
+        }).then(hydrateDeck)
     }
 
     async updateDeck(deck: Deck): Promise<Deck> {

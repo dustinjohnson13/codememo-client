@@ -2,7 +2,7 @@
 import type {Clock} from "./APIDomain"
 import {Answer, CardDetail, CollectionResponse, MILLIS_PER_MINUTE} from "./APIDomain"
 import DaoDelegatingDataService from "./DaoDelegatingDataService"
-import {Card, Deck, DUE_IMMEDIATELY, NO_ID, TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
+import {Card, Deck, DUE_IMMEDIATELY, Format, NO_ID, TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
 import {FrozenClock} from "./__mocks__/API"
 import {fakeCards, fakeReviews, REVIEW_END_TIME} from "../fakeData/InMemoryDao"
 
@@ -104,9 +104,12 @@ export function testServiceWithDaoImplementation(createDao: any) {
             const collection = await service.fetchCollection(TEST_USER_EMAIL)
             const decks = collection.decks
             const deckId = decks[0].id
-            const actual = await service.addCard(deckId, question, answer)
+            const format = Format.HTML
+
+            const actual = await service.addCard(deckId, format, question, answer)
 
             expect(actual.id).toBeDefined()
+            expect(actual.format).toEqual(format)
             expect(actual.question).toEqual(question)
             expect(actual.answer).toEqual(answer)
             expect(actual.due).toEqual(DUE_IMMEDIATELY)

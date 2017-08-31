@@ -47,11 +47,11 @@ describe('creators', () => {
 
     it('sends new card to the API and returns the new card detail', () => {
 
-        const action = addCardRequest('deck-1', 'Some Question', 'Some Answer')
+        const action = addCardRequest('deck-1', Format.HTML, 'Some Question', 'Some Answer')
         const gen = addCard(action)
-        expect(gen.next().value).toEqual(call(API.addCard, action.id, action.question, action.answer))
+        expect(gen.next().value).toEqual(call(API.addCard, action.id, action.format, action.question, action.answer))
 
-        const newCard = new CardDetail('deck-1-card-0', 'Some Question', 'Some Answer', Format.PLAIN, MINUTES_PER_HALF_DAY,
+        const newCard = new CardDetail('deck-1-card-0', 'Some Question', 'Some Answer', Format.HTML, MINUTES_PER_HALF_DAY,
             MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, DUE_IMMEDIATELY)
 
         expect(gen.next(newCard).value).toEqual(put(addCardSuccess(newCard, 'deck-1')))

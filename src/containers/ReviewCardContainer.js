@@ -10,6 +10,7 @@ export const mapStateToProps = (state: CombinedState, ownProps: OwnProps) => {
     const props = state.review
 
     return {
+        format: props.format,
         question: props.question,
         answer: props.answer,
         cardId: props.cardId,

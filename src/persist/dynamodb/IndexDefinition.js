@@ -1,12 +1,12 @@
 //@flow
 export default class IndexDefinition {
 
-    name: string
-    type: string
+  name: string
+  type: string
 
-    constructor(name: string, type: string) {
-        this.name = name
-        this.type = type
-    }
+  constructor (name: string, type: string) {
+    this.name = name
+    this.type = type
+  }
 
 }

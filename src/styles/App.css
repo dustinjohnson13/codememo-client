@@ -1,29 +1,29 @@
 .App {
-  text-align: center;
+    text-align: center;
 }
 
 .App-header {
-  background-color: #222;
-  padding: 20px;
-  color: white;
-  margin-bottom: 20px;
+    background-color: #222;
+    padding: 20px;
+    color: white;
+    margin-bottom: 20px;
 }
 
 .due-count {
-  color: green;
+    color: green;
 }
 
 .new-count {
-  color: blue;
+    color: blue;
 }
 
 .btn {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 /*So react links render correctly*/
 a:not([href]):not([tabindex]) {
-  color: #0275d8;
-  text-decoration: none;
-  cursor: pointer;
+    color: #0275d8;
+    text-decoration: none;
+    cursor: pointer;
 }

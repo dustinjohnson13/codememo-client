@@ -1,8 +1,8 @@
 //@flow
-import type {AnswerType} from "../services/APIDomain"
-import {CardDetail, CollectionResponse, Deck, DeckResponse} from "../services/APIDomain"
-import type {PageType} from "./pages"
-import type {FormatType} from "../persist/Dao"
+import type { AnswerType } from '../services/APIDomain'
+import { CardDetail, CollectionResponse, Deck, DeckResponse } from '../services/APIDomain'
+import type { PageType } from './pages'
+import type { FormatType } from '../persist/Dao'
 
 export const REVIEW_DECK_REQUEST = 'REVIEW_DECK_REQUEST'
 export const DELETE_DECK_REQUEST = 'DELETE_DECK_REQUEST'
@@ -51,61 +51,60 @@ export type AddDeckSuccessAction = { type: 'ADD_DECK_SUCCESS', collection: Colle
 export type StartTimerAction = { type: 'START_TIMER', time: number }
 
 export type Action =
-    ShowAnswerAction
-    | StartTimerAction
-    | ReviewDeckRequestAction
-    | DeleteDeckRequestAction
-    | DeleteCardRequestAction
-    | LoginSuccessAction
-    | LoginRequestAction
-    | LoadCollectionPageAction
-    | LoadPageAction
-    | HideAnswerAction
-    | FetchCollectionRequestAction
-    | FetchCollectionSuccessAction
-    | FetchCardsRequestAction
-    | FetchCardsSuccessAction
-    | FetchDeckRequestAction
-    | FetchDeckSuccessAction
-    | AnswerCardRequestAction
-    | AnswerCardSuccessAction
-    | AddCardRequestAction
-    | AddCardSuccessAction
-    | AddDeckRequestAction
-    | AddDeckSuccessAction
-
+  ShowAnswerAction
+  | StartTimerAction
+  | ReviewDeckRequestAction
+  | DeleteDeckRequestAction
+  | DeleteCardRequestAction
+  | LoginSuccessAction
+  | LoginRequestAction
+  | LoadCollectionPageAction
+  | LoadPageAction
+  | HideAnswerAction
+  | FetchCollectionRequestAction
+  | FetchCollectionSuccessAction
+  | FetchCardsRequestAction
+  | FetchCardsSuccessAction
+  | FetchDeckRequestAction
+  | FetchDeckSuccessAction
+  | AnswerCardRequestAction
+  | AnswerCardSuccessAction
+  | AddCardRequestAction
+  | AddCardSuccessAction
+  | AddDeckRequestAction
+  | AddDeckSuccessAction
 
 export type AppState = {
-    +page: ?PageType;
+  +page: ?PageType;
 }
 
 export type CollectionState = {
-    +decks: Array<string>,
-    +decksById: { [string]: Deck }
+  +decks: Array<string>,
+  +decksById: { [string]: Deck }
 }
 
 export type ReviewState = {
-    +dueCards: Array<CardDetail>,
-    +newCards: Array<CardDetail>,
-    +deckName: string,
-    +deckId: string,
-    +cardId: string,
-    +totalCount: number,
-    +question: string,
-    +answer: string,
-    +format: FormatType,
-    +failInterval: string,
-    +hardInterval: string,
-    +goodInterval: string,
-    +easyInterval: string,
-    +showingAnswer: boolean,
-    +startTime: number
+  +dueCards: Array<CardDetail>,
+  +newCards: Array<CardDetail>,
+  +deckName: string,
+  +deckId: string,
+  +cardId: string,
+  +totalCount: number,
+  +question: string,
+  +answer: string,
+  +format: FormatType,
+  +failInterval: string,
+  +hardInterval: string,
+  +goodInterval: string,
+  +easyInterval: string,
+  +showingAnswer: boolean,
+  +startTime: number
 }
 
 export type CombinedState = {
-    app: AppState,
-    collection: CollectionState,
-    review: ReviewState
+  app: AppState,
+  collection: CollectionState,
+  review: ReviewState
 }
 
 export type Dispatch = (action: Action) => void;

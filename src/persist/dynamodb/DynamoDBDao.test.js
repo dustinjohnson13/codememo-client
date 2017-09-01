@@ -1,107 +1,106 @@
 //@flow
 import {
-    ACCESS_KEY_ID,
-    DYNAMODB_TEST_TIMEOUT,
-    loadCollectionData,
-    REGION,
-    SECRET_ACCESS_KEY,
-    startAndLoadData,
-    stop
-} from "./DynamoDBHelper"
-import DynamoDBDao from "./DynamoDBDao"
+  ACCESS_KEY_ID,
+  DYNAMODB_TEST_TIMEOUT,
+  loadCollectionData,
+  REGION,
+  SECRET_ACCESS_KEY,
+  startAndLoadData,
+  stop
+} from './DynamoDBHelper'
+import DynamoDBDao from './DynamoDBDao'
 import {
-    answerTypeFromDBId,
-    Card,
-    CARD_TABLE,
-    Deck,
-    DECK_TABLE,
-    formatTypeFromDBId,
-    Review,
-    REVIEW_TABLE,
-    Template,
-    TEMPLATE_TABLE,
-    templateTypeFromDBId,
-    User,
-    USER_TABLE
-} from "../Dao"
-import type {PreLoadedIds} from "../Dao.test"
-import {testWithDaoImplementation} from "../Dao.test"
-import {testServiceWithDaoImplementation} from "../../services/DataService.test"
+  answerTypeFromDBId,
+  Card,
+  CARD_TABLE,
+  Deck,
+  DECK_TABLE,
+  formatTypeFromDBId,
+  Review,
+  REVIEW_TABLE,
+  Template,
+  TEMPLATE_TABLE,
+  templateTypeFromDBId,
+  User,
+  USER_TABLE
+} from '../Dao'
+import type { PreLoadedIds } from '../Dao.test'
+import { testWithDaoImplementation } from '../Dao.test'
+import { testServiceWithDaoImplementation } from '../../services/DataService.test'
 
-const AWS = require("aws-sdk")
+const AWS = require('aws-sdk')
 
 describe('DynamoDBDao', () => {
-    let port
-    let dao
-    let originalTimeout
+  let port
+  let dao
+  let originalTimeout
 
-    beforeAll(async () => {
-        await startAndLoadData(false).then((assignedPort: number) => {
-            port = assignedPort
-            dao = new DynamoDBDao(REGION, `http://localhost:${port}`, ACCESS_KEY_ID, SECRET_ACCESS_KEY)
-        })
-        originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = DYNAMODB_TEST_TIMEOUT
+  beforeAll(async () => {
+    await startAndLoadData(false).then((assignedPort: number) => {
+      port = assignedPort
+      dao = new DynamoDBDao(REGION, `http://localhost:${port}`, ACCESS_KEY_ID, SECRET_ACCESS_KEY)
     })
+    originalTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = DYNAMODB_TEST_TIMEOUT
+  })
 
-    afterAll(() => {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout
-        stop(port)
-    })
+  afterAll(() => {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout
+    stop(port)
+  })
 
-    function getById(table: string, id: string): Promise<any> {
-        const docClient = new AWS.DynamoDB.DocumentClient()
+  function getById (table: string, id: string): Promise<any> {
+    const docClient = new AWS.DynamoDB.DocumentClient()
 
-        const params = {
-            TableName: table,
-            Key: {
-                "id": id
-            }
+    const params = {
+      TableName: table,
+      Key: {
+        'id': id
+      }
+    }
+
+    return new Promise((resolve, reject) =>
+      docClient.get(params, (err, data) => {
+        if (err) {
+          console.error('Unable to read item. Error JSON:', JSON.stringify(err, null, 2))
+        } else {
+          resolve(data.Item)
         }
+      }))
+  }
 
-        return new Promise((resolve, reject) =>
-            docClient.get(params, (err, data) => {
-                if (err) {
-                    console.error("Unable to read item. Error JSON:", JSON.stringify(err, null, 2))
-                } else {
-                    resolve(data.Item)
-                }
-            }))
-    }
+  function loadDynamoDB (): Promise<PreLoadedIds> {
+    return loadCollectionData(port)
+  }
 
-    function loadDynamoDB(): Promise<PreLoadedIds> {
-        return loadCollectionData(port)
-    }
+  function getDynamoDBUser (id: string): Promise<User | void> {
+    return getById(USER_TABLE, id).then(item => item ? new User(item.id, item.email) : undefined)
+  }
 
-    function getDynamoDBUser(id: string): Promise<User | void> {
-        return getById(USER_TABLE, id).then(item => item ? new User(item.id, item.email) : undefined)
-    }
+  function getDynamoDBDeck (id: string): Promise<Deck | void> {
+    return getById(DECK_TABLE, id).then(item => item ? new Deck(item.id, item.uId, item.n) : undefined)
+  }
 
-    function getDynamoDBDeck(id: string): Promise<Deck | void> {
-        return getById(DECK_TABLE, id).then(item => item ? new Deck(item.id, item.uId, item.n) : undefined)
-    }
+  function getDynamoDBTemplate (id: string): Promise<Template | void> {
+    return getById(TEMPLATE_TABLE, id).then(item => item ? new Template(item.id, item.dId, templateTypeFromDBId(item.t), formatTypeFromDBId(item.f), item.f1, item.f2) : undefined)
+  }
 
-    function getDynamoDBTemplate(id: string): Promise<Template | void> {
-        return getById(TEMPLATE_TABLE, id).then(item => item ?
-            new Template(item.id, item.dId, templateTypeFromDBId(item.t), formatTypeFromDBId(item.f), item.f1, item.f2) : undefined)
-    }
+  function getDynamoDBCard (id: string): Promise<Card | void> {
+    return getById(CARD_TABLE, id).then(item => item ? new Card(item.id, item.tId, item.n, item.g, item.d) : undefined)
+  }
 
-    function getDynamoDBCard(id: string): Promise<Card | void> {
-        return getById(CARD_TABLE, id).then(item => item ? new Card(item.id, item.tId, item.n, item.g, item.d) : undefined)
-    }
+  function getDynamoDBReview (id: string): Promise<Review | void> {
+    return getById(REVIEW_TABLE, id).then(item => item ? new Review(item.id, item.cId, item.st, item.et, answerTypeFromDBId(item.a)) : undefined)
+  }
 
-    function getDynamoDBReview(id: string): Promise<Review | void> {
-        return getById(REVIEW_TABLE, id).then(item => item ? new Review(item.id, item.cId, item.st, item.et, answerTypeFromDBId(item.a)) : undefined)
-    }
+  testWithDaoImplementation(() => dao, loadDynamoDB,
+    getDynamoDBUser, getDynamoDBDeck, getDynamoDBTemplate, getDynamoDBCard, getDynamoDBReview)
 
-    testWithDaoImplementation(() => dao, loadDynamoDB,
-        getDynamoDBUser, getDynamoDBDeck, getDynamoDBTemplate, getDynamoDBCard, getDynamoDBReview)
+  it('should be able to list tables', async () => {
 
-    it('should be able to list tables', async () => {
+    const tables = await dao.listTables()
+    expect(tables).toEqual([CARD_TABLE, DECK_TABLE, REVIEW_TABLE, TEMPLATE_TABLE, USER_TABLE])
+  })
 
-        const tables = await dao.listTables()
-        expect(tables).toEqual([CARD_TABLE, DECK_TABLE, REVIEW_TABLE, TEMPLATE_TABLE, USER_TABLE])
-    })
-
-    testServiceWithDaoImplementation(() => dao)
+  testServiceWithDaoImplementation(() => dao)
 })

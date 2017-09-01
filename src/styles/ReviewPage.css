@@ -1,50 +1,50 @@
 .back, .tools {
-  cursor: pointer;
-  font-weight: bold;
+    cursor: pointer;
+    font-weight: bold;
 }
 
 .back {
-  margin-right: 10px;
+    margin-right: 10px;
 }
 
 .tools {
-  margin-left: 10px;
+    margin-left: 10px;
 }
 
 .menu {
-  margin-bottom: 15px;
+    margin-bottom: 15px;
 }
 
 .menu div {
-  display: inline;
+    display: inline;
 }
 
 .review-card {
-  /*Make this responsive*/
-  min-height: 500px;
+    /*Make this responsive*/
+    min-height: 500px;
 }
 
 .review-question {
-  margin-top: 20px;
-  font-size: 1.1em;
+    margin-top: 20px;
+    font-size: 1.1em;
 }
 
 .review-answer {
-  margin: 20px;
+    margin: 20px;
 }
 
 .review-answers {
-  position: absolute;
-  bottom: 15%;
-  text-align: center;
-  width: 100%;
+    position: absolute;
+    bottom: 15%;
+    text-align: center;
+    width: 100%;
 }
 
 .review-answers > button:not(:first-child) {
-  margin-left: 5px;
-  width: 60px;
+    margin-left: 5px;
+    width: 60px;
 }
 
 .show-answer {
-  margin-top: 20px;
+    margin-top: 20px;
 }

@@ -2,20 +2,20 @@
 }
 
 .deck {
-  border: 1px solid;
-  padding: 7px 0;
-  margin-bottom: 10px;
+    border: 1px solid;
+    padding: 7px 0;
+    margin-bottom: 10px;
 }
 
 .deck-info {
-  text-align: left;
-  padding-left: 10%;
+    text-align: left;
+    padding-left: 10%;
 }
 
 .deck-name {
-  font-weight: bold;
+    font-weight: bold;
 }
 
 .deck-actions {
-  float: right;
+    float: right;
 }

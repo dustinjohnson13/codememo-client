@@ -1,56 +1,56 @@
 //@flow
 import React from 'react'
-import {FormGroup, Input, InputGroup, Label} from 'reactstrap'
+import { FormGroup, Input, InputGroup, Label } from 'reactstrap'
 import '../styles/AddCardModal.css'
-import ModalWrapper from "./ModalWrapper"
-import type {FormatType} from "../persist/Dao"
-import {Format} from "../persist/Dao"
+import ModalWrapper from './ModalWrapper'
+import type { FormatType } from '../persist/Dao'
+import { Format } from '../persist/Dao'
 
 type Props = {
-    +deckId: string,
-    +addCard: (deckId: string, format: FormatType, question: string, answer: string) => void,
-    +restartTimer: () => void
+  +deckId: string,
+  +addCard: (deckId: string, format: FormatType, question: string, answer: string) => void,
+  +restartTimer: () => void
 }
 
 type State = {
-    format: FormatType,
-    question: string,
-    answer: string
+  format: FormatType,
+  question: string,
+  answer: string
 }
 
 class AddCardModal extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props)
-        this.state = {format: Format.PLAIN, answer: '', question: ''};
+  constructor (props: Props) {
+    super(props)
+    this.state = {format: Format.PLAIN, answer: '', question: ''};
 
-        (this: any).handleFormatChange = this.handleFormatChange.bind(this);
-        (this: any).handleQuestionChange = this.handleQuestionChange.bind(this);
-        (this: any).handleAnswerChange = this.handleAnswerChange.bind(this);
-        (this: any).addCard = this.addCard.bind(this);
-    }
+    (this: any).handleFormatChange = this.handleFormatChange.bind(this);
+    (this: any).handleQuestionChange = this.handleQuestionChange.bind(this);
+    (this: any).handleAnswerChange = this.handleAnswerChange.bind(this);
+    (this: any).addCard = this.addCard.bind(this)
+  }
 
-    handleFormatChange(event: SyntheticInputEvent<Input>) {
-        // $FlowFixMe
-        this.setState({format: event.target.value})
-    }
+  handleFormatChange (event: SyntheticInputEvent<Input>) {
+    // $FlowFixMe
+    this.setState({format: event.target.value})
+  }
 
-    handleQuestionChange(event: SyntheticInputEvent<Input>) {
-        this.setState({question: event.target.value})
-    }
+  handleQuestionChange (event: SyntheticInputEvent<Input>) {
+    this.setState({question: event.target.value})
+  }
 
-    handleAnswerChange(event: SyntheticInputEvent<Input>) {
-        this.setState({answer: event.target.value})
-    }
+  handleAnswerChange (event: SyntheticInputEvent<Input>) {
+    this.setState({answer: event.target.value})
+  }
 
-    addCard() {
-        this.props.addCard(this.props.deckId, this.state.format, this.state.question, this.state.answer)
-        this.setState({answer: '', question: ''})
-    }
+  addCard () {
+    this.props.addCard(this.props.deckId, this.state.format, this.state.question, this.state.answer)
+    this.setState({answer: '', question: ''})
+  }
 
-    render() {
+  render () {
 
-        return (
-            <span>
+    return (
+      <span>
                 <ModalWrapper title="New Card" toggleText="Add" closeOnConfirmation={false}
                               confirmAction={this.addCard} closedCallback={this.props.restartTimer}>
                     <FormGroup>
@@ -69,8 +69,8 @@ class AddCardModal extends React.Component<Props, State> {
                     </InputGroup>
                 </ModalWrapper>
             </span>
-        )
-    }
+    )
+  }
 }
 
 export default AddCardModal

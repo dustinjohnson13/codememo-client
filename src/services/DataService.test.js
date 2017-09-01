@@ -2,7 +2,7 @@
 import type {Clock} from "./APIDomain"
 import {Answer, CardDetail, CollectionResponse, MILLIS_PER_MINUTE} from "./APIDomain"
 import DaoDelegatingDataService from "./DaoDelegatingDataService"
-import {Card, Deck, DUE_IMMEDIATELY, Format, NO_ID, TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
+import {Card, DUE_IMMEDIATELY, Format, newDeck, TEST_DECK_NAME, TEST_USER_EMAIL} from "../persist/Dao"
 import {FrozenClock} from "./__mocks__/API"
 import {fakeCards, fakeReviews, REVIEW_END_TIME} from "../fakeData/InMemoryDao"
 
@@ -38,25 +38,45 @@ export function testServiceWithDaoImplementation(createDao: any) {
         const clock = new FrozenClock()
         let service
 
+        let dao
+        let loadedDecks = []
+        let loadedTemplates = []
+        let loadedCards = []
+
         beforeEach(async () => {
-            const dao = createDao()
+            dao = createDao()
+
+            loadedDecks = []
+            loadedTemplates = []
+            loadedCards = []
 
             service = new DaoDelegatingDataService(dao, clock)
 
             await service.init(true).then(() =>
                 dao.findUserByEmail(TEST_USER_EMAIL)
-                    .then(user => dao.saveDeck(new Deck(NO_ID, user.id, TEST_DECK_NAME)))
+                    .then(user => dao.saveDeck(newDeck(user.id, TEST_DECK_NAME)))
                     .then(deck => {
+                        loadedDecks.push(deck)
+
                         const currentTime = clock.epochMilliseconds()
                         const {templates, cards} = fakeCards(currentTime, deck.id, TOTAL_COUNT,
                             DUE_COUNT, TOTAL_COUNT - GOOD_COUNT - DUE_COUNT, false)
-                        const reviews = fakeReviews(REVIEW_END_TIME, cards[0].id, 1, false)
 
-                        return Promise.all(templates.map(it => dao.saveTemplate(it))).then(templates =>
-                            Promise.all(cards.map((card, idx) => {
+                        return Promise.all(templates.map(it => dao.saveTemplate(it))).then(templates => {
+                            loadedTemplates = templates
+
+                            return Promise.all(cards.map((card, idx) => {
                                 const cardWithTemplateId = new Card(card.id, templates[idx].id, card.cardNumber, card.goodInterval, card.due)
                                 return dao.saveCard(cardWithTemplateId)
-                            })).then(() => reviews.map(it => dao.saveReview(it))))
+                            })).then(cards => {
+                                loadedCards = cards
+                                return cards
+                            }).then(cards => {
+                                const reviews = fakeReviews(REVIEW_END_TIME, cards[0].id, 1, false)
+
+                                return Promise.all(reviews.map(it => dao.saveReview(it)))
+                            })
+                        })
                     }))
         })
 
@@ -98,8 +118,7 @@ export function testServiceWithDaoImplementation(createDao: any) {
         })
 
         it('can delete deck', async () => {
-            const collection = await service.fetchCollection(TEST_USER_EMAIL)
-            const deck = collection.decks[0]
+            const deck = loadedDecks[0]
             const deckId = deck.id
 
             const deckWithCards = await service.fetchDeck(deckId)
@@ -109,6 +128,36 @@ export function testServiceWithDaoImplementation(createDao: any) {
             const cardResponse = await service.fetchCards([deckWithCards.cards[0].id])
 
             expect(cardResponse.cards.length).toEqual(0)
+        })
+
+        it('can delete card', async () => {
+            const card = loadedCards[0]
+            const cardId = card.id
+
+            // We expect these two things to be deleted
+            const originalReviews = await service.fetchReviews(cardId)
+            const template = await dao.findTemplate(card.templateId)
+
+            expect(template).toBeDefined()
+
+            const deck = await service.fetchDeck(template.deckId)
+            const cards = deck.cards
+
+            // Make sure we have stuff to delete
+            expect(cards.length).toBeGreaterThan(0)
+            expect(originalReviews.reviews.length).toBeGreaterThan(0)
+
+            const actual = await service.deleteCard(TEST_USER_EMAIL, cardId)
+
+            // Make sure deletions happened
+            const cardResponse = await service.fetchDeck(deck.id)
+            const newReviews = await service.fetchReviews(cardId)
+
+            expect(cardResponse.cards.length).toEqual(cards.length - 1)
+            expect(newReviews.reviews.length).toEqual(0)
+
+            const shouldBeDeleted = await dao.findTemplate(card.templateId)
+            expect(shouldBeDeleted).toBeUndefined()
         })
 
         it('can add new card', async () => {

@@ -224,6 +224,8 @@ export interface Dao {
 
     findCardsByDeckId(deckId: string): Promise<Array<Card>>;
 
+    findCardsByTemplateId(templateId: string): Promise<Array<Card>>;
+
     findUserByEmail(email: string): Promise<User | void>;
 }
 

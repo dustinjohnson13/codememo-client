@@ -523,6 +523,11 @@ export default class DynamoDBDao implements Dao {
         })
     }
 
+    async findCardsByTemplateId(templateId: string): Promise<Array<Card>> {
+        const items = await this.findByIndexQuery(CARD_TABLE, TEMPLATE_ID_INDEX, templateId)
+        return items.map(hydrateCard)
+    }
+
     async findUserByEmail(email: string): Promise<User | void> {
         const items = await this.findByIndexQuery(USER_TABLE, EMAIL_INDEX, email)
         return items.length === 0 ? undefined : items[0]

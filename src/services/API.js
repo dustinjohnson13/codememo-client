@@ -113,6 +113,12 @@ class DelegatingDataService implements DataService {
             setTimeout(() => this.delegate.addCard(deckId, format, question, answer).then(resolve), this.timeoutDelay)
         })
     }
+
+    deleteCard(email: string, id: string): Promise<DeckResponse> {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => this.delegate.deleteCard(email, id).then(resolve), this.timeoutDelay)
+        })
+    }
 }
 
 const clock = new SystemClock()

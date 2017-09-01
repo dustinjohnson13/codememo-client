@@ -6,8 +6,13 @@ import {
     answerCard,
     answerCardRequest,
     answerCardSuccess,
+    deleteCard,
+    deleteCardRequest,
+    deleteDeck,
+    deleteDeckRequest,
     fetchCardsSuccess,
     fetchCollection,
+    fetchCollectionSuccess,
     fetchDeckSuccess,
     loadCollectionPage,
     loadPage,
@@ -33,7 +38,7 @@ import {deckId, deckName, getDeck1DueCards, gotDeck1} from "./creators.test.acti
 import API from '../services/API'
 import {collectionState} from "../fakeData/collectionState"
 import {initialState} from "../reducers/collectionPage"
-import {DUE_IMMEDIATELY, Format} from "../persist/Dao"
+import {DUE_IMMEDIATELY, Format, TEST_USER_EMAIL} from "../persist/Dao"
 import {reviewState} from "../fakeData/reviewState"
 
 jest.mock('../services/API') // Set mock API for module importing
@@ -44,6 +49,28 @@ describe('creators', () => {
     // Still need tests for these two:
     // yield takeEvery(ADD_DECK_REQUEST, addDeck);
     // yield takeEvery(LOAD_COLLECTION_PAGE, loadCollectionPage);
+
+    it('sends delete card request to the API and returns the response', () => {
+
+        const action = deleteCardRequest('card-1')
+        const gen = deleteCard(action)
+        expect(gen.next().value).toEqual(call(API.deleteDeck, TEST_USER_EMAIL, action.id))
+
+        const response = new DeckResponse('deck-1', "Deck 1", [])
+
+        expect(gen.next(response).value).toEqual(put(fetchDeckSuccess(response)))
+    })
+
+    it('sends delete deck request to the API and returns the collection response', () => {
+
+        const action = deleteDeckRequest('deck-1')
+        const gen = deleteDeck(action)
+        expect(gen.next().value).toEqual(call(API.deleteDeck, TEST_USER_EMAIL, action.id))
+
+        const response = new CollectionResponse([])
+
+        expect(gen.next(response).value).toEqual(put(fetchCollectionSuccess(response)))
+    })
 
     it('sends new card to the API and returns the new card detail', () => {
 

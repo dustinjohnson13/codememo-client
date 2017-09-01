@@ -251,6 +251,10 @@ export class InMemoryDao implements Dao {
         return Promise.resolve(this.cards.filter(it => templateIds.indexOf(it.templateId) !== -1))
     }
 
+    findCardsByTemplateId(templateId: string): Promise<Array<Card>> {
+        return Promise.resolve(this.cards.filter(it => it.templateId === templateId))
+    }
+
     findUserByEmail(email: string): Promise<User | void> {
         return Promise.resolve(this.users.find(it => it.email === email))
     }

@@ -7,6 +7,7 @@ import type {
     AddDeckSuccessAction,
     AnswerCardRequestAction,
     AnswerCardSuccessAction,
+    DeleteCardRequestAction,
     DeleteDeckRequestAction,
     FetchCardsRequestAction,
     FetchCardsSuccessAction,
@@ -30,6 +31,7 @@ import {
     ADD_DECK_SUCCESS,
     ANSWER_CARD_REQUEST,
     ANSWER_CARD_SUCCESS,
+    DELETE_CARD_REQUEST,
     DELETE_DECK_REQUEST,
     FETCH_CARDS_REQUEST,
     FETCH_CARDS_SUCCESS,
@@ -115,6 +117,13 @@ export const addDeckSuccess = (response: CollectionResponse): AddDeckSuccessActi
     return {
         type: ADD_DECK_SUCCESS,
         collection: response
+    }
+}
+
+export const deleteCardRequest = (id: string): DeleteCardRequestAction => {
+    return {
+        type: DELETE_CARD_REQUEST,
+        id
     }
 }
 
@@ -260,6 +269,11 @@ export function* reviewDeck(action: ReviewDeckRequestAction): Generator<DeckResp
 
     yield put(loadPage(Page.REVIEW))
     yield put(startTimer())
+}
+
+export function* deleteCard(action: DeleteCardRequestAction): Generator<DeleteCardRequestAction, void, DeckResponse> {
+    const response = yield call(API.deleteDeck, TEST_USER_EMAIL, action.id)
+    yield put(fetchDeckSuccess(response))
 }
 
 export function* deleteDeck(action: DeleteDeckRequestAction): Generator<DeleteDeckRequestAction, void, CollectionResponse> {

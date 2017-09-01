@@ -106,6 +106,30 @@ export default class DaoDelegatingDataService implements DataService {
         }
     }
 
+    async deleteCard(email: string, id: string): Promise<DeckResponse> {
+        const card = await this.dao.findCard(id)
+        if (!card) {
+            throw new Error(`No card with id ${id}`)
+        }
+
+        const template = await this.dao.findTemplate(card.templateId)
+        if (!template) {
+            throw new Error(`No template with id ${card.templateId}`)
+        }
+
+        const reviews = await this.dao.findReviewsByCardId(id)
+        await Promise.all(reviews.map(it => this.dao.deleteReview(it.id)))
+
+        const cards = await this.dao.findCardsByTemplateId(template.id)
+        if (cards.length === 1) {
+            await this.dao.deleteTemplate(template.id)
+        }
+
+        await this.dao.deleteCard(id)
+
+        return this.fetchDeck(template.deckId)
+    }
+
     async fetchCards(ids: Array<string>): Promise<CardDetailResponse> {
         const cards: Array<Card | void> = await Promise.all(ids.map(id => this.dao.findCard(id)))
         const details = []

@@ -321,6 +321,15 @@ export class SequelizeDao implements Dao {
         return entities.map(hydrateCard)
     }
 
+    async findCardsByTemplateId(templateId: string): Promise<Array<Card>> {
+        const entities = await CardEntity.findAll({
+            where: {
+                templateId: templateId
+            }
+        })
+        return entities.map(hydrateCard)
+    }
+
     findUserByEmail(email: string): Promise<User | void> {
         const q = UserEntity.findOne({
             where: {

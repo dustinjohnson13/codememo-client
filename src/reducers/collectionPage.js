@@ -1,9 +1,10 @@
 //@flow
-import type { Action, CollectionState } from '../actions/actionTypes'
+import type { Action, CollectionState, DeleteCardSuccessAction } from '../actions/actionTypes'
 import {
   ADD_CARD_SUCCESS,
   ADD_DECK_SUCCESS,
   ANSWER_CARD_SUCCESS,
+  DELETE_CARD_SUCCESS,
   FETCH_COLLECTION_SUCCESS
 } from '../actions/actionTypes'
 import { Deck } from '../services/APIDomain'
@@ -26,6 +27,8 @@ const collectionPage = (state: CollectionState = initialState, action: Action) =
         decks: incomingDecks.map(deck => deck.id),
         decksById: incomingDecksById
       })
+    case DELETE_CARD_SUCCESS:
+      return getViewState(handleDeleteCardSuccess(state, action))
     case ADD_CARD_SUCCESS:
       let decksByIdWithAddedCard = {...state.decksById}
       const deckForAddedCard = decksByIdWithAddedCard[action.deckId]
@@ -61,6 +64,30 @@ const collectionPage = (state: CollectionState = initialState, action: Action) =
       })
     default:
       return state
+  }
+}
+
+const handleDeleteCardSuccess = (state: CollectionState, action: DeleteCardSuccessAction) => {
+  let decksById = state.decksById
+  const deckId = action.deck.id
+  const deck = decksById[deckId]
+
+  if (deck) {
+    let dueCount = deck.dueCount
+    let newCount = deck.newCount
+    if (deck.dueCount > 0) {
+      dueCount--
+    } else if (newCount > 0) {
+      newCount--
+    }
+
+    const newDeck = new Deck(deckId, deck.name, deck.totalCount - 1, dueCount, newCount)
+    decksById = {...decksById}
+    decksById[deckId] = newDeck
+  }
+  return {
+    ...state,
+    decksById: decksById
   }
 }
 

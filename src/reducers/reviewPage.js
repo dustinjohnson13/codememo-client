@@ -3,9 +3,11 @@ import type { Action, ReviewState } from '../actions/actionTypes'
 import {
   ADD_CARD_SUCCESS,
   ANSWER_CARD_SUCCESS,
+  DELETE_CARD_SUCCESS,
   FETCH_CARDS_SUCCESS,
   FETCH_DECK_SUCCESS,
   HIDE_ANSWER,
+  LOAD_PAGE,
   SHOW_ANSWER,
   START_TIMER
 } from '../actions/actionTypes'
@@ -35,6 +37,7 @@ export const getViewState = (state: ReviewState): ReviewState => state
 
 const reviewPage = (state: ReviewState = initialState, action: Action) => {
   switch (action.type) {
+    case LOAD_PAGE:
     case HIDE_ANSWER:
       return getViewState({
         ...state,
@@ -137,6 +140,27 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
         hardInterval: doneReviewing ? '' : numDueCards > 0 ? userFriendlyInterval(dueCardsMinusReviewed[0].hardInterval) : userFriendlyInterval(newCardsMinusReviewed[0].failInterval),
         goodInterval: doneReviewing ? '' : numDueCards > 0 ? userFriendlyInterval(dueCardsMinusReviewed[0].goodInterval) : userFriendlyInterval(newCardsMinusReviewed[0].failInterval),
         easyInterval: doneReviewing ? '' : numDueCards > 0 ? userFriendlyInterval(dueCardsMinusReviewed[0].easyInterval) : userFriendlyInterval(newCardsMinusReviewed[0].failInterval),
+        showingAnswer: false
+      })
+    case DELETE_CARD_SUCCESS:
+      const dcs_dueCardsMinusReviewed = state.dueCards.filter(card => card.id !== state.cardId)
+      const dcs_newCardsMinusReviewed = state.newCards.filter(card => card.id !== state.cardId)
+      const dcs_numDueCards = dcs_dueCardsMinusReviewed.length
+      const dcs_numNewCards = dcs_newCardsMinusReviewed.length
+      const dcs_doneReviewing = dcs_numDueCards === 0 && dcs_numNewCards === 0
+      return getViewState({
+        ...state,
+        totalCount: state.totalCount - 1,
+        dueCards: dcs_dueCardsMinusReviewed,
+        newCards: dcs_newCardsMinusReviewed,
+        question: dcs_doneReviewing ? '' : dcs_numDueCards > 0 ? dcs_dueCardsMinusReviewed[0].question : dcs_newCardsMinusReviewed[0].question,
+        answer: dcs_doneReviewing ? '' : dcs_numDueCards > 0 ? dcs_dueCardsMinusReviewed[0].answer : dcs_newCardsMinusReviewed[0].answer,
+        format: dcs_doneReviewing ? state.format : dcs_numDueCards > 0 ? dcs_dueCardsMinusReviewed[0].format : dcs_newCardsMinusReviewed[0].format,
+        cardId: dcs_doneReviewing ? '' : dcs_numDueCards > 0 ? dcs_dueCardsMinusReviewed[0].id : dcs_newCardsMinusReviewed[0].id,
+        failInterval: dcs_doneReviewing ? '' : dcs_numDueCards > 0 ? userFriendlyInterval(dcs_dueCardsMinusReviewed[0].failInterval) : userFriendlyInterval(dcs_newCardsMinusReviewed[0].failInterval),
+        hardInterval: dcs_doneReviewing ? '' : dcs_numDueCards > 0 ? userFriendlyInterval(dcs_dueCardsMinusReviewed[0].hardInterval) : userFriendlyInterval(dcs_newCardsMinusReviewed[0].failInterval),
+        goodInterval: dcs_doneReviewing ? '' : dcs_numDueCards > 0 ? userFriendlyInterval(dcs_dueCardsMinusReviewed[0].goodInterval) : userFriendlyInterval(dcs_newCardsMinusReviewed[0].failInterval),
+        easyInterval: dcs_doneReviewing ? '' : dcs_numDueCards > 0 ? userFriendlyInterval(dcs_dueCardsMinusReviewed[0].easyInterval) : userFriendlyInterval(dcs_newCardsMinusReviewed[0].failInterval),
         showingAnswer: false
       })
     case START_TIMER:

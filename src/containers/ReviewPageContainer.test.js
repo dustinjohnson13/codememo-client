@@ -21,6 +21,7 @@ describe('<ReviewPageContainer/>', () => {
   it('maps deck attributes from state', () => {
     const expectedState = {
       'id': 'deck-1',
+      'cardId': 'deck-1-card-30',
       'deckName': 'Deck1',
       'dueCount': 2,
       'newCount': 1,

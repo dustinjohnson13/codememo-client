@@ -8,6 +8,7 @@ import type {
   AnswerCardRequestAction,
   AnswerCardSuccessAction,
   DeleteCardRequestAction,
+  DeleteCardSuccessAction,
   DeleteDeckRequestAction,
   FetchCardsRequestAction,
   FetchCardsSuccessAction,
@@ -32,6 +33,7 @@ import {
   ANSWER_CARD_REQUEST,
   ANSWER_CARD_SUCCESS,
   DELETE_CARD_REQUEST,
+  DELETE_CARD_SUCCESS,
   DELETE_DECK_REQUEST,
   FETCH_CARDS_REQUEST,
   FETCH_CARDS_SUCCESS,
@@ -124,6 +126,14 @@ export const deleteCardRequest = (id: string): DeleteCardRequestAction => {
   return {
     type: DELETE_CARD_REQUEST,
     id
+  }
+}
+
+export const deleteCardSuccess = (id: string, response: DeckResponse): DeleteCardSuccessAction => {
+  return {
+    type: DELETE_CARD_SUCCESS,
+    id,
+    deck: response
   }
 }
 
@@ -272,8 +282,8 @@ export function * reviewDeck (action: ReviewDeckRequestAction): Generator<DeckRe
 }
 
 export function * deleteCard (action: DeleteCardRequestAction): Generator<DeleteCardRequestAction, void, DeckResponse> {
-  const response = yield call(API.deleteDeck, TEST_USER_EMAIL, action.id)
-  yield put(fetchDeckSuccess(response))
+  const response = yield call(API.deleteCard, TEST_USER_EMAIL, action.id)
+  yield put(deleteCardSuccess(action.id, response))
 }
 
 export function * deleteDeck (action: DeleteDeckRequestAction): Generator<DeleteDeckRequestAction, void, CollectionResponse> {
@@ -297,6 +307,7 @@ export function * saga (): Generator<Action, any, void> {
   yield takeEvery(ADD_CARD_REQUEST, addCard)
   yield takeEvery(ANSWER_CARD_REQUEST, answerCard)
   yield takeEvery(DELETE_DECK_REQUEST, deleteDeck)
+  yield takeEvery(DELETE_CARD_REQUEST, deleteCard)
   yield takeEvery(REVIEW_DECK_REQUEST, reviewDeck)
   yield takeEvery(FETCH_CARDS_REQUEST, fetchCards)
   yield takeEvery(FETCH_COLLECTION_REQUEST, fetchCollection)

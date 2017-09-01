@@ -8,6 +8,7 @@ import {
   answerCardSuccess,
   deleteCard,
   deleteCardRequest,
+  deleteCardSuccess,
   deleteDeck,
   deleteDeckRequest,
   fetchCardsSuccess,
@@ -52,13 +53,14 @@ describe('creators', () => {
 
   it('sends delete card request to the API and returns the response', () => {
 
-    const action = deleteCardRequest('card-1')
+    const cardId = 'card-1'
+    const action = deleteCardRequest(cardId)
     const gen = deleteCard(action)
-    expect(gen.next().value).toEqual(call(API.deleteDeck, TEST_USER_EMAIL, action.id))
+    expect(gen.next().value).toEqual(call(API.deleteCard, TEST_USER_EMAIL, action.id))
 
     const response = new DeckResponse('deck-1', 'Deck 1', [])
 
-    expect(gen.next(response).value).toEqual(put(fetchDeckSuccess(response)))
+    expect(gen.next(response).value).toEqual(put(deleteCardSuccess(cardId, response)))
   })
 
   it('sends delete deck request to the API and returns the collection response', () => {

@@ -5,20 +5,39 @@ import '../styles/ReviewPage.css'
 import ReviewCardContainer from '../containers/ReviewCardContainer'
 import AddCardModal from './AddCardModal'
 import type { FormatType } from '../persist/Dao'
+import { confirmAlert } from 'react-confirm-alert'
+import 'react-confirm-alert/src/react-confirm-alert.css'
 
 type Props = {
   +id: string,
   +deckName: string,
+  +cardId: string,
   +totalCount: number,
   +dueCount: number,
   +newCount: number,
   +back: () => void,
   +addCard: (deckId: string, format: FormatType, question: string, answer: string) => void,
   +showAnswer: () => void,
-  +restartTimer: () => void
+  +restartTimer: () => void,
+  +deleteCard: (id: string) => void
 }
 
 class ReviewPage extends Component<Props, void> {
+  constructor (props: Props) {
+    super(props);
+    (this: any).deleteCard = this.deleteCard.bind(this)
+  }
+
+  deleteCard () {
+    confirmAlert({
+      title: '',
+      message: `Are you sure you want to delete this card?`,
+      confirmLabel: 'Delete',
+      cancelLabel: 'Cancel',
+      onConfirm: () => this.props.deleteCard(this.props.cardId)
+    })
+  }
+
   render () {
     const reviewSection = (this.props.dueCount === 0 && this.props.newCount === 0) ?
       <div>Congratulations, you're caught up!</div> : <ReviewCardContainer/>
@@ -29,6 +48,7 @@ class ReviewPage extends Component<Props, void> {
           <AddCardModal deckId={this.props.id} addCard={this.props.addCard}
                         restartTimer={this.props.restartTimer}/>
           <Button>Edit</Button><Button>Find</Button>
+          <Button color="danger" onClick={this.deleteCard}>Delete</Button>
           <a className="tools">Tools</a>
         </div>
         <h3>{this.props.deckName}</h3>

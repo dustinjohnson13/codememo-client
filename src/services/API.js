@@ -34,6 +34,7 @@ class DelegatingDataService implements DataService {
     (this: any).answerCard = this.answerCard.bind(this);
     (this: any).addDeck = this.addDeck.bind(this);
     (this: any).deleteDeck = this.deleteDeck.bind(this);
+    (this: any).deleteCard = this.deleteCard.bind(this);
     (this: any).fetchCollection = this.fetchCollection.bind(this);
     (this: any).fetchDeck = this.fetchDeck.bind(this);
     (this: any).fetchCards = this.fetchCards.bind(this);

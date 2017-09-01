@@ -21,6 +21,7 @@ class Deck extends Component<Props, void> {
 
   deleteDeck () {
     confirmAlert({
+      title: '',
       message: `Are you sure you want to delete "${this.props.deck.name}"?`,
       confirmLabel: 'Delete',
       cancelLabel: 'Cancel',

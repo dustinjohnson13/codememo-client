@@ -7,6 +7,7 @@ import type { FormatType } from '../persist/Dao'
 export const REVIEW_DECK_REQUEST = 'REVIEW_DECK_REQUEST'
 export const DELETE_DECK_REQUEST = 'DELETE_DECK_REQUEST'
 export const DELETE_CARD_REQUEST = 'DELETE_CARD_REQUEST'
+export const DELETE_CARD_SUCCESS = 'DELETE_CARD_SUCCESS'
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
 export const LOGIN_REQUEST = 'LOGIN_REQUEST'
 export const LOAD_COLLECTION_PAGE = 'LOAD_COLLECTION_PAGE'
@@ -30,6 +31,7 @@ export const START_TIMER = 'START_TIMER'
 export type ReviewDeckRequestAction = { type: 'REVIEW_DECK_REQUEST', id: string }
 export type DeleteDeckRequestAction = { type: 'DELETE_DECK_REQUEST', id: string }
 export type DeleteCardRequestAction = { type: 'DELETE_CARD_REQUEST', id: string }
+export type DeleteCardSuccessAction = { type: 'DELETE_CARD_SUCCESS', id: string, deck: DeckResponse }
 export type LoginRequestAction = { type: 'LOGIN_REQUEST', email: string, password: string }
 export type LoginSuccessAction = { type: 'LOGIN_SUCCESS', email: string, password: string }
 export type LoadCollectionPageAction = { type: 'LOAD_COLLECTION_PAGE' };
@@ -56,6 +58,7 @@ export type Action =
   | ReviewDeckRequestAction
   | DeleteDeckRequestAction
   | DeleteCardRequestAction
+  | DeleteCardSuccessAction
   | LoginSuccessAction
   | LoginRequestAction
   | LoadCollectionPageAction

@@ -18,6 +18,8 @@ describe('<Collection />', () => {
 
     const invokedFunction = (deck) => {
     }
+    const deleteDeck = () => {
+    }
 
     let component
 
@@ -25,7 +27,7 @@ describe('<Collection />', () => {
         const store = storeFake()
         const wrapper = mount(
             <Provider store={store}>
-                <Collection decks={testDecks} reviewDeck={invokedFunction}/>
+                <Collection decks={testDecks} reviewDeck={invokedFunction} deleteDeck={deleteDeck}/>
             </Provider>
         )
 
@@ -34,7 +36,7 @@ describe('<Collection />', () => {
 
     it('should render a deck for each in the collection', () => {
         expect(component.find('.deck').length).toEqual(2)
-        expect(component.contains(<span>Deck1</span>)).toEqual(true)
-        expect(component.contains(<span>Deck2</span>)).toEqual(true)
+        expect(component.contains(<div className="deck-name">Deck1</div>)).toEqual(true)
+        expect(component.contains(<div className="deck-name">Deck2</div>)).toEqual(true)
     })
 })

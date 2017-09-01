@@ -15,20 +15,24 @@ describe('<Deck />', () => {
 
     const testDeck = new APIDeck('deck-1', 'Deck1', 16, 7, 3)
 
-    let requestedDecks
+    let actions
     let app
 
-    const invokedFunction = (deck) => {
-        requestedDecks.push(deck)
+    const reviewDeck = (name) => {
+        actions.push("reviewDeck: " + name)
+    }
+
+    const deleteDeck = (id) => {
+        actions.push("delete: " + id)
     }
 
     beforeEach(() => {
-        requestedDecks = []
+        actions = []
 
         const store = storeFake()
         const wrapper = mount(
             <Provider store={store}>
-                <Deck deck={testDeck} reviewDeck={invokedFunction}/>
+                <Deck deck={testDeck} reviewDeck={reviewDeck} deleteDeck={deleteDeck}/>
             </Provider>
         )
 
@@ -36,9 +40,11 @@ describe('<Deck />', () => {
     })
 
     it('can request to review deck', () => {
-        app.find('.deck').simulate('click')
-        expect(requestedDecks).toEqual(['deck-1'])
+        app.find('.review-deck').simulate('click')
+        expect(actions).toEqual(['reviewDeck: deck-1'])
     })
+
+    // TODO: Test deleting deck via modal
 
     it('shows due count', () => {
         const due = <span className="due-count">{7}</span>
@@ -51,7 +57,7 @@ describe('<Deck />', () => {
     })
 
     it('shows deck name', () => {
-        const name = <span>Deck1</span>
+        const name = <div className="deck-name">Deck1</div>
         expect(app.contains(name)).toEqual(true)
     })
 })

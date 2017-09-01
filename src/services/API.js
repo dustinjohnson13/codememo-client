@@ -33,6 +33,7 @@ class DelegatingDataService implements DataService {
 
         (this: any).answerCard = this.answerCard.bind(this);
         (this: any).addDeck = this.addDeck.bind(this);
+        (this: any).deleteDeck = this.deleteDeck.bind(this);
         (this: any).fetchCollection = this.fetchCollection.bind(this);
         (this: any).fetchDeck = this.fetchDeck.bind(this);
         (this: any).fetchCards = this.fetchCards.bind(this);
@@ -68,6 +69,12 @@ class DelegatingDataService implements DataService {
     addDeck(email: string, name: string): Promise<CollectionResponse> {
         return new Promise((resolve, reject) => {
             setTimeout(() => this.delegate.addDeck(email, name).then(resolve), this.timeoutDelay)
+        })
+    }
+
+    deleteDeck(email: string, id: string): Promise<CollectionResponse> {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => this.delegate.deleteDeck(email, id).then(resolve), this.timeoutDelay)
         })
     }
 

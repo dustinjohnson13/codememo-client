@@ -5,6 +5,7 @@ import type {PageType} from "./pages"
 import type {FormatType} from "../persist/Dao"
 
 export const REVIEW_DECK_REQUEST = 'REVIEW_DECK_REQUEST'
+export const DELETE_DECK_REQUEST = 'DELETE_DECK_REQUEST'
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
 export const LOGIN_REQUEST = 'LOGIN_REQUEST'
 export const LOAD_COLLECTION_PAGE = 'LOAD_COLLECTION_PAGE'
@@ -26,6 +27,7 @@ export const SHOW_ANSWER = 'SHOW_ANSWER'
 export const START_TIMER = 'START_TIMER'
 
 export type ReviewDeckRequestAction = { type: 'REVIEW_DECK_REQUEST', id: string }
+export type DeleteDeckRequestAction = { type: 'DELETE_DECK_REQUEST', id: string }
 export type LoginRequestAction = { type: 'LOGIN_REQUEST', email: string, password: string }
 export type LoginSuccessAction = { type: 'LOGIN_SUCCESS', email: string, password: string }
 export type LoadCollectionPageAction = { type: 'LOAD_COLLECTION_PAGE' };
@@ -50,6 +52,7 @@ export type Action =
     ShowAnswerAction
     | StartTimerAction
     | ReviewDeckRequestAction
+    | DeleteDeckRequestAction
     | LoginSuccessAction
     | LoginRequestAction
     | LoadCollectionPageAction

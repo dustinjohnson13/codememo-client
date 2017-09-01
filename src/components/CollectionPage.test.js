@@ -19,13 +19,16 @@ describe('<CollectionPage />', () => {
     }
     const addDeck = (name) => {
     }
+    const deleteDeck = (id) => {
+    }
 
     let app
     beforeEach(() => {
         const store = storeFake()
         const wrapper = mount(
             <Provider store={store}>
-                <CollectionPage decks={testDecks} addDeck={addDeck} reviewDeck={reviewDeck}/>
+                <CollectionPage decks={testDecks} addDeck={addDeck}
+                                reviewDeck={reviewDeck} deleteDeck={deleteDeck}/>
             </Provider>
         )
 

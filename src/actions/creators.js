@@ -7,6 +7,7 @@ import type {
     AddDeckSuccessAction,
     AnswerCardRequestAction,
     AnswerCardSuccessAction,
+    DeleteDeckRequestAction,
     FetchCardsRequestAction,
     FetchCardsSuccessAction,
     FetchCollectionRequestAction,
@@ -29,6 +30,7 @@ import {
     ADD_DECK_SUCCESS,
     ANSWER_CARD_REQUEST,
     ANSWER_CARD_SUCCESS,
+    DELETE_DECK_REQUEST,
     FETCH_CARDS_REQUEST,
     FETCH_CARDS_SUCCESS,
     FETCH_COLLECTION_REQUEST,
@@ -113,6 +115,13 @@ export const addDeckSuccess = (response: CollectionResponse): AddDeckSuccessActi
     return {
         type: ADD_DECK_SUCCESS,
         collection: response
+    }
+}
+
+export const deleteDeckRequest = (id: string): DeleteDeckRequestAction => {
+    return {
+        type: DELETE_DECK_REQUEST,
+        id
     }
 }
 
@@ -253,6 +262,11 @@ export function* reviewDeck(action: ReviewDeckRequestAction): Generator<DeckResp
     yield put(startTimer())
 }
 
+export function* deleteDeck(action: DeleteDeckRequestAction): Generator<DeleteDeckRequestAction, void, CollectionResponse> {
+    const response = yield call(API.deleteDeck, TEST_USER_EMAIL, action.id)
+    yield put(fetchCollectionSuccess(response))
+}
+
 export function* fetchCollection(action: FetchCollectionRequestAction): Generator<FetchCollectionRequestAction, any, CollectionResponse> {
     // TODO: Should be using real email
     const response = yield call(API.fetchCollection, TEST_USER_EMAIL)
@@ -268,6 +282,7 @@ export function* fetchCards(action: FetchCardsRequestAction): Generator<FetchCar
 export function* saga(): Generator<Action, any, void> {
     yield takeEvery(ADD_CARD_REQUEST, addCard)
     yield takeEvery(ANSWER_CARD_REQUEST, answerCard)
+    yield takeEvery(DELETE_DECK_REQUEST, deleteDeck)
     yield takeEvery(REVIEW_DECK_REQUEST, reviewDeck)
     yield takeEvery(FETCH_CARDS_REQUEST, fetchCards)
     yield takeEvery(FETCH_COLLECTION_REQUEST, fetchCollection)

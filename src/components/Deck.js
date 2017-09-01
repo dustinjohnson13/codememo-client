@@ -2,9 +2,12 @@
 import React, {Component} from 'react'
 import {Col, Row} from 'reactstrap'
 import {Deck as APIDeck} from "../services/APIDomain"
+import {confirmAlert} from 'react-confirm-alert'
+import 'react-confirm-alert/src/react-confirm-alert.css'
 
 type Props = {
     +reviewDeck: (id: string) => void;
+    +deleteDeck: (id: string) => void;
     +deck: APIDeck;
 }
 
@@ -12,7 +15,17 @@ class Deck extends Component<Props, void> {
     constructor(props: Props) {
         super(props);
 
-        (this: any).review = this.review.bind(this)
+        (this: any).deleteDeck = this.deleteDeck.bind(this);
+        (this: any).review = this.review.bind(this);
+    }
+
+    deleteDeck() {
+        confirmAlert({
+            message: `Are you sure you want to delete "${this.props.deck.name}"?`,
+            confirmLabel: 'Delete',
+            cancelLabel: 'Cancel',
+            onConfirm: () => this.props.deleteDeck(this.props.deck.id)
+        })
     }
 
     review() {
@@ -25,17 +38,20 @@ class Deck extends Component<Props, void> {
 
         return (
             <Col sm={{size: 6, offset: 3}}>
-                <Row className="deck" onClick={this.review}>
-                    <Col sm="8">
-                        <div className="deck-name">
-                            <span>{this.props.deck.name}</span>
+                <Row className="deck">
+                    <Col sm="6">
+                        <div className="deck-info">
+                            <div className="deck-name">{this.props.deck.name}</div>
+                            <div><span className="due-count">{dueCount}</span> Due, <span
+                                className="new-count">{newCount}</span> New
+                            </div>
                         </div>
                     </Col>
-                    <Col sm="4">
-                            <span className="card-counts">
-                                 <span className="due-count">{dueCount}</span> / <span
-                                className="new-count">{newCount}</span> >
-                            </span>
+                    <Col sm="6">
+                        <div className="deck-actions">
+                            <div><a className="review-deck" onClick={this.review}>Review</a></div>
+                            <div><a className="delete-deck" onClick={this.deleteDeck}>Delete</a></div>
+                        </div>
                     </Col>
                 </Row>
             </Col>

@@ -86,6 +86,15 @@ export default class DaoDelegatingDataService implements DataService {
         }
     }
 
+    async deleteDeck(email: string, id: string): Promise<CollectionResponse> {
+        const cards = await this.dao.findCardsByDeckId(id)
+
+        await Promise.all(cards.map(it => this.dao.deleteCard(it.id)))
+        await this.dao.deleteDeck(id)
+
+        return this.fetchCollection(email)
+    }
+
     async addCard(deckId: string, format: FormatType, question: string, answer: string): Promise<CardDetail> {
         const deck = await this.dao.findDeck(deckId)
         if (deck) {

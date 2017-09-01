@@ -97,6 +97,20 @@ export function testServiceWithDaoImplementation(createDao: any) {
             expect(deck.cards.length).toEqual(TOTAL_COUNT)
         })
 
+        it('can delete deck', async () => {
+            const collection = await service.fetchCollection(TEST_USER_EMAIL)
+            const deck = collection.decks[0]
+            const deckId = deck.id
+
+            const deckWithCards = await service.fetchDeck(deckId)
+            expect(deckWithCards.cards.length).toBeGreaterThan(0)
+
+            const actual = await service.deleteDeck(TEST_USER_EMAIL, deckId)
+            const cardResponse = await service.fetchCards([deckWithCards.cards[0].id])
+
+            expect(cardResponse.cards.length).toEqual(0)
+        })
+
         it('can add new card', async () => {
             const question = 'The question'
             const answer = 'The answer'

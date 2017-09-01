@@ -141,6 +141,8 @@ export interface DataService {
     // TODO: This should be userId instead of email
     addDeck(email: string, name: string): Promise<CollectionResponse>;
 
+    deleteDeck(email: string, id: string): Promise<CollectionResponse>;
+
     init(clearDatabase: boolean): Promise<void>;
 
     fetchCollection(email: string): Promise<CollectionResponse>;

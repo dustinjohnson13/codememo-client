@@ -23,12 +23,7 @@ type Props = {
 }
 
 class ReviewPage extends Component<Props, void> {
-  constructor (props: Props) {
-    super(props);
-    (this: any).deleteCard = this.deleteCard.bind(this)
-  }
-
-  deleteCard () {
+  deleteCard = () => {
     confirmAlert({
       title: '',
       message: `Are you sure you want to delete this card?`,

@@ -12,22 +12,18 @@ type State = {
 }
 
 class AddDeckModal extends React.Component<Props, State> {
-  constructor (props: Props) {
-    super(props)
-    this.state = {name: ''};
-
-    (this: any).handleChange = this.handleChange.bind(this);
-    (this: any).deckConfirmed = this.deckConfirmed.bind(this)
-  }
-
-  handleChange (event: SyntheticInputEvent<Input>) {
+  handleChange = (event: SyntheticInputEvent<Input>) => {
     this.setState({name: event.target.value})
   }
-
-  deckConfirmed () {
+  deckConfirmed = () => {
     const name = this.state.name
 
     this.props.addDeck(name)
+  }
+
+  constructor (props: Props) {
+    super(props)
+    this.state = {name: ''}
   }
 
   render () {

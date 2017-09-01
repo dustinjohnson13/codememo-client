@@ -14,27 +14,20 @@ type State = {
 
 class LoginPage extends Component<Props, State> {
   state: State
+  handleEmailChange = (event: SyntheticInputEvent<Input>) => {
+    this.setState({email: event.target.value})
+  }
+  handlePasswordChange = (event: SyntheticInputEvent<Input>) => {
+    this.setState({password: event.target.value})
+  }
+  login = () => {
+    this.props.login(this.state.email, this.state.password)
+  }
 
   constructor (props: Props) {
     super(props)
 
-    this.state = {email: '', password: ''};
-
-    (this: any).handleEmailChange = this.handleEmailChange.bind(this);
-    (this: any).handlePasswordChange = this.handlePasswordChange.bind(this);
-    (this: any).login = this.login.bind(this)
-  }
-
-  handleEmailChange (event: SyntheticInputEvent<Input>) {
-    this.setState({email: event.target.value})
-  }
-
-  handlePasswordChange (event: SyntheticInputEvent<Input>) {
-    this.setState({password: event.target.value})
-  }
-
-  login () {
-    this.props.login(this.state.email, this.state.password)
+    this.state = {email: '', password: ''}
   }
 
   render () {

@@ -12,14 +12,8 @@ type Props = {
 }
 
 class Deck extends Component<Props, void> {
-  constructor (props: Props) {
-    super(props);
 
-    (this: any).deleteDeck = this.deleteDeck.bind(this);
-    (this: any).review = this.review.bind(this)
-  }
-
-  deleteDeck () {
+  deleteDeck = () => {
     confirmAlert({
       title: '',
       message: `Are you sure you want to delete "${this.props.deck.name}"?`,
@@ -29,7 +23,7 @@ class Deck extends Component<Props, void> {
     })
   }
 
-  review () {
+  review = () => {
     this.props.reviewDeck(this.props.deck.id)
   }
 

@@ -14,28 +14,16 @@ type Props = {
 
 class AnswerCard extends Component<Props, void> {
 
-  constructor (props: Props) {
-    super(props);
-
-    (this: any).fail = this.fail.bind(this);
-    (this: any).hard = this.hard.bind(this);
-    (this: any).good = this.good.bind(this);
-    (this: any).easy = this.easy.bind(this)
-  };
-
-  fail () {
+  fail = () => {
     this.props.answerCard(Answer.FAIL)
   }
-
-  hard () {
+  hard = () => {
     this.props.answerCard(Answer.HARD)
   }
-
-  good () {
+  good = () => {
     this.props.answerCard(Answer.GOOD)
   }
-
-  easy () {
+  easy = () => {
     this.props.answerCard(Answer.EASY)
   }
 

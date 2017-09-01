@@ -17,24 +17,13 @@ type State = {
 }
 
 class ModalWrapper extends React.Component<Props, State> {
-  constructor (props: Props) {
-    super(props)
-    this.state = {
-      modal: false
-    };
-
-    (this: any).confirmed = this.confirmed.bind(this);
-    (this: any).toggle = this.toggle.bind(this)
-  }
-
-  confirmed () {
+  confirmed = () => {
     this.props.confirmAction()
     if (this.props.closeOnConfirmation) {
       this.toggle()
     }
   }
-
-  toggle () {
+  toggle = () => {
     const open = !this.state.modal
 
     this.setState({
@@ -43,6 +32,13 @@ class ModalWrapper extends React.Component<Props, State> {
 
     if (!open) {
       this.props.closedCallback()
+    }
+  }
+
+  constructor (props: Props) {
+    super(props)
+    this.state = {
+      modal: false
     }
   }
 

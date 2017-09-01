@@ -1,5 +1,12 @@
 //@flow
-import type { Action, ReviewState } from '../actions/actionTypes'
+import type {
+  Action,
+  AddCardSuccessAction,
+  AnswerCardSuccessAction,
+  DeleteCardSuccessAction,
+  FetchCardsSuccessAction,
+  ReviewState
+} from '../actions/actionTypes'
 import {
   ADD_CARD_SUCCESS,
   ANSWER_CARD_SUCCESS,
@@ -11,7 +18,7 @@ import {
   SHOW_ANSWER,
   START_TIMER
 } from '../actions/actionTypes'
-import { MINUTES_PER_DAY, MINUTES_PER_HOUR } from '../services/APIDomain'
+import { CardDetail, MINUTES_PER_DAY, MINUTES_PER_HOUR } from '../services/APIDomain'
 import { DUE_IMMEDIATELY, Format } from '../persist/Dao'
 
 export const initialState = {
@@ -60,109 +67,13 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
 
       })
     case FETCH_CARDS_SUCCESS:
-      const cards = action.cards
-      const cardsForReview = cards
-      let question = ''
-      let answer = ''
-      let format = state.format
-      let cardId = ''
-      let failInterval = ''
-      let hardInterval = ''
-      let goodInterval = ''
-      let easyInterval = ''
-      if (cardsForReview.length !== 0) {
-        const forReview = cardsForReview[0]
-        question = forReview.question
-        answer = forReview.answer
-        format = forReview.format
-        cardId = forReview.id
-        failInterval = userFriendlyInterval(forReview.failInterval)
-        hardInterval = userFriendlyInterval(forReview.hardInterval)
-        goodInterval = userFriendlyInterval(forReview.goodInterval)
-        easyInterval = userFriendlyInterval(forReview.easyInterval)
-      }
-
-      return getViewState({
-        ...state,
-        dueCards: cards.filter(card => card.due !== DUE_IMMEDIATELY),
-        newCards: cards.filter(card => card.due === DUE_IMMEDIATELY),
-        question: question,
-        answer: answer,
-        format: format,
-        cardId: cardId,
-        failInterval: failInterval,
-        hardInterval: hardInterval,
-        goodInterval: goodInterval,
-        easyInterval: easyInterval
-      })
+      return getViewState(handleFetchCardsSuccess(state, action))
     case ADD_CARD_SUCCESS:
-      const addedCard = action.card
-      const reviewNewCard = state.question === ''
-      const questionAfterAddCard = reviewNewCard ? addedCard.question : state.question
-      const answerAfterAddCard = reviewNewCard ? addedCard.answer : state.answer
-      const cardIdAfterAddCard = reviewNewCard ? addedCard.id : state.cardId
-      const failIntervalAfterAddCard = reviewNewCard ? userFriendlyInterval(addedCard.failInterval) : state.failInterval
-      const hardIntervalAfterAddCard = reviewNewCard ? userFriendlyInterval(addedCard.hardInterval) : state.hardInterval
-      const goodIntervalAfterAddCard = reviewNewCard ? userFriendlyInterval(addedCard.goodInterval) : state.goodInterval
-      const easyIntervalAfterAddCard = reviewNewCard ? userFriendlyInterval(addedCard.easyInterval) : state.easyInterval
-      const formatAfterAddCard = reviewNewCard ? addedCard.format : state.format
-
-      return getViewState({
-        ...state,
-        totalCount: state.totalCount + 1,
-        newCards: [...state.newCards, addedCard],
-        question: questionAfterAddCard,
-        answer: answerAfterAddCard,
-        format: formatAfterAddCard,
-        cardId: cardIdAfterAddCard,
-        failInterval: failIntervalAfterAddCard,
-        hardInterval: hardIntervalAfterAddCard,
-        goodInterval: goodIntervalAfterAddCard,
-        easyInterval: easyIntervalAfterAddCard,
-        showingAnswer: false
-      })
+      return getViewState(handleAddCardSuccess(state, action))
     case ANSWER_CARD_SUCCESS:
-      const reviewedCard = action.card
-      const dueCardsMinusReviewed = state.dueCards.filter(card => card.id !== reviewedCard.id)
-      const newCardsMinusReviewed = state.newCards.filter(card => card.id !== reviewedCard.id)
-      const numDueCards = dueCardsMinusReviewed.length
-      const numNewCards = newCardsMinusReviewed.length
-      const doneReviewing = numDueCards === 0 && numNewCards === 0
-      return getViewState({
-        ...state,
-        dueCards: dueCardsMinusReviewed,
-        newCards: newCardsMinusReviewed,
-        question: doneReviewing ? '' : numDueCards > 0 ? dueCardsMinusReviewed[0].question : newCardsMinusReviewed[0].question,
-        answer: doneReviewing ? '' : numDueCards > 0 ? dueCardsMinusReviewed[0].answer : newCardsMinusReviewed[0].answer,
-        format: doneReviewing ? state.format : numDueCards > 0 ? dueCardsMinusReviewed[0].format : newCardsMinusReviewed[0].format,
-        cardId: doneReviewing ? '' : numDueCards > 0 ? dueCardsMinusReviewed[0].id : newCardsMinusReviewed[0].id,
-        failInterval: doneReviewing ? '' : numDueCards > 0 ? userFriendlyInterval(dueCardsMinusReviewed[0].failInterval) : userFriendlyInterval(newCardsMinusReviewed[0].failInterval),
-        hardInterval: doneReviewing ? '' : numDueCards > 0 ? userFriendlyInterval(dueCardsMinusReviewed[0].hardInterval) : userFriendlyInterval(newCardsMinusReviewed[0].failInterval),
-        goodInterval: doneReviewing ? '' : numDueCards > 0 ? userFriendlyInterval(dueCardsMinusReviewed[0].goodInterval) : userFriendlyInterval(newCardsMinusReviewed[0].failInterval),
-        easyInterval: doneReviewing ? '' : numDueCards > 0 ? userFriendlyInterval(dueCardsMinusReviewed[0].easyInterval) : userFriendlyInterval(newCardsMinusReviewed[0].failInterval),
-        showingAnswer: false
-      })
+      return getViewState(handleAnswerCardSuccess(state, action))
     case DELETE_CARD_SUCCESS:
-      const dcs_dueCardsMinusReviewed = state.dueCards.filter(card => card.id !== state.cardId)
-      const dcs_newCardsMinusReviewed = state.newCards.filter(card => card.id !== state.cardId)
-      const dcs_numDueCards = dcs_dueCardsMinusReviewed.length
-      const dcs_numNewCards = dcs_newCardsMinusReviewed.length
-      const dcs_doneReviewing = dcs_numDueCards === 0 && dcs_numNewCards === 0
-      return getViewState({
-        ...state,
-        totalCount: state.totalCount - 1,
-        dueCards: dcs_dueCardsMinusReviewed,
-        newCards: dcs_newCardsMinusReviewed,
-        question: dcs_doneReviewing ? '' : dcs_numDueCards > 0 ? dcs_dueCardsMinusReviewed[0].question : dcs_newCardsMinusReviewed[0].question,
-        answer: dcs_doneReviewing ? '' : dcs_numDueCards > 0 ? dcs_dueCardsMinusReviewed[0].answer : dcs_newCardsMinusReviewed[0].answer,
-        format: dcs_doneReviewing ? state.format : dcs_numDueCards > 0 ? dcs_dueCardsMinusReviewed[0].format : dcs_newCardsMinusReviewed[0].format,
-        cardId: dcs_doneReviewing ? '' : dcs_numDueCards > 0 ? dcs_dueCardsMinusReviewed[0].id : dcs_newCardsMinusReviewed[0].id,
-        failInterval: dcs_doneReviewing ? '' : dcs_numDueCards > 0 ? userFriendlyInterval(dcs_dueCardsMinusReviewed[0].failInterval) : userFriendlyInterval(dcs_newCardsMinusReviewed[0].failInterval),
-        hardInterval: dcs_doneReviewing ? '' : dcs_numDueCards > 0 ? userFriendlyInterval(dcs_dueCardsMinusReviewed[0].hardInterval) : userFriendlyInterval(dcs_newCardsMinusReviewed[0].failInterval),
-        goodInterval: dcs_doneReviewing ? '' : dcs_numDueCards > 0 ? userFriendlyInterval(dcs_dueCardsMinusReviewed[0].goodInterval) : userFriendlyInterval(dcs_newCardsMinusReviewed[0].failInterval),
-        easyInterval: dcs_doneReviewing ? '' : dcs_numDueCards > 0 ? userFriendlyInterval(dcs_dueCardsMinusReviewed[0].easyInterval) : userFriendlyInterval(dcs_newCardsMinusReviewed[0].failInterval),
-        showingAnswer: false
-      })
+      return getViewState(handleDeleteCardSuccess(state, action))
     case START_TIMER:
       return getViewState({
         ...state,
@@ -170,6 +81,91 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
       })
     default:
       return state
+  }
+}
+
+const handleFetchCardsSuccess = (state: ReviewState, action: FetchCardsSuccessAction): ReviewState => {
+  const cards = action.cards
+  const dueCards = cards.filter(card => card.due !== DUE_IMMEDIATELY)
+  const newCards = cards.filter(card => card.due === DUE_IMMEDIATELY)
+
+  return updateCardReviewState({
+    ...state,
+    dueCards: dueCards,
+    newCards: newCards
+  })
+}
+
+const handleAddCardSuccess = (state: ReviewState, action: AddCardSuccessAction): ReviewState => {
+  return updateCardReviewState({
+    ...state,
+    totalCount: state.totalCount + 1,
+    newCards: [...state.newCards, action.card]
+  })
+}
+
+const handleAnswerCardSuccess = (state: ReviewState, action: AnswerCardSuccessAction): ReviewState => {
+  const reviewedCard = action.card
+  const dueCards = state.dueCards.filter(card => card.id !== reviewedCard.id)
+  const newCards = state.newCards.filter(card => card.id !== reviewedCard.id)
+
+  return updateCardReviewState({
+    ...state,
+    dueCards: dueCards,
+    newCards: newCards
+  })
+}
+
+const handleDeleteCardSuccess = (state: ReviewState, action: DeleteCardSuccessAction): ReviewState => {
+  const dueCards = state.dueCards.filter(card => card.id !== state.cardId)
+  const newCards = state.newCards.filter(card => card.id !== state.cardId)
+
+  return updateCardReviewState({
+    ...state,
+    totalCount: state.totalCount - 1,
+    dueCards: dueCards,
+    newCards: newCards
+  })
+}
+
+const updateCardReviewState = (state: ReviewState): ReviewState => {
+  const dueCards = state.dueCards
+  const newCards = state.newCards
+  const numDueCards = dueCards.length
+  const numNewCards = newCards.length
+
+  let question = ''
+  let answer = ''
+  let format = state.format
+  let cardId = ''
+  let failInterval = ''
+  let hardInterval = ''
+  let goodInterval = ''
+  let easyInterval = ''
+
+  const card: ?CardDetail = numDueCards > 0 ? dueCards[0] : numNewCards > 0 ? newCards[0] : undefined
+  if (card) {
+    question = card.question
+    answer = card.answer
+    format = card.format
+    cardId = card.id
+    failInterval = userFriendlyInterval(card.failInterval)
+    hardInterval = userFriendlyInterval(card.hardInterval)
+    goodInterval = userFriendlyInterval(card.goodInterval)
+    easyInterval = userFriendlyInterval(card.easyInterval)
+  }
+
+  return {
+    ...state,
+    question: question,
+    answer: answer,
+    format: format,
+    cardId: cardId,
+    failInterval: failInterval,
+    hardInterval: hardInterval,
+    goodInterval: goodInterval,
+    easyInterval: easyInterval,
+    showingAnswer: false
   }
 }
 

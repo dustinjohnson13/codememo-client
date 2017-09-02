@@ -4,6 +4,7 @@ import { Button } from 'reactstrap'
 import '../styles/ReviewPage.css'
 import ReviewCardContainer from '../containers/ReviewCardContainer'
 import AddCardModalContainer from '../containers/AddCardModalContainer'
+import EditCardModalContainer from '../containers/EditCardModalContainer'
 import { confirmAlert } from 'react-confirm-alert'
 import 'react-confirm-alert/src/react-confirm-alert.css'
 
@@ -35,7 +36,7 @@ class ReviewPage extends Component<Props, void> {
 
     const reviewSection = doneReviewing ? <div>Congratulations, you're caught up!</div> : <ReviewCardContainer/>
 
-    const editButton = doneReviewing ? '' : <AddCardModalContainer editMode={true}/>
+    const editButton = doneReviewing ? '' : <EditCardModalContainer editMode={true}/>
 
     return (
       <div>

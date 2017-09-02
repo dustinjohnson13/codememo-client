@@ -80,6 +80,15 @@ export default class DaoDelegatingDataService implements DataService {
     }
   }
 
+  async updateDeck (id: string, name: string): Promise<CollectionResponse> {
+    const deck = await this.dao.findDeck(id)
+    if (!deck) {
+      throw new Error(`No deck found with id ${id}`)
+    }
+    await this.dao.updateDeck(new Deck(id, deck.userId, name))
+    return this.fetchCollection(TEST_USER_EMAIL)
+  }
+
   async deleteDeck (email: string, id: string): Promise<CollectionResponse> {
     const cards = await this.dao.findCardsByDeckId(id)
 

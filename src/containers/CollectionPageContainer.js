@@ -1,6 +1,6 @@
 //@flow
 import { connect } from 'react-redux'
-import { addDeckRequest, deleteDeckRequest, reviewDeckRequest } from '../actions/creators'
+import { addDeckRequest, deleteDeckRequest, reviewDeckRequest, updateDeckRequest } from '../actions/creators'
 import CollectionPage from '../components/CollectionPage'
 import type { CombinedState, Dispatch } from '../actions/actionTypes'
 
@@ -24,6 +24,9 @@ export const mapDispatchToProps = (dispatch: Dispatch, ownProps: OwnProps) => {
     },
     addDeck: (name: string) => {
       dispatch(addDeckRequest(name))
+    },
+    updateDeck: (id: string, name: string) => {
+      dispatch(updateDeckRequest(id, name))
     }
   }
 }

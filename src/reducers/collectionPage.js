@@ -5,7 +5,8 @@ import {
   ADD_DECK_SUCCESS,
   ANSWER_CARD_SUCCESS,
   DELETE_CARD_SUCCESS,
-  FETCH_COLLECTION_SUCCESS
+  FETCH_COLLECTION_SUCCESS,
+  UPDATE_DECK_SUCCESS
 } from '../actions/actionTypes'
 import { Deck } from '../services/APIDomain'
 
@@ -15,6 +16,7 @@ export const initialState = {decks: [], decksById: {}}
 
 const collectionPage = (state: CollectionState = initialState, action: Action) => {
   switch (action.type) {
+    case UPDATE_DECK_SUCCESS:
     case FETCH_COLLECTION_SUCCESS:
     case ADD_DECK_SUCCESS:
       const incomingDecks = action.collection.decks

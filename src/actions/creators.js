@@ -25,7 +25,9 @@ import type {
   ShowAnswerAction,
   StartTimerAction,
   UpdateCardRequestAction,
-  UpdateCardSuccessAction
+  UpdateCardSuccessAction,
+  UpdateDeckRequestAction,
+  UpdateDeckSuccessAction
 } from './actionTypes'
 import {
   ADD_CARD_REQUEST,
@@ -52,7 +54,9 @@ import {
   SHOW_ANSWER,
   START_TIMER,
   UPDATE_CARD_REQUEST,
-  UPDATE_CARD_SUCCESS
+  UPDATE_CARD_SUCCESS,
+  UPDATE_DECK_REQUEST,
+  UPDATE_DECK_SUCCESS
 } from './actionTypes'
 import type { PageType } from './pages'
 import { Page } from './pages'
@@ -229,6 +233,21 @@ export const updateCardRequest = (deckId: string, id: string, format: FormatType
   }
 }
 
+export const updateDeckSuccess = (response: CollectionResponse): UpdateDeckSuccessAction => {
+  return {
+    type: UPDATE_DECK_SUCCESS,
+    collection: response
+  }
+}
+
+export const updateDeckRequest = (id: string, name: string): UpdateDeckRequestAction => {
+  return {
+    type: UPDATE_DECK_REQUEST,
+    id: id,
+    name: name
+  }
+}
+
 export const updateCardSuccess = (response: CardDetail, deckId: string): UpdateCardSuccessAction => {
   return {
     type: UPDATE_CARD_SUCCESS,
@@ -280,6 +299,11 @@ export function * addCard (action: AddCardRequestAction): Generator<CardDetail, 
 export function * updateCard (action: UpdateCardRequestAction): Generator<CardDetail, void, CardDetail> {
   const card = yield call(API.updateCard, action.id, action.format, action.question, action.answer)
   yield put(updateCardSuccess(card, action.deckId))
+}
+
+export function * updateDeck (action: UpdateDeckRequestAction): Generator<CollectionResponse, void, CollectionResponse> {
+  const response = yield call(API.updateDeck, action.id, action.name)
+  yield put(updateDeckSuccess(response))
 }
 
 export function * answerCard (action: AnswerCardRequestAction): Generator<CardDetail, void, any> {
@@ -334,6 +358,7 @@ export function * fetchCards (action: FetchCardsRequestAction): Generator<FetchC
 export function * saga (): Generator<Action, any, void> {
   yield takeEvery(ADD_CARD_REQUEST, addCard)
   yield takeEvery(UPDATE_CARD_REQUEST, updateCard)
+  yield takeEvery(UPDATE_DECK_REQUEST, updateDeck)
   yield takeEvery(ANSWER_CARD_REQUEST, answerCard)
   yield takeEvery(DELETE_DECK_REQUEST, deleteDeck)
   yield takeEvery(DELETE_CARD_REQUEST, deleteCard)

@@ -32,7 +32,10 @@ import {
   startTimer,
   updateCard,
   updateCardRequest,
-  updateCardSuccess
+  updateCardSuccess,
+  updateDeck,
+  updateDeckRequest,
+  updateDeckSuccess
 } from './creators'
 import { call, put, select, takeEvery } from 'redux-saga/effects'
 import {
@@ -71,7 +74,8 @@ import {
   LOAD_COLLECTION_PAGE,
   LOGIN_REQUEST,
   REVIEW_DECK_REQUEST,
-  UPDATE_CARD_REQUEST
+  UPDATE_CARD_REQUEST,
+  UPDATE_DECK_REQUEST
 } from './actionTypes'
 
 jest.mock('../services/API') // Set mock API for module importing
@@ -84,6 +88,7 @@ describe('creators', () => {
 
     expect(gen.next().value).toEqual(takeEvery(ADD_CARD_REQUEST, addCard))
     expect(gen.next().value).toEqual(takeEvery(UPDATE_CARD_REQUEST, updateCard))
+    expect(gen.next().value).toEqual(takeEvery(UPDATE_DECK_REQUEST, updateDeck))
     expect(gen.next().value).toEqual(takeEvery(ANSWER_CARD_REQUEST, answerCard))
     expect(gen.next().value).toEqual(takeEvery(DELETE_DECK_REQUEST, deleteDeck))
     expect(gen.next().value).toEqual(takeEvery(DELETE_CARD_REQUEST, deleteCard))
@@ -240,6 +245,18 @@ describe('creators', () => {
 
     const response = gotCollection.collection
     expect(gen.next(response).value).toEqual(put(addDeckSuccess(response)))
+  })
+
+  it('can update deck', () => {
+    const deckName = 'Updated Deck Name'
+
+    const deckId = 'deck-1'
+    const gen = updateDeck(updateDeckRequest(deckId, deckName))
+
+    expect(gen.next().value).toEqual(call(API.updateDeck, deckId, deckName))
+
+    const response = gotCollection.collection
+    expect(gen.next(response).value).toEqual(put(updateDeckSuccess(response)))
   })
 
   it('can fetch collection', () => {

@@ -20,6 +20,8 @@ describe('<Collection />', () => {
   }
   const deleteDeck = () => {
   }
+  const updateDeck = (id: string, name: string) => {
+  }
 
   let component
 
@@ -27,7 +29,8 @@ describe('<Collection />', () => {
     const store = storeFake()
     const wrapper = mount(
       <Provider store={store}>
-        <Collection decks={testDecks} reviewDeck={invokedFunction} deleteDeck={deleteDeck}/>
+        <Collection decks={testDecks} reviewDeck={invokedFunction} deleteDeck={deleteDeck}
+                    updateDeck={updateDeck}/>
       </Provider>
     )
 

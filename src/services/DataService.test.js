@@ -107,6 +107,33 @@ export function testServiceWithDaoImplementation (createDao: any) {
       }
     })
 
+    it('can update deck', async () => {
+
+      const original = loadedDecks[0]
+
+      const name = 'A New Name'
+
+      const returned = await service.updateDeck(original.id, name)
+      const actual = await service.fetchCollection(TEST_USER_EMAIL)
+      const toVerify = [returned, actual]
+
+      toVerify.forEach(it => {
+        expect(it.decks.length).toEqual(1)
+        expect(it.decks[0].id).toEqual(original.id)
+        expect(it.decks[0].name).toEqual(name)
+      })
+    })
+
+    it('update deck throws error for non-existent deck', async () => {
+      expect.assertions(1)
+
+      try {
+        await service.updateDeck('i-dont-exist', 'A New Name')
+      } catch (e) {
+        expect(e.message).toEqual('No deck found with id i-dont-exist')
+      }
+    })
+
     it('can fetch collection', async () => {
 
       const actual: CollectionResponse = await service.fetchCollection(TEST_USER_EMAIL)

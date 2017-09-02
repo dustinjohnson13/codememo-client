@@ -39,11 +39,11 @@ class EditCardModal extends React.Component<Props, State> {
   }
 
   componentWillReceiveProps (nextProps: Props) {
-    this.state = {
+    this.setState({
       format: nextProps.format,
       answer: nextProps.answer,
       question: nextProps.question
-    }
+    })
   }
 
   render () {

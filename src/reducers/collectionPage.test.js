@@ -6,7 +6,8 @@ import {
   answerCardSuccess,
   deleteCardSuccess,
   fetchCollectionSuccess,
-  startTimer
+  startTimer,
+  updateDeckSuccess
 } from '../actions/creators'
 import {
   CardDetail,
@@ -50,6 +51,25 @@ describe('collectionPage', () => {
     }
 
     const actualState = collectionPage(previousState, addDeckSuccess(collection))
+
+    expect(actualState).toEqual(expectedState)
+  })
+
+  it('renames decks on update deck success', () => {
+    const collection = new CollectionResponse([new Deck('deck1', 'Deck1', 80, 27, 23)])
+
+    const previousState = {
+      ...initialState,
+      decks: ['oldDeck'],
+      decksById: {'oldDeck': collection.decks[0]}
+    }
+
+    const expectedState = {
+      decks: ['deck1'],
+      decksById: {'deck1': collection.decks[0]}
+    }
+
+    const actualState = collectionPage(previousState, updateDeckSuccess(collection))
 
     expect(actualState).toEqual(expectedState)
   })

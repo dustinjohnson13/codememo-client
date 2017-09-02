@@ -2,7 +2,7 @@
 import React from 'react'
 import { mapDispatchToProps, mapStateToProps } from './CollectionPageContainer'
 import { collectionState } from '../fakeData/collectionState'
-import { addDeckRequest, deleteDeckRequest, reviewDeckRequest } from '../actions/creators'
+import { addDeckRequest, deleteDeckRequest, reviewDeckRequest, updateDeckRequest } from '../actions/creators'
 import { defaultState } from '../fakeData/storeFake'
 
 describe('<CollectionPageContainer />', () => {
@@ -59,4 +59,15 @@ describe('<CollectionPageContainer />', () => {
     expect(actions).toEqual(expectedActions)
   })
 
+  it('maps updateDeck to the appropriate action', () => {
+
+    const deckId = 'deck-1'
+    const newName = 'NewName'
+    const expectedActions = [updateDeckRequest(deckId, newName)]
+
+    const {updateDeck} = mapDispatchToProps(invoke, {})
+    updateDeck(deckId, newName)
+
+    expect(actions).toEqual(expectedActions)
+  })
 })

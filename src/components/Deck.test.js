@@ -26,13 +26,17 @@ describe('<Deck />', () => {
     actions.push('delete: ' + id)
   }
 
+  const updateDeck = (id: string, name: string) => {
+    actions.push('update: ' + id + ' ' + name)
+  }
+
   beforeEach(() => {
     actions = []
 
     const store = storeFake()
     const wrapper = mount(
       <Provider store={store}>
-        <Deck deck={testDeck} reviewDeck={reviewDeck} deleteDeck={deleteDeck}/>
+        <Deck deck={testDeck} reviewDeck={reviewDeck} deleteDeck={deleteDeck} updateDeck={updateDeck}/>
       </Provider>
     )
 

@@ -24,6 +24,8 @@ export const ADD_CARD_REQUEST = 'ADD_CARD_REQUEST'
 export const ADD_CARD_SUCCESS = 'ADD_CARD_SUCCESS'
 export const UPDATE_CARD_REQUEST = 'UPDATE_CARD_REQUEST'
 export const UPDATE_CARD_SUCCESS = 'UPDATE_CARD_SUCCESS'
+export const UPDATE_DECK_REQUEST = 'UPDATE_DECK_REQUEST'
+export const UPDATE_DECK_SUCCESS = 'UPDATE_DECK_SUCCESS'
 export const FETCH_CARDS_REQUEST = 'FETCH_CARDS_REQUEST'
 export const FETCH_CARDS_SUCCESS = 'FETCH_CARDS_SUCCESS'
 export const HIDE_ANSWER = 'HIDE_ANSWER'
@@ -52,6 +54,8 @@ export type AddCardRequestAction = { type: 'ADD_CARD_REQUEST', id: string, forma
 export type AddCardSuccessAction = { type: 'ADD_CARD_SUCCESS', card: CardDetail, deckId: string }
 export type UpdateCardRequestAction = { type: 'UPDATE_CARD_REQUEST', deckId: string, id: string, format: FormatType, question: string, answer: string }
 export type UpdateCardSuccessAction = { type: 'UPDATE_CARD_SUCCESS', card: CardDetail, deckId: string }
+export type UpdateDeckRequestAction = { type: 'UPDATE_DECK_REQUEST', id: string, name: string }
+export type UpdateDeckSuccessAction = { type: 'UPDATE_DECK_SUCCESS', collection: CollectionResponse }
 export type AddDeckRequestAction = { type: 'ADD_DECK_REQUEST', name: string }
 export type AddDeckSuccessAction = { type: 'ADD_DECK_SUCCESS', collection: CollectionResponse }
 export type StartTimerAction = { type: 'START_TIMER', time: number }
@@ -81,6 +85,8 @@ export type Action =
   | AddDeckRequestAction
   | UpdateCardRequestAction
   | UpdateCardSuccessAction
+  | UpdateDeckRequestAction
+  | UpdateDeckSuccessAction
   | AddDeckRequestAction
   | AddDeckSuccessAction
 

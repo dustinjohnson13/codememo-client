@@ -1,6 +1,6 @@
 //@flow
 import React from 'react'
-import { FormGroup, Input, InputGroup, Label } from 'reactstrap'
+import { Button, FormGroup, Input, InputGroup, Label } from 'reactstrap'
 import '../styles/AddCardModal.css'
 import ModalWrapper from './ModalWrapper'
 import type { FormatType } from '../persist/Dao'
@@ -20,9 +20,7 @@ export type Props = {|
 |}
 
 type State = {|
-  format: FormatType,
-  question: string,
-  answer: string
+  modalOpen: boolean
 |}
 
 class CardModal extends React.Component<Props, State> {
@@ -36,14 +34,34 @@ class CardModal extends React.Component<Props, State> {
   handleAnswerChange = (event: SyntheticInputEvent<Input>) => {
     this.props.update(this.props.format, this.props.question, event.target.value)
   }
+  toggleModal = () => {
+    const open = !this.state.modalOpen
+
+    this.setState({
+      modalOpen: open
+    })
+
+    if (!open) {
+      this.props.closedCallback()
+    }
+  }
+
+  constructor (props: Props) {
+    super(props)
+
+    this.state = {
+      modalOpen: false
+    }
+  }
 
   render () {
     return (
       <span>
-        <ModalWrapper title={this.props.title} toggleText={this.props.toggleText}
+        <Button color={this.props.toggleColor} onClick={this.toggleModal}>{this.props.toggleText}</Button>
+        <ModalWrapper open={this.state.modalOpen} title={this.props.title}
                       closeOnConfirmation={this.props.closeOnConfirmation}
                       confirmText={'Save'} confirmAction={this.props.confirmed}
-                      toggleColor={this.props.toggleColor} closedCallback={this.props.closedCallback}>
+                      closedCallback={this.toggleModal}>
             <FormGroup>
               <Label for="format">Format:</Label>
                 <Input type="select" name="select" id="format" value={this.props.format}

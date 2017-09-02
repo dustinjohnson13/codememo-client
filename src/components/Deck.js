@@ -4,14 +4,20 @@ import { Col, Row } from 'reactstrap'
 import { Deck as APIDeck } from '../services/APIDomain'
 import { confirmAlert } from 'react-confirm-alert'
 import 'react-confirm-alert/src/react-confirm-alert.css'
+import EditDeckModal from './EditDeckModal'
 
 type Props = {
-  +reviewDeck: (id: string) => void;
-  +deleteDeck: (id: string) => void;
-  +deck: APIDeck;
+  +reviewDeck: (id: string) => void,
+  +deleteDeck: (id: string) => void,
+  +updateDeck: (id: string, name: string) => void,
+  +deck: APIDeck
 }
 
-class Deck extends Component<Props, void> {
+type State = {
+  modalOpen: boolean
+}
+
+class Deck extends Component<Props, State> {
 
   deleteDeck = () => {
     confirmAlert({
@@ -23,8 +29,22 @@ class Deck extends Component<Props, void> {
     })
   }
 
+  renameDeck = (name: string) => {
+    this.props.updateDeck(this.props.deck.id, name)
+  }
+
   review = () => {
     this.props.reviewDeck(this.props.deck.id)
+  }
+
+  toggleModal = () => {
+    const open = !this.state.modalOpen
+    this.setState({modalOpen: open})
+  }
+
+  constructor (props: Props) {
+    super(props)
+    this.state = {modalOpen: false}
   }
 
   render () {
@@ -45,10 +65,13 @@ class Deck extends Component<Props, void> {
           <Col sm="6">
             <div className="deck-actions">
               <div><a className="review-deck" onClick={this.review}>Review</a></div>
+              <div><a className="rename-deck" onClick={this.toggleModal}>Rename</a></div>
               <div><a className="delete-deck" onClick={this.deleteDeck}>Delete</a></div>
             </div>
           </Col>
         </Row>
+        <EditDeckModal open={this.state.modalOpen} updateDeck={this.renameDeck}
+                       toggleModal={this.toggleModal}/>
       </Col>
     )
   }

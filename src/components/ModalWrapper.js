@@ -3,22 +3,17 @@ import * as React from 'react'
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap'
 
 type Props = {
+  +open: boolean,
   +confirmAction: () => void,
   +closedCallback: () => void,
   +children?: React.Node,
   +closeOnConfirmation: boolean,
-  +toggleText: string,
-  +toggleColor: string,
   +title: string,
   +confirmText: string,
   +className?: string
 }
 
-type State = {
-  modal: boolean
-}
-
-class ModalWrapper extends React.Component<Props, State> {
+class ModalWrapper extends React.Component<Props, void> {
   confirmed = () => {
     this.props.confirmAction()
     if (this.props.closeOnConfirmation) {
@@ -26,29 +21,13 @@ class ModalWrapper extends React.Component<Props, State> {
     }
   }
   toggle = () => {
-    const open = !this.state.modal
-
-    this.setState({
-      modal: open
-    })
-
-    if (!open) {
-      this.props.closedCallback()
-    }
-  }
-
-  constructor (props: Props) {
-    super(props)
-    this.state = {
-      modal: false
-    }
+    this.props.closedCallback()
   }
 
   render () {
     return (
       <div>
-        <Button color={this.props.toggleColor} onClick={this.toggle}>{this.props.toggleText}</Button>
-        <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+        <Modal isOpen={this.props.open} toggle={this.toggle} className={this.props.className}>
           <ModalHeader toggle={this.toggle}>{this.props.title}</ModalHeader>
           <ModalBody>
             {this.props.children}

@@ -5,7 +5,7 @@ import ModalWrapper from './ModalWrapper'
 
 type Props = {|
   +open: boolean,
-  +addDeck: (name: string) => void,
+  +updateDeck: (name: string) => void,
   +toggleModal: () => void
 |}
 
@@ -13,14 +13,14 @@ type State = {|
   name: string
 |}
 
-class AddDeckModal extends React.Component<Props, State> {
+class EditDeckModal extends React.Component<Props, State> {
   handleChange = (event: SyntheticInputEvent<Input>) => {
     this.setState({...this.state, name: event.target.value})
   }
   deckConfirmed = () => {
     const name = this.state.name
 
-    this.props.addDeck(name)
+    this.props.updateDeck(name)
   }
 
   constructor (props: Props) {
@@ -31,7 +31,7 @@ class AddDeckModal extends React.Component<Props, State> {
   render () {
     return (
       <div>
-        <ModalWrapper title="Create Deck" confirmText="Create" open={this.props.open}
+        <ModalWrapper title="Rename Deck" confirmText="Rename" open={this.props.open}
                       closeOnConfirmation={true} confirmAction={this.deckConfirmed}
                       closedCallback={this.props.toggleModal}>
           <InputGroup>
@@ -43,4 +43,4 @@ class AddDeckModal extends React.Component<Props, State> {
   }
 }
 
-export default AddDeckModal
+export default EditDeckModal

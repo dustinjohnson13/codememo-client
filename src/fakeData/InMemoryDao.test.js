@@ -13,9 +13,9 @@ import {
   TEST_USER_EMAIL,
   User
 } from '../persist/Dao'
-import type { PreLoadedIds } from '../persist/Dao.test'
-import { testWithDaoImplementation } from '../persist/Dao.test'
-import { InMemoryDao, REVIEW_END_TIME } from './InMemoryDao'
+import type { PreLoadedIds } from '../persist/AbstractDao.test'
+import { testWithDaoImplementation } from '../persist/AbstractDao.test'
+import { fakeCards, InMemoryDao, REVIEW_END_TIME } from './InMemoryDao'
 import { Answer, MILLIS_PER_MINUTE, MINUTES_PER_DAY } from '../services/APIDomain'
 import { testServiceWithDaoImplementation } from '../services/DataService.test'
 
@@ -86,4 +86,13 @@ describe('InMemoryDao', () => {
     getSequelizeUser, getSequelizeDeck, getSequelizeTemplate, getSequelizeCard, getSequelizeReview)
 
   testServiceWithDaoImplementation(createDao)
+
+  it('should throw error on trying to add more due and new cards than total specified', () => {
+    const totalCount = 10
+    const dueCount = 9
+    const newCount = 2
+
+    expect(() => fakeCards(1, 'deckId', totalCount, dueCount, newCount, false))
+      .toThrowError('Cannot specify more due and new cards than total!')
+  })
 })

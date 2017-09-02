@@ -2,10 +2,19 @@
 import React from 'react'
 import { mapDispatchToProps, mapStateToProps } from './CollectionPageContainer'
 import { collectionState } from '../fakeData/collectionState'
-import { addDeckRequest, reviewDeckRequest } from '../actions/creators'
+import { addDeckRequest, deleteDeckRequest, reviewDeckRequest } from '../actions/creators'
 import { defaultState } from '../fakeData/storeFake'
 
 describe('<CollectionPageContainer />', () => {
+
+  let actions = []
+  const invoke = (action) => {
+    actions.push(action)
+  }
+
+  beforeEach(function () {
+    actions = []
+  })
 
   it('maps decks from state', () => {
     const expectedDecks = []
@@ -13,9 +22,7 @@ describe('<CollectionPageContainer />', () => {
       expectedDecks.push(collectionState.decksById[deckId])
     }
 
-    const state = defaultState
-
-    const props = mapStateToProps(state, {})
+    const props = mapStateToProps(defaultState, {})
 
     expect(props).toEqual({decks: expectedDecks})
   })
@@ -24,11 +31,6 @@ describe('<CollectionPageContainer />', () => {
 
     const deckId = 'deck-1'
     const expectedActions = [reviewDeckRequest(deckId)]
-
-    const actions = []
-    const invoke = (action) => {
-      actions.push(action)
-    }
 
     const {reviewDeck} = mapDispatchToProps(invoke, {})
     reviewDeck(deckId)
@@ -40,15 +42,21 @@ describe('<CollectionPageContainer />', () => {
 
     const expectedActions = [addDeckRequest('BrandNew')]
 
-    const actions = []
-    const invoke = (action) => {
-      actions.push(action)
-    }
-
     const {addDeck} = mapDispatchToProps(invoke, {})
     addDeck('BrandNew')
 
     expect(actions).toEqual([addDeckRequest('BrandNew')])
+  })
+
+  it('maps deleteDeck to the appropriate action', () => {
+
+    const deckId = 'deck-1'
+    const expectedActions = [deleteDeckRequest(deckId)]
+
+    const {deleteDeck} = mapDispatchToProps(invoke, {})
+    deleteDeck(deckId)
+
+    expect(actions).toEqual(expectedActions)
   })
 
 })

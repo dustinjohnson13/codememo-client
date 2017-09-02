@@ -37,17 +37,17 @@ class LoginPage extends Component<Props, State> {
           <Row className="login">
             <Col sm={{size: 6, offset: 3}}>
               <InputGroup>
-                <Input placeholder="email" value={this.state.email} onChange={this.handleEmailChange}/>
+                <Input id="email" placeholder="email" value={this.state.email} onChange={this.handleEmailChange}/>
               </InputGroup>
             </Col>
             <Col sm={{size: 6, offset: 3}}>
               <InputGroup>
-                <Input placeholder="password" type="password" value={this.state.password}
+                <Input id="password" placeholder="password" type="password" value={this.state.password}
                        onChange={this.handlePasswordChange}/>
               </InputGroup>
             </Col>
             <Col sm={{size: 6, offset: 3}}>
-              <Button color="primary" onClick={this.login}>Login</Button>
+              <Button id="login" color="primary" onClick={this.login}>Login</Button>
             </Col>
           </Row>
         </Container>

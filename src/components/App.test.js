@@ -11,6 +11,7 @@ import type { PageType } from '../actions/pages'
 import { Page } from '../actions/pages'
 import ReviewPageContainer from '../containers/ReviewPageContainer'
 import CollectionPageContainer from '../containers/CollectionPageContainer'
+import LoginPageContainer from '../containers/LoginPageContainer'
 import { reviewState } from '../fakeData/reviewState'
 import { collectionState } from '../fakeData/collectionState'
 
@@ -70,6 +71,13 @@ describe('<App />', () => {
     const app = prepareContainer(Page.COLLECTION, {collection: collectionState})
 
     const expected = <CollectionPageContainer/>
+    expect(app.contains(expected)).toEqual(true)
+  })
+
+  it('displays the login page when specified', () => {
+    const app = prepareContainer(Page.LOGIN, {})
+
+    const expected = <LoginPageContainer/>
     expect(app.contains(expected)).toEqual(true)
   })
 })

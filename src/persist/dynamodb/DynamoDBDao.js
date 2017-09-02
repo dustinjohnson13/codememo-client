@@ -75,12 +75,18 @@ const hydrateReview = (item): Review | void => {
 
 export default class DynamoDBDao implements Dao {
 
-  region: string
-  endpoint: string
+  +region: string
+  +endpoint: string
+  +dynamodbCreator: () => AWS.DynamoDB
+  +docClientCreator: () => AWS.DynamoDB.DocumentClient
 
-  constructor (region: string, endpoint: string, accessKeyId: string, secretAccessKey: string) {
-    this.region = region
-    this.endpoint = endpoint
+  constructor (region: string, endpoint: string, accessKeyId: string, secretAccessKey: string,
+               dynamodbCreator?: () => AWS.DynamoDB = () => new AWS.DynamoDB(),
+               docClientCreator?: () => AWS.DynamoDB.DocumentClient = () => new AWS.DynamoDB.DocumentClient()) {
+    (this: any).region = region;
+    (this: any).endpoint = endpoint;
+    (this: any).dynamodbCreator = dynamodbCreator;
+    (this: any).docClientCreator = docClientCreator
 
     console.log(`Using region: ${region} and endpoint: ${endpoint}`)
 
@@ -124,7 +130,7 @@ export default class DynamoDBDao implements Dao {
   }
 
   listTables (): Promise<Array<string>> {
-    const dynamodb = new AWS.DynamoDB()
+    const dynamodb = this.dynamodbCreator()
 
     return new Promise((resolve, reject) => {
       dynamodb.listTables({Limit: 10}, (err, data) => {
@@ -292,7 +298,7 @@ export default class DynamoDBDao implements Dao {
 
   createTable (name: string, indices: Array<IndexDefinition>): Promise<void> {
 
-    const dynamodb = new AWS.DynamoDB()
+    const dynamodb = this.dynamodbCreator()
 
     const keySchema = [
       {AttributeName: ID_COLUMN, KeyType: DYNAMODB_HASH}
@@ -361,7 +367,7 @@ export default class DynamoDBDao implements Dao {
         TableName: name
       }
 
-      const dynamodb = new AWS.DynamoDB()
+      const dynamodb = this.dynamodbCreator()
 
       dynamodb.deleteTable(params, (err, data) => {
         if (err) {
@@ -375,7 +381,7 @@ export default class DynamoDBDao implements Dao {
   }
 
   insert (table: string, key: { [string]: string | number }, fields: { [string]: any }): Promise<any> {
-    const docClient = new AWS.DynamoDB.DocumentClient()
+    const docClient = this.docClientCreator()
 
     const item = Object.assign({}, key, fields)
     const params = {
@@ -407,7 +413,7 @@ export default class DynamoDBDao implements Dao {
   }
 
   update (table: string, key: { [string]: string }, fields: [Map<string, *>]): Promise<any> {
-    const docClient = new AWS.DynamoDB.DocumentClient()
+    const docClient = this.docClientCreator()
 
     const expressions = []
     const expressionValues = {}
@@ -440,7 +446,7 @@ export default class DynamoDBDao implements Dao {
   }
 
   deleteEntity (table: string, key: { [string]: string | number }): Promise<any> {
-    const docClient = new AWS.DynamoDB.DocumentClient()
+    const docClient = this.docClientCreator()
 
     const params = {
       TableName: table,
@@ -460,7 +466,7 @@ export default class DynamoDBDao implements Dao {
   }
 
   findOne (table: string, key: { [string]: string | number }): Promise<any> {
-    const docClient = new AWS.DynamoDB.DocumentClient()
+    const docClient = this.docClientCreator()
 
     const params = {
       TableName: table,
@@ -490,7 +496,7 @@ export default class DynamoDBDao implements Dao {
     }
 
     return new Promise((resolve, reject) => {
-      const docClient = new AWS.DynamoDB.DocumentClient()
+      const docClient = this.docClientCreator()
 
       docClient.query(params, (err, data) => {
         if (err) {

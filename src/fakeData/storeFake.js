@@ -11,14 +11,12 @@ export const defaultState: CombinedState = {
 
 export const storeFake = (state: CombinedState = defaultState) => {
   return {
-    default: () => {
-    },
     subscribe: () => {
     },
     dispatch: () => {
     },
     getState: () => {
       return {...state}
-    },
+    }
   }
 }

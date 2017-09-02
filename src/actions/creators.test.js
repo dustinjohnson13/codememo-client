@@ -3,6 +3,9 @@ import {
   addCard,
   addCardRequest,
   addCardSuccess,
+  addDeck,
+  addDeckRequest,
+  addDeckSuccess,
   answerCard,
   answerCardRequest,
   answerCardSuccess,
@@ -11,21 +14,27 @@ import {
   deleteCardSuccess,
   deleteDeck,
   deleteDeckRequest,
+  fetchCards,
+  fetchCardsRequest,
   fetchCardsSuccess,
   fetchCollection,
+  fetchCollectionRequest,
   fetchCollectionSuccess,
   fetchDeckSuccess,
   loadCollectionPage,
   loadPage,
+  login,
+  loginRequest,
+  loginSuccess,
   reviewDeck,
   reviewDeckRequest,
+  saga,
   startTimer
 } from './creators'
-import { call, put, select } from 'redux-saga/effects'
+import { call, put, select, takeEvery } from 'redux-saga/effects'
 import {
   CardDetail,
   CardDetailResponse,
-  CollectionResponse,
   DeckResponse,
   MILLIS_PER_MINUTE,
   MINUTES_PER_DAY,
@@ -35,21 +44,51 @@ import {
 } from '../services/APIDomain'
 import { Page } from './pages'
 import * as selectors from './selectors'
-import { deckId, deckName, getDeck1DueCards, gotDeck1 } from './creators.test.actions'
+import {
+  cardDetailResponse,
+  deckId,
+  deckName,
+  getDeck1DueCards,
+  gotCollection,
+  gotDeck1
+} from './creators.test.actions'
 import API from '../services/API'
 import { collectionState } from '../fakeData/collectionState'
 import { initialState } from '../reducers/collectionPage'
 import { DUE_IMMEDIATELY, Format, TEST_USER_EMAIL } from '../persist/Dao'
 import { reviewState } from '../fakeData/reviewState'
+import {
+  ADD_CARD_REQUEST,
+  ADD_DECK_REQUEST,
+  ANSWER_CARD_REQUEST,
+  DELETE_CARD_REQUEST,
+  DELETE_DECK_REQUEST,
+  FETCH_CARDS_REQUEST,
+  FETCH_COLLECTION_REQUEST,
+  LOAD_COLLECTION_PAGE,
+  LOGIN_REQUEST,
+  REVIEW_DECK_REQUEST
+} from './actionTypes'
 
 jest.mock('../services/API') // Set mock API for module importing
 
 describe('creators', () => {
 
+  it('configures saga appropriately', () => {
 
-  // Still need tests for these two:
-  // yield takeEvery(ADD_DECK_REQUEST, addDeck);
-  // yield takeEvery(LOAD_COLLECTION_PAGE, loadCollectionPage);
+    const gen = saga()
+
+    expect(gen.next().value).toEqual(takeEvery(ADD_CARD_REQUEST, addCard))
+    expect(gen.next().value).toEqual(takeEvery(ANSWER_CARD_REQUEST, answerCard))
+    expect(gen.next().value).toEqual(takeEvery(DELETE_DECK_REQUEST, deleteDeck))
+    expect(gen.next().value).toEqual(takeEvery(DELETE_CARD_REQUEST, deleteCard))
+    expect(gen.next().value).toEqual(takeEvery(REVIEW_DECK_REQUEST, reviewDeck))
+    expect(gen.next().value).toEqual(takeEvery(FETCH_CARDS_REQUEST, fetchCards))
+    expect(gen.next().value).toEqual(takeEvery(FETCH_COLLECTION_REQUEST, fetchCollection))
+    expect(gen.next().value).toEqual(takeEvery(ADD_DECK_REQUEST, addDeck))
+    expect(gen.next().value).toEqual(takeEvery(LOGIN_REQUEST, login))
+    expect(gen.next().value).toEqual(takeEvery(LOAD_COLLECTION_PAGE, loadCollectionPage))
+  })
 
   it('sends delete card request to the API and returns the response', () => {
 
@@ -69,7 +108,7 @@ describe('creators', () => {
     const gen = deleteDeck(action)
     expect(gen.next().value).toEqual(call(API.deleteDeck, TEST_USER_EMAIL, action.id))
 
-    const response = new CollectionResponse([])
+    const response = gotCollection.collection
 
     expect(gen.next(response).value).toEqual(put(fetchCollectionSuccess(response)))
   })
@@ -121,7 +160,9 @@ describe('creators', () => {
     let next = gen.next(initialState)
     expect(next.value).toEqual(call(fetchCollection))
 
-    next = gen.next(new CollectionResponse([]))
+    const response = gotCollection.collection
+
+    next = gen.next(response)
     expect(next.value).toEqual(put(loadPage(Page.COLLECTION)))
   })
 
@@ -157,5 +198,45 @@ describe('creators', () => {
       .toEqual(put(fetchCardsSuccess(new CardDetailResponse([]))))
 
     expect(gen.next().value).toEqual(put(loadPage(Page.REVIEW)))
+  })
+
+  it('handles login appropriately', () => {
+    const email = 'me@here.com'
+    const password = 'somepassword'
+
+    const gen = login(loginRequest(email, password))
+
+    expect(gen.next().value).toEqual(call(API.init, false))
+    expect(gen.next().value).toEqual(put(loginSuccess(email, password)))
+    expect(gen.next().value).toEqual(call(loadCollectionPage))
+  })
+
+  it('can add deck', () => {
+    const deckName = 'Some New Deck'
+
+    const gen = addDeck(addDeckRequest(deckName))
+
+    expect(gen.next().value).toEqual(call(API.addDeck, TEST_USER_EMAIL, deckName))
+
+    const response = gotCollection.collection
+    expect(gen.next(response).value).toEqual(put(addDeckSuccess(response)))
+  })
+
+  it('can fetch collection', () => {
+    const gen = fetchCollection(fetchCollectionRequest())
+
+    expect(gen.next().value).toEqual(call(API.fetchCollection, TEST_USER_EMAIL))
+
+    const response = gotCollection.collection
+    expect(gen.next(response).value).toEqual(put(fetchCollectionSuccess(response)))
+  })
+
+  it('can fetch cards', () => {
+    const ids = ['1', '2', '3']
+    const gen = fetchCards(fetchCardsRequest(ids))
+
+    expect(gen.next().value).toEqual(call(API.fetchCards, ids))
+
+    expect(gen.next(cardDetailResponse).value).toEqual(put(fetchCardsSuccess(cardDetailResponse)))
   })
 })

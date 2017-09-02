@@ -9,7 +9,7 @@ export const mapStateToProps = (state: CombinedState, ownProps: {}) => {
   return {page: page}
 }
 
-const mapDispatchToProps = (dispatch: Dispatch, ownProps: {}) => {
+export const mapDispatchToProps = (dispatch: Dispatch, ownProps: {}) => {
   return {}
 }
 

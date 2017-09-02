@@ -3,16 +3,21 @@ import reviewPage, { initialState } from './reviewPage'
 import {
   addCardSuccess,
   answerCardSuccess,
+  deleteCardSuccess,
   fetchCardsSuccess,
+  fetchCollectionSuccess,
   fetchDeckSuccess,
   hideAnswer,
-  showAnswer
+  loadPage,
+  showAnswer,
+  startTimer
 } from '../actions/creators'
 import {
   Card,
   CardDetail,
   CardDetailResponse,
   CardStatus,
+  CollectionResponse,
   DeckResponse,
   MINUTES_PER_DAY,
   MINUTES_PER_FOUR_DAYS,
@@ -20,6 +25,7 @@ import {
   MINUTES_PER_TWO_DAYS
 } from '../services/APIDomain'
 import { DUE_IMMEDIATELY, Format } from '../persist/Dao'
+import { Page } from '../actions/pages'
 
 describe('reviewPage', () => {
 
@@ -32,6 +38,35 @@ describe('reviewPage', () => {
   const deck = new DeckResponse(expectedDeckID, expectedDeckName, cards)
 
   const addCardResponse = new CardDetail('deck-1-card-99', 'Some Question', 'Some Answer', Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, DUE_IMMEDIATELY)
+
+  const currentlyReviewing = {
+    ...initialState,
+    format: Format.PLAIN,
+    answer: 'Answer Number 30',
+    question: 'Question Number 30?',
+    cardId: 'deck-1-card-30',
+    totalCount: 5,
+    dueCards: [new CardDetail(
+      'deck-1-card-30',
+      'Question Number 30?',
+      'Answer Number 30',
+      Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS,
+      -299999
+    ), new CardDetail('deck-1-card-31',
+      'Question Number 31?',
+      'Answer Number 31',
+      Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS,
+      -309999
+    )],
+    newCards: [
+      new CardDetail('deck-1-card-32',
+        'Question Number 32?',
+        'Answer Number 32',
+        Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS,
+        DUE_IMMEDIATELY)
+    ],
+    showingAnswer: true
+  }
 
   it('adds new card on add card success', () => {
 
@@ -96,6 +131,23 @@ describe('reviewPage', () => {
     }
 
     const action = addCardSuccess(response, 'deck-1')
+    const actualState = reviewPage(previousState, action)
+
+    expect(actualState.showingAnswer).toEqual(false)
+  })
+
+  it('hides answer on load page', () => {
+
+    const response = addCardResponse
+
+    const previousState = {
+      ...initialState,
+      dueCards: [],
+      newCards: [],
+      showingAnswer: true
+    }
+
+    const action = loadPage(Page.COLLECTION)
     const actualState = reviewPage(previousState, action)
 
     expect(actualState.showingAnswer).toEqual(false)
@@ -177,41 +229,12 @@ describe('reviewPage', () => {
     expect(actualState).toEqual(expectedState)
   })
 
-  it('resets answer card state on answer card', () => {
+  it('resets answer card state on answer card, delete card', () => {
 
-    const previousState = {
-      ...initialState,
-      format: Format.PLAIN,
-      answer: 'Answer Number 30',
-      question: 'Question Number 30?',
-      cardId: 'deck-1-card-30',
-      totalCount: 5,
-      dueCards: [new CardDetail(
-        'deck-1-card-30',
-        'Question Number 30?',
-        'Answer Number 30',
-        Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS,
-        -299999
-      ), new CardDetail('deck-1-card-31',
-        'Question Number 31?',
-        'Answer Number 31',
-        Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS,
-        -309999
-      )],
-      newCards: [
-        new CardDetail('deck-1-card-32',
-          'Question Number 32?',
-          'Answer Number 32',
-          Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS,
-          DUE_IMMEDIATELY)
-      ],
-      showingAnswer: true
-    }
+    const expectedDueCards = currentlyReviewing.dueCards.slice(1)
 
-    const expectedDueCards = previousState.dueCards.slice(1)
-
-    const expectedState = {
-      ...previousState,
+    const expectedCommonState = {
+      ...currentlyReviewing,
       answer: 'Answer Number 31',
       question: 'Question Number 31?',
       failInterval: '12h',
@@ -219,15 +242,44 @@ describe('reviewPage', () => {
       goodInterval: '2d',
       easyInterval: '4d',
       cardId: 'deck-1-card-31',
-      totalCount: 5,
       dueCards: expectedDueCards,
       showingAnswer: false
     }
 
-    const action = answerCardSuccess(new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, 86400), 'deck-1')
+    const actions = [
+      answerCardSuccess(new CardDetail('deck-1-card-30', 'Question Number 30?', 'Answer Number 30', Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, 86400), 'deck-1'),
+      deleteCardSuccess('deck-1-card-30', new DeckResponse('deck-1', 'Deck 1', []))
+    ]
+    const expectedStates = [
+      {...expectedCommonState, totalCount: 5},
+      {...expectedCommonState, totalCount: 4}
+    ]
+
+    actions.forEach((action, idx) => {
+      const actualState = reviewPage(currentlyReviewing, action)
+      expect(actualState).toEqual(expectedStates[idx])
+    })
+  })
+
+  it('starts timer when requested', () => {
+
+    const previousState = {
+      ...initialState,
+      startTime: -1
+    }
+
+    const action = startTimer()
     const actualState = reviewPage(previousState, action)
 
-    expect(actualState).toEqual(expectedState)
+    expect(actualState.startTime).toBeGreaterThan(0)
+  })
+
+  it('returns state without change on unsupported action', () => {
+
+    const action = fetchCollectionSuccess(new CollectionResponse([]))
+    const actualState = reviewPage(initialState, action)
+
+    expect(actualState).toEqual(initialState)
   })
 
 })

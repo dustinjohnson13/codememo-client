@@ -237,7 +237,7 @@ export function * login (action: LoginRequestAction): Generator<LoginRequestActi
     credentials: new AWS.Credentials(action.email, action.password)
   })
 
-  API.init(false)
+  yield call(API.init, false)
 
   yield put(loginSuccess(action.email, action.password))
   yield call(loadCollectionPage)

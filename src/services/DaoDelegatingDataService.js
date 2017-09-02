@@ -33,16 +33,11 @@ export default class DaoDelegatingDataService implements DataService {
   }
 
   async init (clearDatabase: boolean): Promise<void> {
-    try {
-      await this.dao.init(clearDatabase)
-      const u = await this.dao.findUserByEmail(TEST_USER_EMAIL)
+    await this.dao.init(clearDatabase)
+    const u = await this.dao.findUserByEmail(TEST_USER_EMAIL)
 
-      if (u === undefined) {
-        await this.dao.saveUser(newUser(TEST_USER_EMAIL))
-      }
-    }
-    catch (err) {
-      console.log(err)
+    if (u === undefined) {
+      await this.dao.saveUser(newUser(TEST_USER_EMAIL))
     }
   }
 
@@ -71,8 +66,7 @@ export default class DaoDelegatingDataService implements DataService {
       const apiCards = cards.map(card => this.businessRules.cardToAPICard(now, card))
       return new DeckResponse(id, deckName, apiCards)
     } else {
-      // TODO: Need to provide an error message, the deck doesn't exist
-      return new DeckResponse(id, '', [])
+      throw new Error(`No deck found with id ${id}`)
     }
   }
 
@@ -82,7 +76,7 @@ export default class DaoDelegatingDataService implements DataService {
       await this.dao.saveDeck(newDeck(user.id, name))
       return this.fetchCollection(email)
     } else {
-      throw new Error(`No user with email ${email}`)
+      throw new Error(`No user found with email ${email}`)
     }
   }
 

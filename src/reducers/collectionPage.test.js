@@ -1,10 +1,18 @@
 //@flow
 import collectionPage, { initialState } from './collectionPage'
-import { addCardSuccess, addDeckSuccess, answerCardSuccess, fetchCollectionSuccess } from '../actions/creators'
+import {
+  addCardSuccess,
+  addDeckSuccess,
+  answerCardSuccess,
+  deleteCardSuccess,
+  fetchCollectionSuccess,
+  startTimer
+} from '../actions/creators'
 import {
   CardDetail,
   CollectionResponse,
   Deck,
+  DeckResponse,
   MINUTES_PER_DAY,
   MINUTES_PER_FOUR_DAYS,
   MINUTES_PER_HALF_DAY,
@@ -125,5 +133,52 @@ describe('collectionPage', () => {
       Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS, MINUTES_PER_FOUR_DAYS, 9999999), 'deck1'))
 
     expect(actualState).toEqual(expectedState)
+  })
+
+  it('decreases total and due counts when a card is deleted', () => {
+    const expectedState = {
+      decks: ['deck1', 'deck2'],
+      decksById: {
+        'deck1': new Deck('deck1', 'Deck1', 80, 27, 23),
+        'deck2': new Deck('deck2', 'Deck2', 79, 26, 23)
+      }
+    }
+
+    const deckId = expectedState.decks[1]
+    const response = new DeckResponse(deckId, expectedState.decksById[deckId].name, [])
+
+    const actualState = collectionPage(twoDecksWithDueAndNewCardsState, deleteCardSuccess('cardId', response))
+    expect(actualState).toEqual(expectedState)
+  })
+
+  it('decreases total and new counts when a card is deleted', () => {
+    const expectedState = {
+      decks: ['deck1', 'deck2'],
+      decksById: {
+        'deck1': new Deck('deck1', 'Deck1', 80, 27, 23),
+        'deck2': new Deck('deck2', 'Deck2', 79, 0, 22)
+      }
+    }
+
+    const initialState = {
+      ...twoDecksWithDueAndNewCardsState,
+      decksById: {
+        ...twoDecksWithDueAndNewCardsState.decksById,
+        'deck2': new Deck('deck2', 'Deck2', 80, 0, 23)
+      }
+    }
+
+    const deckId = expectedState.decks[1]
+    const response = new DeckResponse(deckId, expectedState.decksById[deckId].name, [])
+
+    const actualState = collectionPage(initialState, deleteCardSuccess('cardId', response))
+    expect(actualState).toEqual(expectedState)
+  })
+
+  it('returns state without change on unsupported action', () => {
+
+    const actualState = collectionPage(initialState, startTimer())
+
+    expect(actualState).toEqual(initialState)
   })
 })

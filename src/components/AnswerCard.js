@@ -14,26 +14,13 @@ type Props = {
 
 class AnswerCard extends Component<Props, void> {
 
-  fail = () => {
-    this.props.answerCard(Answer.FAIL)
-  }
-  hard = () => {
-    this.props.answerCard(Answer.HARD)
-  }
-  good = () => {
-    this.props.answerCard(Answer.GOOD)
-  }
-  easy = () => {
-    this.props.answerCard(Answer.EASY)
-  }
-
   render () {
     return (
       <div className="review-answers">
-        <Button color="danger" onClick={this.fail}>{this.props.failInterval} </Button>
-        <Button color="warning" onClick={this.hard}>{this.props.hardInterval}</Button>
-        <Button color="info" onClick={this.good}>{this.props.goodInterval}</Button>
-        <Button color="success" onClick={this.easy}>{this.props.easyInterval}</Button>
+        <Button color="danger" onClick={() => this.props.answerCard(Answer.FAIL)}>{this.props.failInterval} </Button>
+        <Button color="warning" onClick={() => this.props.answerCard(Answer.HARD)}>{this.props.hardInterval}</Button>
+        <Button color="info" onClick={() => this.props.answerCard(Answer.GOOD)}>{this.props.goodInterval}</Button>
+        <Button color="success" onClick={() => this.props.answerCard(Answer.EASY)}>{this.props.easyInterval}</Button>
       </div>
     )
   }

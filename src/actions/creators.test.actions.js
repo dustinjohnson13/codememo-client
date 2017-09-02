@@ -138,7 +138,7 @@ export const getDeck1DueCards = fetchCardsRequest(
     'deck-1-card-77', 'deck-1-card-78', 'deck-1-card-79'
   ])
 
-export const gotDeck1DueCards = fetchCardsSuccess(new CardDetailResponse([
+export const cardDetailResponse = new CardDetailResponse([
   new CardDetail('deck-1-card-30',
     'Question Number 30?',
     'Answer Number 30',
@@ -208,4 +208,6 @@ export const gotDeck1DueCards = fetchCardsSuccess(new CardDetailResponse([
     Format.PLAIN, MINUTES_PER_HALF_DAY, MINUTES_PER_DAY, MINUTES_PER_TWO_DAYS,
     MINUTES_PER_FOUR_DAYS,
     -389999
-  )]))
+  )])
+
+export const gotDeck1DueCards = fetchCardsSuccess(cardDetailResponse)

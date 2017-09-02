@@ -1,6 +1,6 @@
 //@flow
 import type { Clock } from './APIDomain'
-import { Answer, CardDetail, CollectionResponse, MILLIS_PER_MINUTE } from './APIDomain'
+import { Answer, CardDetail, CollectionResponse, DeckResponse, MILLIS_PER_MINUTE } from './APIDomain'
 import DaoDelegatingDataService from './DaoDelegatingDataService'
 import { Card, DUE_IMMEDIATELY, Format, newDeck, TEST_DECK_NAME, TEST_USER_EMAIL } from '../persist/Dao'
 import { FrozenClock } from './__mocks__/API'
@@ -97,6 +97,16 @@ export function testServiceWithDaoImplementation (createDao: any) {
       }
     })
 
+    it('add deck throws error for unknown user', async () => {
+      expect.assertions(1)
+
+      try {
+        await service.addDeck('unknown@blah.com', 'NewDeck')
+      } catch (e) {
+        expect(e.message).toEqual('No user found with email unknown@blah.com')
+      }
+    })
+
     it('can fetch collection', async () => {
 
       const actual: CollectionResponse = await service.fetchCollection(TEST_USER_EMAIL)
@@ -109,12 +119,45 @@ export function testServiceWithDaoImplementation (createDao: any) {
       expect(returnedDeck.newCount).toEqual(TOTAL_COUNT - DUE_COUNT - GOOD_COUNT)
     })
 
+    it('fetch collection throws error for unknown user', async () => {
+      expect.assertions(1)
+
+      try {
+        const actual: CollectionResponse = await service.fetchCollection('unknown@blah.com')
+      } catch (e) {
+        expect(e.message).toEqual('No user found with email unknown@blah.com')
+      }
+    })
+
     it('can fetch decks', async () => {
       const actual = await service.fetchCollection(TEST_USER_EMAIL)
       const deck = await service.fetchDeck(actual.decks[0].id)
 
       expect(deck.name).toEqual(TEST_DECK_NAME)
       expect(deck.cards.length).toEqual(TOTAL_COUNT)
+    })
+
+    it('fetch decks throws error for non-existent deck', async () => {
+      expect.assertions(1)
+
+      try {
+        const actual: DeckResponse = await service.fetchDeck('i-dont-exist')
+      } catch (e) {
+        expect(e.message).toEqual('No deck found with id i-dont-exist')
+      }
+    })
+
+    it('fetch cards throws error for non-existent template for card', async () => {
+      expect.assertions(1)
+
+      const card = loadedCards[0]
+      await dao.deleteTemplate(card.templateId)
+
+      try {
+        await service.fetchCards([card.id])
+      } catch (e) {
+        expect(e.message).toEqual(`Unable to find template for card ${card.id}`)
+      }
     })
 
     it('can delete deck', async () => {
@@ -160,6 +203,29 @@ export function testServiceWithDaoImplementation (createDao: any) {
       expect(shouldBeDeleted).toBeUndefined()
     })
 
+    it('delete card throws error for non-existent card', async () => {
+      expect.assertions(1)
+
+      try {
+        await service.deleteCard(TEST_USER_EMAIL, 'i-dont-exist')
+      } catch (e) {
+        expect(e.message).toEqual('No card with id i-dont-exist')
+      }
+    })
+
+    it('delete card throws error for non-existent template for card', async () => {
+      expect.assertions(1)
+
+      const card = loadedCards[0]
+      await dao.deleteTemplate(card.templateId)
+
+      try {
+        await service.deleteCard(TEST_USER_EMAIL, card.id)
+      } catch (e) {
+        expect(e.message).toEqual(`No template with id ${card.templateId}`)
+      }
+    })
+
     it('can add new card', async () => {
       const question = 'The question'
       const answer = 'The answer'
@@ -176,6 +242,16 @@ export function testServiceWithDaoImplementation (createDao: any) {
       expect(actual.question).toEqual(question)
       expect(actual.answer).toEqual(answer)
       expect(actual.due).toEqual(DUE_IMMEDIATELY)
+    })
+
+    it('add card throws error for non-existent deck', async () => {
+      expect.assertions(1)
+
+      try {
+        await service.addCard('i-dont-exist', Format.PLAIN, 'question', 'answer')
+      } catch (e) {
+        expect(e.message).toEqual('No deck with id i-dont-exist')
+      }
     })
 
     it('can fetch deck by id', async () => {
@@ -225,6 +301,32 @@ export function testServiceWithDaoImplementation (createDao: any) {
       expect(review.answer).toEqual(answer)
       expect(review.startTime).toEqual(startTime)
       expect(review.endTime).toEqual(endTime)
+    })
+
+    it('answer card throws error for non-existent template for card', async () => {
+      expect.assertions(1)
+
+      const card = loadedCards[0]
+      await dao.deleteTemplate(card.templateId)
+
+      try {
+        await service.answerCard(card.id, 1, 5000, Answer.GOOD)
+      } catch (e) {
+        expect(e.message).toEqual(`Unable to find template for card ${card.id}`)
+      }
+    })
+
+    it('answer card throws error for non-existent card', async () => {
+      expect.assertions(1)
+
+      const card = loadedCards[0]
+      await dao.deleteCard(card.id)
+
+      try {
+        await service.answerCard(card.id, 1, 5000, Answer.GOOD)
+      } catch (e) {
+        expect(e.message).toEqual(`Card with id ${card.id} doesn't exist.`)
+      }
     })
   })
 }

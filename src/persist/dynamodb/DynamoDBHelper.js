@@ -1,7 +1,7 @@
 //@flow
 import freeport from 'freeport'
 import { CARD_TABLE, DECK_TABLE, REVIEW_TABLE, TEMPLATE_TABLE, USER_TABLE } from '../Dao'
-import type { PreLoadedIds } from '../Dao.test'
+import type { PreLoadedIds } from '../AbstractDao.test'
 
 const localDynamo = require('local-dynamo')
 const AWS = require('aws-sdk')

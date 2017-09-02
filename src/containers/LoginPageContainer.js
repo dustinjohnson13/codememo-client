@@ -7,7 +7,7 @@ import LoginPage from '../components/LoginPage'
 type OwnProps = {}
 
 export const mapStateToProps = (state: CombinedState, ownProps: OwnProps) => {
-  return state
+  return {}
 }
 
 export const mapDispatchToProps = (dispatch: Dispatch, ownProps: OwnProps) => {

@@ -18,8 +18,8 @@ import {
   TEST_USER_EMAIL,
   User
 } from '../Dao'
-import type { PreLoadedIds } from '../Dao.test'
-import { testWithDaoImplementation } from '../Dao.test'
+import type { PreLoadedIds } from '../AbstractDao.test'
+import { testWithDaoImplementation } from '../AbstractDao.test'
 import { testServiceWithDaoImplementation } from '../../services/DataService.test'
 import { Answer, MILLIS_PER_MINUTE, MINUTES_PER_DAY } from '../../services/APIDomain'
 import { REVIEW_END_TIME } from '../../fakeData/InMemoryDao'

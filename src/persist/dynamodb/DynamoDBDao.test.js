@@ -24,8 +24,8 @@ import {
   User,
   USER_TABLE
 } from '../Dao'
-import type { PreLoadedIds } from '../Dao.test'
-import { testWithDaoImplementation } from '../Dao.test'
+import type { PreLoadedIds } from '../AbstractDao.test'
+import { testWithDaoImplementation } from '../AbstractDao.test'
 import { testServiceWithDaoImplementation } from '../../services/DataService.test'
 
 const AWS = require('aws-sdk')
@@ -103,4 +103,49 @@ describe('DynamoDBDao', () => {
   })
 
   testServiceWithDaoImplementation(() => dao)
+})
+
+describe('DynamoDBDao - No DB connection available', () => {
+
+  it('should throw error when unable to perform db operations', async () => {
+
+    expect.assertions(7)
+
+    const errorDetails = 'Error listing tables!'
+    const mock = {
+      listTables: (params: any, callback: (err: any, data: any) => void) => {
+        callback(errorDetails)
+      },
+      createTable: (params: any, callback: (err: any, data: any) => void) => {
+        callback(errorDetails)
+      },
+      deleteTable: (params: any, callback: (err: any, data: any) => void) => {
+        callback(errorDetails)
+      },
+      put: (params: any, callback: (err: any, data: any) => void) => {
+        callback(errorDetails)
+      },
+      get: (params: any, callback: (err: any, data: any) => void) => {
+        callback(errorDetails)
+      },
+      delete: (params: any, callback: (err: any, data: any) => void) => {
+        callback(errorDetails)
+      },
+      query: (params: any, callback: (err: any, data: any) => void) => {
+        callback(errorDetails)
+      }
+    }
+
+    const dao = new DynamoDBDao(REGION, 'http://localhost:-1', 'accessKey', 'secretKey',
+      () => mock, () => mock)
+
+    await dao.listTables().catch(e => expect(e).toEqual(errorDetails))
+    await dao.createTable('tablename', []).catch(e => expect(e).toEqual(errorDetails))
+    await dao.dropTable('tablename').catch(e => expect(e).toEqual(errorDetails))
+    await dao.insert('tablename', {'id': 'someId'}, {}).catch(e => expect(e).toEqual(errorDetails))
+    await dao.deleteCard('id').catch(e => expect(e).toEqual(errorDetails))
+    await dao.findCard('id').catch(e => expect(e).toEqual(errorDetails))
+    await dao.findCardsByDeckId('id').catch(e => expect(e).toEqual(errorDetails))
+  })
+
 })

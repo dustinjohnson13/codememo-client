@@ -1,6 +1,6 @@
 //@flow
 import React from 'react'
-import { mapStateToProps } from './AppContainer'
+import { mapDispatchToProps, mapStateToProps } from './AppContainer'
 import { Page } from '../actions/pages'
 import { defaultState } from '../fakeData/storeFake'
 import { appState } from '../fakeData/appState'
@@ -21,5 +21,13 @@ describe('<AppContainer />', () => {
     const props = mapStateToProps(state, ownProps)
 
     expect(props.page).toEqual(expectedPage)
+  })
+
+  it('maps dispatch to props', () => {
+    const expectedProps = {}
+
+    const actual = mapDispatchToProps(action => {}, ownProps)
+
+    expect(actual).toEqual(expectedProps)
   })
 })

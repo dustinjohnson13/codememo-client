@@ -1,6 +1,6 @@
 //@flow
 import React from 'react'
-import { addCardRequest, collectionPage, startTimer } from '../actions/creators'
+import { addCardRequest, collectionPage, deleteCardRequest, startTimer } from '../actions/creators'
 import { mapDispatchToProps, mapStateToProps } from './ReviewPageContainer'
 import { defaultState } from '../fakeData/storeFake'
 import { Format } from '../persist/Dao'
@@ -60,6 +60,18 @@ describe('<ReviewPageContainer/>', () => {
 
     const {addCard} = mapDispatchToProps(dispatcher, {})
     addCard(deckId, format, question, answer)
+
+    expect(dispatchedActions).toEqual(expectedActions)
+  })
+
+  it('maps delete card', () => {
+
+    const cardId = 'deck-1-card-1'
+
+    const expectedActions = [deleteCardRequest(cardId)]
+
+    const {deleteCard} = mapDispatchToProps(dispatcher, {})
+    deleteCard(cardId)
 
     expect(dispatchedActions).toEqual(expectedActions)
   })

@@ -157,5 +157,7 @@ export interface DataService {
 
   addCard(deckId: string, format: FormatType, question: string, answer: string): Promise<CardDetail>;
 
+  updateCard(id: string, format: FormatType, question: string, answer: string): Promise<CardDetail>;
+
   deleteCard(email: string, id: string): Promise<DeckResponse>;
 }

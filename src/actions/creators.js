@@ -23,7 +23,9 @@ import type {
   LoginSuccessAction,
   ReviewDeckRequestAction,
   ShowAnswerAction,
-  StartTimerAction
+  StartTimerAction,
+  UpdateCardRequestAction,
+  UpdateCardSuccessAction
 } from './actionTypes'
 import {
   ADD_CARD_REQUEST,
@@ -48,7 +50,9 @@ import {
   LOGIN_SUCCESS,
   REVIEW_DECK_REQUEST,
   SHOW_ANSWER,
-  START_TIMER
+  START_TIMER,
+  UPDATE_CARD_REQUEST,
+  UPDATE_CARD_SUCCESS
 } from './actionTypes'
 import type { PageType } from './pages'
 import { Page } from './pages'
@@ -214,6 +218,25 @@ export const addCardSuccess = (response: CardDetail, deckId: string): AddCardSuc
   }
 }
 
+export const updateCardRequest = (deckId: string, id: string, format: FormatType, question: string, answer: string): UpdateCardRequestAction => {
+  return {
+    type: UPDATE_CARD_REQUEST,
+    deckId: deckId,
+    id: id,
+    format: format,
+    answer: answer,
+    question: question
+  }
+}
+
+export const updateCardSuccess = (response: CardDetail, deckId: string): UpdateCardSuccessAction => {
+  return {
+    type: UPDATE_CARD_SUCCESS,
+    card: response,
+    deckId: deckId
+  }
+}
+
 export const startTimer = (): StartTimerAction => {
   return {
     type: START_TIMER,
@@ -252,6 +275,11 @@ export function * addDeck (action: AddDeckRequestAction): Generator<AddDeckReque
 export function * addCard (action: AddCardRequestAction): Generator<CardDetail, void, CardDetail> {
   const card = yield call(API.addCard, action.id, action.format, action.question, action.answer)
   yield put(addCardSuccess(card, action.id))
+}
+
+export function * updateCard (action: UpdateCardRequestAction): Generator<CardDetail, void, CardDetail> {
+  const card = yield call(API.updateCard, action.id, action.format, action.question, action.answer)
+  yield put(updateCardSuccess(card, action.deckId))
 }
 
 export function * answerCard (action: AnswerCardRequestAction): Generator<CardDetail, void, any> {
@@ -305,6 +333,7 @@ export function * fetchCards (action: FetchCardsRequestAction): Generator<FetchC
 // TODO: Are these the correct generics?
 export function * saga (): Generator<Action, any, void> {
   yield takeEvery(ADD_CARD_REQUEST, addCard)
+  yield takeEvery(UPDATE_CARD_REQUEST, updateCard)
   yield takeEvery(ANSWER_CARD_REQUEST, answerCard)
   yield takeEvery(DELETE_DECK_REQUEST, deleteDeck)
   yield takeEvery(DELETE_CARD_REQUEST, deleteCard)

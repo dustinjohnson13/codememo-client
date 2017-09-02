@@ -29,6 +29,9 @@ describe('<ReviewPage />', () => {
   const addCard = () => {
     requested.push('addCard')
   }
+  const updateCard = () => {
+    requested.push('updateCard')
+  }
   const deleteCard = () => {
     requested.push('deleteCard')
   }
@@ -40,8 +43,7 @@ describe('<ReviewPage />', () => {
     const wrapper = mount(
       <Provider store={store}>
         <ReviewPage deckName={'SomeDeck'} totalCount={30} dueCount={20} newCount={10} back={back}
-                    id='deck1' cardId="card-1" question='q1' answer='a1' answerCard={answerCard} addCard={addCard}
-                    deleteCard={deleteCard} showAnswer={showAnswer} restartTimer={restartTimer}/>
+                    id='deck1' cardId="card-1" deleteCard={deleteCard} showAnswer={showAnswer}/>
       </Provider>
     )
 

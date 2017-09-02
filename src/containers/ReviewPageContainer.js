@@ -1,9 +1,8 @@
 //@flow
 import { connect } from 'react-redux'
-import { addCardRequest, collectionPage, deleteCardRequest, startTimer } from '../actions/creators'
+import { collectionPage, deleteCardRequest } from '../actions/creators'
 import ReviewPage from '../components/ReviewPage'
 import type { CombinedState, Dispatch } from '../actions/actionTypes'
-import type { FormatType } from '../persist/Dao'
 
 type OwnProps = {}
 
@@ -25,13 +24,9 @@ export const mapDispatchToProps = (dispatch: Dispatch, ownProps: OwnProps) => {
     back: () => {
       dispatch(collectionPage())
     },
-    addCard: (deckId: string, format: FormatType, question: string, answer: string) => {
-      dispatch(addCardRequest(deckId, format, question, answer))
-    },
     deleteCard: (id: string) => {
       dispatch(deleteCardRequest(id))
-    },
-    restartTimer: () => dispatch(startTimer())
+    }
   }
 }
 

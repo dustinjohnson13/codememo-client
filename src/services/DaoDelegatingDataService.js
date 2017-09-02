@@ -100,6 +100,21 @@ export default class DaoDelegatingDataService implements DataService {
     }
   }
 
+  async updateCard (cardId: string, format: FormatType, question: string, answer: string): Promise<CardDetail> {
+    const card = await this.dao.findCard(cardId)
+    if (card) {
+      const template = await this.dao.findTemplate(card.templateId)
+      if (!template) {
+        throw new Error(`No template with id ${card.templateId}`)
+      }
+      const updated = new Template(template.id, template.deckId, template.type, format, question, answer)
+      await this.dao.updateTemplate(updated)
+      return this.createCardDetail(updated, card)
+    } else {
+      throw new Error(`No card with id ${cardId}`)
+    }
+  }
+
   async deleteCard (email: string, id: string): Promise<DeckResponse> {
     const card = await this.dao.findCard(id)
     if (!card) {

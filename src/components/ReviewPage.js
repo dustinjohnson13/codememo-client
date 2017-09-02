@@ -3,12 +3,11 @@ import React, { Component } from 'react'
 import { Button } from 'reactstrap'
 import '../styles/ReviewPage.css'
 import ReviewCardContainer from '../containers/ReviewCardContainer'
-import AddCardModal from './AddCardModal'
-import type { FormatType } from '../persist/Dao'
+import AddCardModalContainer from '../containers/AddCardModalContainer'
 import { confirmAlert } from 'react-confirm-alert'
 import 'react-confirm-alert/src/react-confirm-alert.css'
 
-type Props = {
+type Props = {|
   +id: string,
   +deckName: string,
   +cardId: string,
@@ -16,11 +15,9 @@ type Props = {
   +dueCount: number,
   +newCount: number,
   +back: () => void,
-  +addCard: (deckId: string, format: FormatType, question: string, answer: string) => void,
   +showAnswer: () => void,
-  +restartTimer: () => void,
   +deleteCard: (id: string) => void
-}
+|}
 
 class ReviewPage extends Component<Props, void> {
   deleteCard = () => {
@@ -34,15 +31,19 @@ class ReviewPage extends Component<Props, void> {
   }
 
   render () {
-    const reviewSection = (this.props.dueCount === 0 && this.props.newCount === 0) ?
-      <div>Congratulations, you're caught up!</div> : <ReviewCardContainer/>
+    const doneReviewing = (this.props.dueCount === 0 && this.props.newCount === 0)
+
+    const reviewSection = doneReviewing ? <div>Congratulations, you're caught up!</div> : <ReviewCardContainer/>
+
+    const editButton = doneReviewing ? '' : <AddCardModalContainer editMode={true}/>
+
     return (
       <div>
         <div className="menu">
           <a className="back" onClick={this.props.back}>&lt;&nbsp;Back</a>
-          <AddCardModal deckId={this.props.id} addCard={this.props.addCard}
-                        restartTimer={this.props.restartTimer}/>
-          <Button>Edit</Button><Button>Find</Button>
+          <AddCardModalContainer editMode={false}/>
+          {editButton}
+          <Button>Find</Button>
           <Button color="danger" onClick={this.deleteCard}>Delete</Button>
           <a className="tools">Tools</a>
         </div>

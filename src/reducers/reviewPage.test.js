@@ -10,7 +10,8 @@ import {
   hideAnswer,
   loadPage,
   showAnswer,
-  startTimer
+  startTimer,
+  updateCardSuccess
 } from '../actions/creators'
 import {
   Card,
@@ -95,7 +96,7 @@ describe('reviewPage', () => {
     expect(actualState.newCards).toEqual(expectedNewCards)
   })
 
-  it('adds question/answer/id for added card if there are no cards for review', () => {
+  it('adds question/answer/format/id for added card if there are no cards for review', () => {
 
     const response = addCardResponse
 
@@ -103,6 +104,7 @@ describe('reviewPage', () => {
       ...initialState,
       question: '',
       answer: '',
+      format: Format.HTML,
       dueCards: [],
       newCards: []
     }
@@ -112,11 +114,36 @@ describe('reviewPage', () => {
 
     expect(actualState.question).toEqual(response.question)
     expect(actualState.answer).toEqual(response.answer)
+    expect(actualState.format).toEqual(response.format)
     expect(actualState.cardId).toEqual(response.id)
     expect(actualState.failInterval).toEqual('12h')
     expect(actualState.hardInterval).toEqual('1d')
     expect(actualState.goodInterval).toEqual('2d')
     expect(actualState.easyInterval).toEqual('4d')
+  })
+
+  it('updates question/answer/format for updated card', () => {
+
+    const response = addCardResponse
+
+    const previousState = {
+      ...initialState,
+      question: 'Original Question',
+      answer: 'Original Answer',
+      format: Format.HTML
+    }
+
+    const expectedState = {
+      ...previousState,
+      question: response.question,
+      answer: response.answer,
+      format: response.format
+    }
+
+    const action = updateCardSuccess(response, 'deck-1')
+    const actualState = reviewPage(previousState, action)
+
+    expect(actualState).toEqual(expectedState)
   })
 
   it('hides answer after adding card', () => {

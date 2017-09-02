@@ -8,7 +8,9 @@ type Props = {
   +children?: React.Node,
   +closeOnConfirmation: boolean,
   +toggleText: string,
+  +toggleColor: string,
   +title: string,
+  +confirmText: string,
   +className?: string
 }
 
@@ -45,14 +47,14 @@ class ModalWrapper extends React.Component<Props, State> {
   render () {
     return (
       <div>
-        <Button color="primary" onClick={this.toggle}>{this.props.toggleText}</Button>
+        <Button color={this.props.toggleColor} onClick={this.toggle}>{this.props.toggleText}</Button>
         <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
           <ModalHeader toggle={this.toggle}>{this.props.title}</ModalHeader>
           <ModalBody>
             {this.props.children}
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={this.confirmed}>Create</Button>{' '}
+            <Button color="primary" onClick={this.confirmed}>{this.props.confirmText}</Button>{' '}
             <Button color="secondary" onClick={this.toggle}>Cancel</Button>
           </ModalFooter>
         </Modal>

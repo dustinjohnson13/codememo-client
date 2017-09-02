@@ -5,7 +5,8 @@ import type {
   AnswerCardSuccessAction,
   DeleteCardSuccessAction,
   FetchCardsSuccessAction,
-  ReviewState
+  ReviewState,
+  UpdateCardSuccessAction
 } from '../actions/actionTypes'
 import {
   ADD_CARD_SUCCESS,
@@ -16,7 +17,8 @@ import {
   HIDE_ANSWER,
   LOAD_PAGE,
   SHOW_ANSWER,
-  START_TIMER
+  START_TIMER,
+  UPDATE_CARD_SUCCESS
 } from '../actions/actionTypes'
 import { CardDetail, MINUTES_PER_DAY, MINUTES_PER_HOUR } from '../services/APIDomain'
 import { DUE_IMMEDIATELY, Format } from '../persist/Dao'
@@ -70,6 +72,8 @@ const reviewPage = (state: ReviewState = initialState, action: Action) => {
       return getViewState(handleFetchCardsSuccess(state, action))
     case ADD_CARD_SUCCESS:
       return getViewState(handleAddCardSuccess(state, action))
+    case UPDATE_CARD_SUCCESS:
+      return getViewState(handleUpdateCardSuccess(state, action))
     case ANSWER_CARD_SUCCESS:
       return getViewState(handleAnswerCardSuccess(state, action))
     case DELETE_CARD_SUCCESS:
@@ -101,6 +105,15 @@ const handleAddCardSuccess = (state: ReviewState, action: AddCardSuccessAction):
     ...state,
     totalCount: state.totalCount + 1,
     newCards: [...state.newCards, action.card]
+  })
+}
+
+const handleUpdateCardSuccess = (state: ReviewState, action: UpdateCardSuccessAction): ReviewState => {
+  return ({
+    ...state,
+    question: action.card.question,
+    answer: action.card.answer,
+    format: action.card.format
   })
 }
 

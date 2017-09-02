@@ -254,6 +254,51 @@ export function testServiceWithDaoImplementation (createDao: any) {
       }
     })
 
+    it('can update card', async () => {
+
+      const original = (await service.fetchCards([loadedCards[0].id])).cards[0]
+
+      const question = 'Brand new question'
+      const answer = 'Brand new answer'
+      const format = Format.HTML
+
+      const returned = await service.updateCard(original.id, format, question, answer)
+      const actual = (await service.fetchCards([original.id])).cards[0]
+      const toVerify = [returned, actual]
+
+      toVerify.forEach(it => {
+        expect(it.id).toEqual(original.id)
+        expect(it.format).toEqual(format)
+        expect(it.question).toEqual(question)
+        expect(it.answer).toEqual(answer)
+        expect(it.due).toEqual(original.due)
+      })
+    })
+
+    it('update card throws error for non-existent card', async () => {
+      expect.assertions(1)
+
+      try {
+        await service.updateCard('i-dont-exist', Format.PLAIN, 'question', 'answer')
+      } catch (e) {
+        expect(e.message).toEqual('No card with id i-dont-exist')
+      }
+    })
+
+    it('update card throws error for non-existent template', async () => {
+      expect.assertions(1)
+
+      const originalCard = loadedCards[0]
+
+      await dao.deleteTemplate(originalCard.templateId)
+
+      try {
+        await service.updateCard(originalCard.id, Format.PLAIN, 'question', 'answer')
+      } catch (e) {
+        expect(e.message).toEqual(`No template with id ${originalCard.templateId}`)
+      }
+    })
+
     it('can fetch deck by id', async () => {
       const collection = await service.fetchCollection(TEST_USER_EMAIL)
       const decks = collection.decks

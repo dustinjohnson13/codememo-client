@@ -29,10 +29,10 @@ class AddDeckModal extends React.Component<Props, State> {
   render () {
     return (
       <div>
-        <ModalWrapper title="Create Deck" toggleText="Create Deck"
+        <ModalWrapper title="Create Deck" toggleText="Create Deck" confirmText="Create"
                       closeOnConfirmation={true} confirmAction={this.deckConfirmed}
-                      closedCallback={() => {
-                      }}>
+                      toggleColor="primary" closedCallback={() => {
+        }}>
           <InputGroup>
             <Input placeholder="deck name" value={this.state.name} onChange={this.handleChange}/>
           </InputGroup>

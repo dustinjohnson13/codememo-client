@@ -4,13 +4,8 @@ import { Button, Col, Form, FormGroup, Input, InputGroup, Label } from 'reactstr
 import ModalWrapper from './ModalWrapper'
 import type { FormatType } from '../persist/Dao'
 import { Format } from '../persist/Dao'
-import { ContentState, convertToRaw, EditorState } from 'draft-js'
-import { Editor } from 'react-draft-wysiwyg'
-import htmlToDraft from 'html-to-draftjs'
-import draftToHtml from 'draftjs-to-html'
-//$FlowFixMe
-import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
 import '../styles/AddCardModal.css'
+import WYSIWYGInput from './WYSIWYGInput'
 
 export type Props = {|
   +title: string,
@@ -26,23 +21,11 @@ export type Props = {|
 |}
 
 type State = {|
-  modalOpen: boolean,
-  questionState: EditorState,
-  answerState: EditorState
+  modalOpen: boolean
 |}
 
 class CardModal extends React.Component<Props, State> {
 
-  defaultHtmlContent = (input: string): EditorState => {
-    if (input !== '') {
-      const contentBlock = htmlToDraft(input)
-      if (contentBlock) {
-        const contentState = ContentState.createFromBlockArray(contentBlock.contentBlocks)
-        return EditorState.createWithContent(contentState)
-      }
-    }
-    return EditorState.createEmpty()
-  }
   handleFormatChange = (event: SyntheticInputEvent<Input>) => {
     //$FlowFixMe
     this.props.update(event.target.value, this.props.question, this.props.answer)
@@ -50,26 +33,14 @@ class CardModal extends React.Component<Props, State> {
   handleQuestionChange = (event: SyntheticInputEvent<Input>) => {
     this.props.update(this.props.format, event.target.value, this.props.answer)
   }
+  onHTMLQuestionChange = (content: string) => {
+    this.props.update(this.props.format, content, this.props.answer)
+  }
   handleAnswerChange = (event: SyntheticInputEvent<Input>) => {
     this.props.update(this.props.format, this.props.question, event.target.value)
   }
-
-  onQuestionEditorStateChange: Function = (editorState: EditorState) => {
-    const html = draftToHtml(convertToRaw(editorState.getCurrentContent()))
-    this.setState({
-      ...this.state,
-      questionState: editorState
-    })
-    this.props.update(this.props.format, html, this.props.answer)
-  }
-
-  onAnswerEditorStateChange: Function = (editorState: EditorState) => {
-    const html = draftToHtml(convertToRaw(editorState.getCurrentContent()))
-    this.setState({
-      ...this.state,
-      answerState: editorState
-    })
-    this.props.update(this.props.format, this.props.question, html)
+  onHTMLAnswerChange = (content: string) => {
+    this.props.update(this.props.format, this.props.question, content)
   }
 
   toggleModal = () => {
@@ -92,46 +63,23 @@ class CardModal extends React.Component<Props, State> {
     super(props)
 
     this.state = {
-      modalOpen: false,
-      answerState: this.defaultHtmlContent(this.props.answer),
-      questionState: this.defaultHtmlContent(this.props.question)
-    }
-  }
-
-  componentWillReceiveProps (nextProps: Props) {
-    // Don't want to reset active editor states while typing, but we do if
-    // the editor isn't open, or the format changes, or it's a new question
-    if (!this.state.modalOpen || (this.props.format !== nextProps.format) || (nextProps.question === '')) {
-      this.setState({
-        answerState: this.defaultHtmlContent(nextProps.answer),
-        questionState: this.defaultHtmlContent(nextProps.question)
-      })
+      modalOpen: false
     }
   }
 
   render () {
 
-    const {questionState, answerState} = this.state
-
     const inputGroupClass = this.props.format === Format.PLAIN ? 'question-group' : 'html-question-group'
     const questionEditor = this.props.format === Format.PLAIN ?
       <Input type="textarea" placeholder="question" value={this.props.question}
-             onChange={this.handleQuestionChange}/> : <Editor
-        editorState={questionState}
-        wrapperClassName="question-wrapper"
-        editorClassName="question-editor"
-        onEditorStateChange={this.onQuestionEditorStateChange}
-      />
+             onChange={this.handleQuestionChange}/> :
+      <WYSIWYGInput content={this.props.question} update={this.onHTMLQuestionChange}/>
 
     const answerInputGroupClass = this.props.format === Format.PLAIN ? 'answer-group' : 'html-answer-group'
     const answerEditor = this.props.format === Format.PLAIN ?
       <Input type="textarea" placeholder="answer" value={this.props.answer}
-             onChange={this.handleAnswerChange}/> : <Editor
-        editorState={answerState}
-        wrapperClassName="answer-wrapper"
-        editorClassName="answer-editor"
-        onEditorStateChange={this.onAnswerEditorStateChange}
-      />
+             onChange={this.handleAnswerChange}/> :
+      <WYSIWYGInput content={this.props.answer} update={this.onHTMLAnswerChange}/>
 
     return (
       <span>

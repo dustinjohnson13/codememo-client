@@ -22,7 +22,11 @@ type State = {|
 
 class EditCardModal extends React.Component<Props, State> {
   update = (format: FormatType, question: string, answer: string) => {
-    this.setState({format: format, question: question, answer: answer})
+    this.setState({
+      format: format,
+      question: question,
+      answer: answer
+    })
   }
   confirmed = () => {
     this.props.updateCard(this.props.deckId, this.props.cardId, this.state.format, this.state.question, this.state.answer)
@@ -40,6 +44,7 @@ class EditCardModal extends React.Component<Props, State> {
 
   componentWillReceiveProps (nextProps: Props) {
     this.setState({
+      ...this.state,
       format: nextProps.format,
       answer: nextProps.answer,
       question: nextProps.question

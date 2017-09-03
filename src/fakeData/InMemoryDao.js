@@ -41,8 +41,8 @@ export const fakeCards = (currentTime: number, deckId: string, totalCount: numbe
   for (let i = 0; i < totalCount; i++) {
     const plain = i % 2 === 0
     const format = plain ? Format.PLAIN : Format.HTML
-    const prefix = plain ? '' : '<div><b>'
-    const suffix = plain ? '' : '</b></div>'
+    const prefix = plain ? '' : '<strong>'
+    const suffix = plain ? '' : '</strong>'
 
     const question = `${prefix}Question Number ${i}?${suffix}`
     const answer = `Answer Number ${i}`

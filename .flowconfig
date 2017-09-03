@@ -1,4 +1,6 @@
 [ignore]
+.*/node_modules/draft-js/.*
+.*/node_modules/react-draft-wysiwyg/.*
 
 [include]
 

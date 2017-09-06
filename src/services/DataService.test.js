@@ -2,9 +2,8 @@
 import type { Clock } from './APIDomain'
 import { Answer, CardDetail, CollectionResponse, DeckResponse, MILLIS_PER_MINUTE } from './APIDomain'
 import DaoDelegatingDataService from './DaoDelegatingDataService'
-import { Card, DUE_IMMEDIATELY, Format, newDeck, TEST_DECK_NAME, TEST_USER_EMAIL } from '../persist/Dao'
+import { DUE_IMMEDIATELY, Format, init, TEST_DECK_NAME, TEST_USER_EMAIL } from '../persist/Dao'
 import { FrozenClock } from './__mocks__/API'
-import { fakeCards, fakeReviews, REVIEW_END_TIME } from '../fakeData/InMemoryDao'
 
 describe('Placeholder', () => {
   it('needs this placeholder', () => {
@@ -46,38 +45,13 @@ export function testServiceWithDaoImplementation (createDao: any) {
     beforeEach(async () => {
       dao = createDao()
 
-      loadedDecks = []
-      loadedTemplates = []
-      loadedCards = []
-
       service = new DaoDelegatingDataService(dao, clock)
 
-      await service.init(true).then(() =>
-        dao.findUserByEmail(TEST_USER_EMAIL)
-          .then(user => dao.saveDeck(newDeck(user.id, TEST_DECK_NAME)))
-          .then(deck => {
-            loadedDecks.push(deck)
+      const loaded = await init(clock.epochMilliseconds(), dao, true)
 
-            const currentTime = clock.epochMilliseconds()
-            const {templates, cards} = fakeCards(currentTime, deck.id, TOTAL_COUNT,
-              DUE_COUNT, TOTAL_COUNT - GOOD_COUNT - DUE_COUNT, false)
-
-            return Promise.all(templates.map(it => dao.saveTemplate(it))).then(templates => {
-              loadedTemplates = templates
-
-              return Promise.all(cards.map((card, idx) => {
-                const cardWithTemplateId = new Card(card.id, templates[idx].id, card.cardNumber, card.goodInterval, card.due)
-                return dao.saveCard(cardWithTemplateId)
-              })).then(cards => {
-                loadedCards = cards
-                return cards
-              }).then(cards => {
-                const reviews = fakeReviews(REVIEW_END_TIME, cards[0].id, 1, false)
-
-                return Promise.all(reviews.map(it => dao.saveReview(it)))
-              })
-            })
-          }))
+      loadedDecks = loaded.loadedDecks
+      loadedTemplates = loaded.loadedTemplates
+      loadedCards = loaded.loadedCards
     })
 
     it('can add new deck', async () => {

@@ -1,6 +1,7 @@
 //@flow
 import type { AnswerType } from '../services/APIDomain'
 import { Answer, MINUTES_PER_DAY } from '../services/APIDomain'
+import { fakeCards, fakeReviews, REVIEW_END_TIME } from '../fakeData/InMemoryDao'
 
 export const USER_TABLE = 'user'
 export const CARD_TABLE = 'card'
@@ -222,6 +223,8 @@ export interface Dao {
 
   findDecksByUserId(userId: string): Promise<Array<Deck>>;
 
+  findTemplatesByDeckId(deckId: string): Promise<Array<Template>>;
+
   findCardsByDeckId(deckId: string): Promise<Array<Card>>;
 
   findCardsByTemplateId(templateId: string): Promise<Array<Card>>;
@@ -241,4 +244,32 @@ export const newCard = (templateId: string, cardNumber: number) =>
 
 export const newReview = (cardId: string, startTime: number, endTime: number, answer: AnswerType): Review => {
   return new Review(NO_ID, cardId, startTime, endTime, answer)
+}
+
+export const init = async (currentTime: number, dao: Dao, clearDatabase: boolean): Promise<{ loadedDecks: Deck[], loadedTemplates: Template[], loadedCards: Card[] }> => {
+  await dao.init(clearDatabase)
+
+  let user = await dao.findUserByEmail(TEST_USER_EMAIL)
+  if (user === undefined) {
+    user = await dao.saveUser(newUser(TEST_USER_EMAIL))
+  }
+
+  const deck = await dao.saveDeck(newDeck(user.id, TEST_DECK_NAME))
+
+  const {templates, cards} = fakeCards(currentTime, deck.id, 80,
+    27, 23, false)
+
+  const persistedTemplates = await Promise.all(templates.map(t => dao.saveTemplate(t)))
+
+  const persistedCards = await Promise.all(cards.map((card, idx) => {
+    const cardWithTemplateId = new Card(card.id, persistedTemplates[idx].id, card.cardNumber, card.goodInterval, card.due)
+    return dao.saveCard(cardWithTemplateId)
+  }))
+
+  const reviews = fakeReviews(REVIEW_END_TIME, persistedCards[0].id, 1, false)
+    .concat(fakeReviews(REVIEW_END_TIME, persistedCards[1].id, 3, false))
+
+  await Promise.all(reviews.map(r => dao.saveReview(r)))
+
+  return {loadedDecks: [deck], loadedTemplates: persistedTemplates, loadedCards: persistedCards}
 }

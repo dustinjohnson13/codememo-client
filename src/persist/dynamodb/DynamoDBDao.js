@@ -519,12 +519,18 @@ export default class DynamoDBDao implements Dao {
     return items.map(hydrateDeck)
   }
 
+  async findTemplatesByDeckId (deckId: string): Promise<Array<Template>> {
+    const items = await this.findByIndexQuery(TEMPLATE_TABLE, DECK_ID_INDEX, deckId)
+    return items.map(hydrateTemplate)
+  }
+
   async findCardsByDeckId (deckId: string): Promise<Array<Card>> {
-    const templateItems = await this.findByIndexQuery(TEMPLATE_TABLE, DECK_ID_INDEX, deckId)
-    const templateIds = templateItems.map(item => item[ID_COLUMN])
+    const templates = await this.findTemplatesByDeckId(deckId)
+    const templateIds = templates.map(item => item.id)
     // This returns an array of arrays
     const items = await Promise.all(templateIds.map(templateId => this.findByIndexQuery(CARD_TABLE, TEMPLATE_ID_INDEX, templateId)))
     return items.map(item => {
+      // $FlowFixMe
       return hydrateCard(item[0])
     })
   }

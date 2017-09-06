@@ -302,14 +302,16 @@ export class SequelizeDao implements Dao {
     return q.then(entities => entities.map(hydrateDeck))
   }
 
-  async findCardsByDeckId (deckId: string): Promise<Array<Card>> {
-    const templates = await TemplateEntity.findAll({
+  async findTemplatesByDeckId (deckId: string): Promise<Array<Template>> {
+    return (await TemplateEntity.findAll({
       where: {
         deckId: deckId
       }
-    })
+    })).map(hydrateTemplate)
+  }
 
-    const templateIds = templates.map(it => it.id)
+  async findCardsByDeckId (deckId: string): Promise<Array<Card>> {
+    const templateIds = (await this.findTemplatesByDeckId(deckId)).map(it => it.id)
 
     const entities = await CardEntity.findAll({
       where: {

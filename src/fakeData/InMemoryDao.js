@@ -257,9 +257,13 @@ export class InMemoryDao implements Dao {
     return Promise.resolve(this.decks.filter(it => it.userId === userId))
   }
 
-  findCardsByDeckId (deckId: string): Promise<Array<Card>> {
-    const templateIds = this.templates.filter(it => it.deckId === deckId).map(it => it.id)
+  async findCardsByDeckId (deckId: string): Promise<Array<Card>> {
+    const templateIds = (await this.findTemplatesByDeckId(deckId)).map(it => it.id)
     return Promise.resolve(this.cards.filter(it => templateIds.indexOf(it.templateId) !== -1))
+  }
+
+  findTemplatesByDeckId (deckId: string): Promise<Array<Template>> {
+    return Promise.resolve(this.templates.filter(it => it.deckId === deckId))
   }
 
   findCardsByTemplateId (templateId: string): Promise<Array<Card>> {
